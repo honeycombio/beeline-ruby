@@ -17,6 +17,8 @@ Gem::Specification.new do |gem|
   gem.license = 'MIT'
 
 
+  gem.add_dependency 'libhoney', '>= 1.5.0'
+
   gem.add_development_dependency 'bump'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'

@@ -1,0 +1,14 @@
+require 'libhoney'
+
+require 'honeycomb/span'
+
+module Honeycomb
+  class << self
+    def init(writekey:, dataset:, options: {})
+      options = options.merge(writekey: writekey, dataset: dataset)
+      @client = Libhoney::Client.new(options)
+    end
+
+    attr_reader :client
+  end
+end
