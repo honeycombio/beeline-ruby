@@ -13,8 +13,9 @@ module Honeycomb
   USER_AGENT_SUFFIX = "#{GEM_NAME}/#{VERSION}"
 
   class << self
-    def init(writekey:, dataset:, options: {})
+    def init(writekey:, dataset:, **options)
       options = options.merge(writekey: writekey, dataset: dataset)
+      options.delete :without
       options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
       @client = Libhoney::Client.new(options)
     end

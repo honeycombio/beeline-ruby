@@ -31,8 +31,9 @@ module Honeycomb
       end
     end
 
-    def init(writekey:, dataset:, options: {})
+    def init(writekey:, dataset:, **options)
       options = options.merge(writekey: writekey, dataset: dataset)
+      @without = options.delete :without
       options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
       @client = Libhoney::Client.new(options)
 
@@ -50,7 +51,11 @@ module Honeycomb
     end
 
     def run_hook(label, block)
-      block.call @client
+      if @without.include?(label)
+        puts "Skipping hook '#{label}' due to opt-out"
+      else
+        block.call @client
+      end
     rescue => e
       warn "Honeycomb.init hook '#{label}' raised #{e.class}: #{e}"
     end
@@ -70,5 +75,5 @@ require 'rack-honeycomb/automagic'
 
 require 'honeycomb/env_config'
 if Honeycomb::ENV_CONFIG
-  Honeycomb.init(Honeycomb::ENV_CONFIG)
+  Honeycomb.init(**Honeycomb::ENV_CONFIG)
 end
