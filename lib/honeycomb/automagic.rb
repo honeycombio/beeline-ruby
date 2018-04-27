@@ -9,13 +9,13 @@ module Honeycomb
   class << self
     attr_reader :client
 
-    def add_after_init(label, &block)
+    def after_init(label, &block)
       raise ArgumentError unless block_given?
 
       hook = if block.arity == 0
                ->(_) { block.call }
              elsif block.arity > 1
-               raise ArgumentError, 'Honeycomb.add_after_init block should take 1 argument'
+               raise ArgumentError, 'Honeycomb.after_init block should take 1 argument'
              else
                block
              end
@@ -24,7 +24,7 @@ module Honeycomb
         puts "Running hook '#{label}' as Honeycomb already initialized"
         run_hook(label, hook)
       else
-        after_init << [label, hook]
+        after_init_hooks << [label, hook]
       end
     end
 
@@ -32,7 +32,7 @@ module Honeycomb
       options = options.merge(writekey: writekey, dataset: dataset)
       @client = Libhoney::Client.new(options)
 
-      after_init.each do |label, block|
+      after_init_hooks.each do |label, block|
         puts "Running hook '#{label}' after Honeycomb.init"
         run_hook(label, block)
       end
@@ -41,8 +41,8 @@ module Honeycomb
     end
 
     private
-    def after_init
-      @after_init ||= []
+    def after_init_hooks
+      @after_init_hooks ||= []
     end
 
     def run_hook(label, block)
@@ -52,14 +52,14 @@ module Honeycomb
     end
   end
 
-  add_after_init :spam do
+  after_init :spam do
     puts "Honeycomb inited"
   end
 
   # things to try autoinstrumenting:
   #  * rack - nope
   #  * sinatra
-  add_after_init(:sinatra) do |client|
+  after_init(:sinatra) do |client|
     require 'sinatra/base'
     require 'rack/honeycomb'
 
@@ -83,7 +83,7 @@ module Honeycomb
     end
   end # TODO if false # compound apps mess this up
   #  * faraday
-  add_after_init(:faraday) do |client|
+  after_init(:faraday) do |client|
     require 'faraday'
     require 'faraday-honeycomb'
 
@@ -107,21 +107,6 @@ module Honeycomb
       end
     end)
   end
-  #  * activerecord
-  add_after_init(:active_record) do |client|
-    begin
-      gem 'activerecord'
-      require 'active_record'
-      require 'activerecord-honeycomb'
-
-      ActiveRecord::Base.extend(Module.new do
-        define_method :establish_connection do |config, *args|
-          munged_config = ActiveRecord::Honeycomb.munge_config(config, client)
-          super(munged_config, *args)
-        end
-      end)
-    rescue Gem::LoadError
-      puts 'not autoinitialising activerecord-honeycomb'
-    end
-  end
 end
+
+require 'activerecord-honeycomb/automagic'
