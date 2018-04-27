@@ -62,31 +62,8 @@ module Honeycomb
 
   # things to try autoinstrumenting:
   #  * rack - nope
-  #  * sinatra
-  after_init(:sinatra) do |client|
-    require 'sinatra/base'
-    require 'rack/honeycomb'
-
-    class << ::Sinatra::Base
-      alias build_without_honeycomb build
-    end
-
-    ::Sinatra::Base.define_singleton_method(:build) do |*args, &block|
-      if defined?(@@honeycomb_already_added)
-        puts "#{self} chained build"
-        unless @@honeycomb_already_added == :warned
-          warn "Honeycomb Sinatra instrumentation will probably not work, try manual installation"
-          @@honeycomb_already_added = :warned
-        end
-      else
-        puts "#{self} chained build adding Honeycomb"
-        self.use Rack::Honeycomb::Middleware, client: client
-        @@honeycomb_already_added = true
-      end
-      build_without_honeycomb(*args, &block)
-    end
-  end # TODO if false # compound apps mess this up
 end
 
 require 'activerecord-honeycomb/automagic'
 require 'faraday-honeycomb/automagic'
+require 'rack-honeycomb/automagic'
