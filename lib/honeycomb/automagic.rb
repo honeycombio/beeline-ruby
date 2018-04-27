@@ -67,3 +67,8 @@ end
 require 'activerecord-honeycomb/automagic'
 require 'faraday-honeycomb/automagic'
 require 'rack-honeycomb/automagic'
+
+require 'honeycomb/env_config'
+if Honeycomb::ENV_CONFIG
+  Honeycomb.init(Honeycomb::ENV_CONFIG)
+end
