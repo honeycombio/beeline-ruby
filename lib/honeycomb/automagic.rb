@@ -4,8 +4,11 @@
 require 'libhoney'
 
 require 'honeycomb/span'
+require 'honeycomb/version'
 
 module Honeycomb
+  USER_AGENT_SUFFIX = "#{GEM_NAME}/#{VERSION}"
+
   class << self
     attr_reader :client
 
@@ -30,6 +33,7 @@ module Honeycomb
 
     def init(writekey:, dataset:, options: {})
       options = options.merge(writekey: writekey, dataset: dataset)
+      options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
       @client = Libhoney::Client.new(options)
 
       after_init_hooks.each do |label, block|
