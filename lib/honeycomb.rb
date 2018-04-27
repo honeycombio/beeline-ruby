@@ -1,3 +1,6 @@
+# Main entrypoint for the 'honeycomb' gem (see also lib/honeycomb/automagic.rb
+# for an alternative entrypoint).
+
 require 'libhoney'
 
 require 'honeycomb/span'
