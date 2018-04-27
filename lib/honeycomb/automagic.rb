@@ -82,31 +82,7 @@ module Honeycomb
       build_without_honeycomb(*args, &block)
     end
   end # TODO if false # compound apps mess this up
-  #  * faraday
-  after_init(:faraday) do |client|
-    require 'faraday'
-    require 'faraday-honeycomb'
-
-    Faraday::Connection.extend(Module.new do
-      define_method :new do |*args|
-        puts "Faraday overridden .new before super"
-        block = if block_given?
-                  proc do |b|
-                    b.use :honeycomb, client: client
-                    yield b
-                  end
-                else
-                  proc do |b|
-                    b.use :honeycomb, client: client
-                    b.adapter Faraday.default_adapter
-                  end
-                end
-        super(*args, &block).tap do
-          puts "Faraday overridden .new after super"
-        end
-      end
-    end)
-  end
 end
 
 require 'activerecord-honeycomb/automagic'
+require 'faraday-honeycomb/automagic'

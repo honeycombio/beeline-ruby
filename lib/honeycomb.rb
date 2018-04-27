@@ -5,6 +5,9 @@ require 'libhoney'
 
 require 'honeycomb/span'
 
+require 'activerecord-honeycomb'
+require 'faraday-honeycomb'
+
 module Honeycomb
   class << self
     def init(writekey:, dataset:, options: {})
