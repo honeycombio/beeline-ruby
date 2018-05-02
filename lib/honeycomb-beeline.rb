@@ -1,5 +1,5 @@
-# Main entrypoint for the 'honeycomb' gem (see also lib/honeycomb/automagic.rb
-# for an alternative entrypoint).
+# Main entrypoint for the 'honeycomb-beeline' gem (see also
+# lib/honeycomb-beeline/automagic.rb for an alternative entrypoint).
 
 require 'libhoney'
 

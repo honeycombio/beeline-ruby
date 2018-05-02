@@ -1,5 +1,5 @@
-# Alternative entrypoint for the 'honeycomb' gem that detects libraries we can
-# instrument and automagically instrument them.
+# Alternative entrypoint for the 'honeycomb-beeline' gem that detects libraries
+# we can instrument and automagically instrument them.
 
 require 'libhoney'
 

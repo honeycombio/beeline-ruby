@@ -1,7 +1,7 @@
-require 'honeycomb/version'
+require 'honeycomb/beeline/version'
 
 module Honeycomb
-  USER_AGENT_SUFFIX = "#{GEM_NAME}/#{VERSION}"
+  USER_AGENT_SUFFIX = "#{Beeline::GEM_NAME}/#{Beeline::VERSION}"
 
   class << self
     attr_reader :client

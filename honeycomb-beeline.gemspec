@@ -1,10 +1,10 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH << lib unless $LOAD_PATH.include?(lib)
-require 'honeycomb/version'
+require 'honeycomb/beeline/version'
 
 Gem::Specification.new do |gem|
-  gem.name = Honeycomb::GEM_NAME
-  gem.version = Honeycomb::VERSION
+  gem.name = Honeycomb::Beeline::GEM_NAME
+  gem.version = Honeycomb::Beeline::VERSION
 
   gem.summary = 'Instrument your Ruby apps with Honeycomb'
   gem.description = <<-DESC
@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
 
   gem.authors = ['Sam Stokes']
   gem.email = %w(sam@honeycomb.io)
-  gem.homepage = 'https://github.com/honeycombio/honeycomb-ruby'
+  gem.homepage = 'https://github.com/honeycombio/beeline-ruby'
   gem.license = 'MIT'
 
 
