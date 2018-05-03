@@ -11,8 +11,17 @@ require 'faraday-honeycomb/auto_install'
 require 'rack-honeycomb/auto_install'
 require 'sequel-honeycomb/auto_install'
 
+require 'honeycomb/env_config'
+
 module Honeycomb
   module Beeline
+    LOGGER = if Honeycomb::DEBUG
+      require 'logger'
+      Logger.new($stderr).tap do |l|
+        l.level = Logger::Severity.const_get(Honeycomb::DEBUG)
+      end
+    end
+
     INSTRUMENTATIONS = [
       ActiveRecord::Honeycomb,
       Faraday::Honeycomb,
@@ -22,19 +31,18 @@ module Honeycomb
 
     INSTRUMENTATIONS.each do |instrumentation|
       auto = instrumentation::AutoInstall
-      if auto.available?
+      if auto.available?(logger: LOGGER)
         hook_label = instrumentation.name.sub(/::Honeycomb$/, '').downcase.to_sym
         Honeycomb.after_init(hook_label) do |client|
-          auto.auto_install!(client)
+          auto.auto_install!(honeycomb_client: client, logger: LOGGER)
         end
       else
-        puts "Not autoinitialising #{instrumentation.name}" # TODO
+        LOGGER.debug "Not autoinitialising #{instrumentation.name}" if LOGGER
       end
     end
   end
 end
 
-require 'honeycomb/env_config'
 if Honeycomb::ENV_CONFIG
-  Honeycomb.init(**Honeycomb::ENV_CONFIG)
+  Honeycomb.init(logger: Honeycomb::Beeline::LOGGER, **Honeycomb::ENV_CONFIG)
 end

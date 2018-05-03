@@ -6,14 +6,15 @@ module Honeycomb
   class << self
     attr_reader :client
 
-    def init(writekey:, dataset:, **options)
+    def init(writekey:, dataset:, logger: nil, without: [], **options)
       options = options.merge(writekey: writekey, dataset: dataset)
-      @without = options.delete :without || []
+      @logger = logger
+      @without = without
       options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
       @client = Libhoney::Client.new(options)
 
       after_init_hooks.each do |label, block|
-        puts "Running hook '#{label}' after Honeycomb.init"
+        @logger.debug "Running hook '#{label}' after Honeycomb.init" if @logger
         run_hook(label, block)
       end
     end
@@ -30,7 +31,7 @@ module Honeycomb
              end
 
       if @initialized
-        puts "Running hook '#{label}' as Honeycomb already initialized"
+        @logger.debug "Running hook '#{label}' as Honeycomb already initialized" if @logger
         run_hook(label, hook)
       else
         after_init_hooks << [label, hook]
@@ -44,7 +45,7 @@ module Honeycomb
 
     def run_hook(label, block)
       if @without.include?(label)
-        puts "Skipping hook '#{label}' due to opt-out"
+        @logger.debug "Skipping hook '#{label}' due to opt-out" if @logger
       else
         block.call @client
       end
@@ -53,7 +54,7 @@ module Honeycomb
     end
   end
 
-  after_init :spam do
-    puts "Honeycomb inited"
+  after_init :log do
+    @logger.info "Honeycomb inited" if @logger
   end
 end

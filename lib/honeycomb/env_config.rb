@@ -10,4 +10,8 @@ module Honeycomb
       {writekey: writekey, dataset: dataset, without: without}.freeze
     end
   end
+
+  DEBUG = if ENV.key?('HONEYCOMB_DEBUG')
+    ENV['HONEYCOMB_DEBUG'].upcase.to_sym
+  end
 end
