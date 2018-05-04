@@ -24,13 +24,12 @@ module Honeycomb
       Thread.current[:honeycomb_span_id] = parent_span_id
     end
 
-    def span(service_name:, name:)
+    def span(service_name:, name:, span_id: SecureRandom.uuid)
       event = client.event
 
       event.add_field :traceId, trace_id if trace_id
       event.add_field :serviceName, service_name
       event.add_field :name, name
-      span_id = SecureRandom.uuid
       event.add_field :id, span_id
 
       start = Time.now
