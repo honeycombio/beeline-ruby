@@ -8,7 +8,9 @@ Gem::Specification.new do |gem|
 
   gem.summary = 'Instrument your Ruby apps with Honeycomb'
   gem.description = <<-DESC
-    TO DO *is* a description
+    The Honeycomb Beeline for Ruby is the fastest path to observability for your
+    Ruby apps. It understands the common packages you use and automatically
+    instruments them to send useful events to Honeycomb.
   DESC
 
   gem.authors = ['Sam Stokes']
