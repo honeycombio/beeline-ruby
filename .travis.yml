@@ -3,6 +3,11 @@ rvm:
   - 2.2
   - 2.3
   - 2.4
+services:
+  - postgresql
+before_script:
+  - bundle exec rake spec:db:create
+  - bundle exec rake spec:db:load_schema
 deploy:
   provider: rubygems
   api_key:
