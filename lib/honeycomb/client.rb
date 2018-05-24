@@ -1,4 +1,5 @@
 require 'honeycomb/beeline/version'
+require 'socket'
 
 module Honeycomb
   USER_AGENT_SUFFIX = "#{Beeline::GEM_NAME}/#{Beeline::VERSION}"
@@ -6,17 +7,34 @@ module Honeycomb
   class << self
     attr_reader :client
 
-    def init(writekey:, dataset:, logger: nil, without: [], **options)
-      options = options.merge(writekey: writekey, dataset: dataset)
+    def init(writekey: nil, dataset: nil, service_name: dataset, logger: nil, without: [], **options)
       @logger = logger
       @without = without
-      options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
-      @client = Libhoney::Client.new(options)
+      @service_name = service_name
+
+      options = options.merge(writekey: writekey, dataset: dataset)
+      @client = new_client(options)
 
       after_init_hooks.each do |label, block|
         @logger.debug "Running hook '#{label}' after Honeycomb.init" if @logger
         run_hook(label, block)
       end
+    end
+
+    def new_client(options)
+      @client = options.delete :client
+
+      options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
+      @client ||= begin
+        unless options[:writekey] && options[:dataset]
+          raise ArgumentError, "must specify writekey and dataset"
+        end
+        Libhoney::Client.new(options)
+      end
+      @client.add_field 'meta.beeline_version', Beeline::VERSION
+      @client.add_field 'meta.local_hostname', Socket.gethostname rescue nil
+      @client.add_field 'service_name',  @service_name
+      @client
     end
 
     def after_init(label, &block)

@@ -21,17 +21,24 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'libhoney', '>= 1.6.0'
 
-  gem.add_dependency 'activerecord-honeycomb'
-  gem.add_dependency 'rack-honeycomb'
-  gem.add_dependency 'faraday-honeycomb'
-  gem.add_dependency 'sequel-honeycomb'
+  gem.add_dependency 'activerecord-honeycomb', '>= 0.2.1'
+  gem.add_dependency 'rack-honeycomb', '>= 0.2.1'
+  gem.add_dependency 'faraday-honeycomb', '>= 0.2.1'
+  gem.add_dependency 'sequel-honeycomb', '>= 0.2.0'
   # TODO
   # gem.add_dependency 'honeycomb-rails'
 
 
+  gem.add_development_dependency 'activerecord'
   gem.add_development_dependency 'bump'
+  gem.add_development_dependency 'faraday'
+  gem.add_development_dependency 'pg'
+  gem.add_development_dependency 'rack'
+  gem.add_development_dependency 'rack-test'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'sinatra'
+  gem.add_development_dependency 'sequel'
   gem.add_development_dependency 'yard'
 
   gem.files = Dir[*%w(
