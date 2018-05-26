@@ -19,22 +19,24 @@ module Honeycomb
         @logger.debug "Running hook '#{label}' after Honeycomb.init" if @logger
         run_hook(label, block)
       end
+
+      @initialized = true
     end
 
     def new_client(options)
-      @client = options.delete :client
+      client = options.delete :client
 
       options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
-      @client ||= begin
+      client ||= begin
         unless options[:writekey] && options[:dataset]
           raise ArgumentError, "must specify writekey and dataset"
         end
         Libhoney::Client.new(options)
       end
-      @client.add_field 'meta.beeline_version', Beeline::VERSION
-      @client.add_field 'meta.local_hostname', Socket.gethostname rescue nil
-      @client.add_field 'service_name',  @service_name
-      @client
+      client.add_field 'meta.beeline_version', Beeline::VERSION
+      client.add_field 'meta.local_hostname', Socket.gethostname rescue nil
+      client.add_field 'service_name',  @service_name
+      client
     end
 
     def after_init(label, &block)
@@ -48,7 +50,7 @@ module Honeycomb
                block
              end
 
-      if @initialized
+      if defined?(@initialized)
         @logger.debug "Running hook '#{label}' as Honeycomb already initialized" if @logger
         run_hook(label, hook)
       else
