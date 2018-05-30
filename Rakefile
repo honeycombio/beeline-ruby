@@ -50,7 +50,12 @@ namespace :spec do
     end
   end
 
-  task all: TEST_APPS
+  desc 'Run specs for Beeline operation'
+  RSpec::Core::RakeTask.new(:beeline) do |t|
+    t.rspec_opts = '--pattern spec/beeline/**/*_spec.rb'
+  end
+
+  task all: TEST_APPS + [:beeline]
 end
 
 desc 'Run all specs'

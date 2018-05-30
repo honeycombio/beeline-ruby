@@ -6,58 +6,19 @@ instruments them to send useful events to Honeycomb.
 
 ## Setup
 
-Setup requires minimal changes to your app, but the approach depends on how your
-app loads gems at startup.
-
-### Automatic setup for apps that call `Bundler.require`
-
-If your app calls `Bundler.require` at startup (you can verify by running `git
-grep 'Bundler\.require'`) then setup just requires adding one line to your
-Gemfile:
-
-```ruby
-gem 'honeycomb-beeline', require: 'honeycomb-beeline/auto_install'
-```
-
-Now run `bundle install` to install the gem.
-
-### Automatic setup for other apps
-
-If your app does not call `Bundler.require` at startup (you can verify by
-running `git grep 'Bundler\.require'`) then you'll need to make two changes.
-First add this line to your Gemfile:
+Setup requires minimal changes to your app. First add this line to your Gemfile:
 
 ```ruby
 gem 'honeycomb-beeline'
 ```
 
-Then require the gem somewhere in your app's startup script - e.g. for a Rack app
-add it to your "config.ru":
-
-```ruby
-require 'honeycomb-beeline/auto_install'
-```
-
-Now run `bundle install` to install the gem.
-
-### Manual setup
-
-If the automatic setup doesn't work for your app, or you prefer to choose which
-libraries to instrument, then you'll need to call `Honeycomb.init` manually.
-
-First add this line to your Gemfile:
-
-```ruby
-gem 'honeycomb-beeline'
-```
-
-Then require and init the gem somewhere in your app's startup script - e.g. for
-a Rack app add it to your "config.ru":
+Then in your app's startup script - e.g. for a Rack app "config.ru" is a good
+place - add the following code:
 
 ```ruby
 require 'honeycomb-beeline'
 
-Honeycomb.init(writekey: '<MY HONEYCOMB WRITEKEY>', dataset: 'my-app')
+Honeycomb.init
 ```
 
 Now run `bundle install` to install the gem.
@@ -68,23 +29,27 @@ You'll need to configure your Honeycomb writekey so that your app can
 identify itself to Honeycomb. You can find your writekey on [your Account
 page](https://ui.honeycomb.io/account).
 
-You can also configure which dataset in your Honeycomb account to send events
-to. If you don't, the gem will guess the dataset name based on the name of the
-current directory.
+You'll also need to configure the name of a dataset in your Honeycomb account to
+send events to. The name of your app is a good choice.
 
 You can specify the configuration either via environment variables, or by
-calling `Honeycomb.init` explicitly:
+passing arguments to `Honeycomb.init`:
 
 ### Configuration via environment variables
 
  * `HONEYCOMB_WRITEKEY` - specifies the writekey
  * `HONEYCOMB_DATASET` - specifies the dataset
+ * `HONEYCOMB_SERVICE` - specifies the name of your app (defaults to the dataset
+   name)
 
 ### Configuration via code
 
 ```ruby
 Honeycomb.init(writekey: '<MY HONEYCOMB WRITEKEY>', dataset: 'my-app')
 ```
+
+Note that you should not check your Honeycomb writekey into version control, as
+it is sensitive and allows sending data to your Honeycomb account.
 
 ## Development
 

@@ -1,7 +1,7 @@
 require 'json'
 require 'sinatra/base'
 
-require 'honeycomb-beeline/auto_install'
+require 'honeycomb-beeline'
 
 require 'support/db_active_record'
 require 'support/fakehoney'

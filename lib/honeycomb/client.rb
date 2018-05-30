@@ -1,4 +1,7 @@
 require 'honeycomb/beeline/version'
+
+require 'libhoney'
+
 require 'socket'
 
 module Honeycomb
@@ -6,8 +9,18 @@ module Honeycomb
 
   class << self
     attr_reader :client
+    attr_reader :service_name
 
-    def init(writekey: nil, dataset: nil, service_name: dataset, logger: nil, without: [], **options)
+    def init(
+      writekey: ENV['HONEYCOMB_WRITEKEY'],
+      dataset: ENV['HONEYCOMB_DATASET'],
+      service_name: ENV['HONEYCOMB_SERVICE'] || dataset,
+      without: [],
+      logger: nil,
+      **options
+    )
+      reset
+
       @logger = logger
       @without = without
       @service_name = service_name
@@ -56,6 +69,26 @@ module Honeycomb
       else
         after_init_hooks << [label, hook]
       end
+    end
+
+    def shutdown
+      if defined?(@client) && @client
+        @client.close
+      end
+    end
+
+    # @api private
+    def reset
+      # TODO encapsulate all this into a Beeline object so we don't need
+      # explicit cleanup
+
+      shutdown
+
+      @logger = nil
+      @without = nil
+      @service_name = nil
+      @client = nil
+      @initialized = false
     end
 
     private
