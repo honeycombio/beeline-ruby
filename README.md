@@ -51,6 +51,49 @@ Honeycomb.init(writekey: '<MY HONEYCOMB WRITEKEY>', dataset: 'my-app')
 Note that you should not check your Honeycomb writekey into version control, as
 it is sensitive and allows sending data to your Honeycomb account.
 
+## Troubleshooting
+
+If you've setup the Beeline as above but you aren't seeing data for your app in
+Honeycomb, or you're seeing errors on startup, here are a few things to try:
+
+### Debug mode
+
+To verify the Beeline is working as expected, try running it in debug mode:
+
+```ruby
+Honeycomb.init(debug: true)
+```
+
+Alternatively, you can also enable debug mode with no code changes by setting
+`HONEYCOMB_DEBUG=true` in your environment.
+
+In debug mode, the Beeline will not send any events to Honeycomb, but will
+instead print them to your app's standard error. It will also log startup
+messages to standard error.
+
+### Logging
+
+By default the Beeline will log errors but otherwise keep quiet. To see more
+detail about what it's doing, you can pass a logger object (compliant with the
+[stdlib Logger API](https://ruby-doc.org/stdlib-2.4.1/libdoc/logger/rdoc/)) to
+`Honeycomb.init`:
+
+```ruby
+require 'logger'
+logger = Logger.new($stderr)
+logger.level = :info           # determine how much detail you want to see
+Honeycomb.init(logger: logger)
+```
+
+A level of `:debug` will show you detail about each library being instrumented,
+whereas a level of `:info` will just print a few progress messages.
+
+### Get in touch
+
+This beeline is still young, so please reach out to
+[support@honeycomb.io](mailto:support@honeycomb.io) or ping us with the chat
+bubble on [our website](https://www.honeycomb.io){target=_blank} for assistance.
+
 ## Development
 
 ### Releasing a new version

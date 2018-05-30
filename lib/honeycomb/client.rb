@@ -2,6 +2,7 @@ require 'honeycomb/beeline/version'
 
 require 'libhoney'
 
+require 'logger'
 require 'socket'
 
 module Honeycomb
@@ -16,14 +17,19 @@ module Honeycomb
       dataset: ENV['HONEYCOMB_DATASET'],
       service_name: ENV['HONEYCOMB_SERVICE'] || dataset,
       without: [],
+      debug: ENV.key?('HONEYCOMB_DEBUG'),
       logger: nil,
       **options
     )
       reset
 
-      @logger = logger
       @without = without
       @service_name = service_name
+      @logger = logger
+      @debug = debug
+      if debug
+        @logger ||= Logger.new($stderr)
+      end
 
       options = options.merge(writekey: writekey, dataset: dataset)
       @client = new_client(options)
@@ -40,11 +46,17 @@ module Honeycomb
       client = options.delete :client
 
       options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
-      client ||= begin
-        unless options[:writekey] && options[:dataset]
-          raise ArgumentError, "must specify writekey and dataset"
+      if @debug
+        raise ArgumentError, "can't specify both client and debug options" if client
+        @logger.info 'logging events to standard error instead of sending to Honeycomb' if @logger
+        client = Libhoney::LogClient.new(verbose: true, **options)
+      else
+        client ||= begin
+          unless options[:writekey] && options[:dataset]
+            raise ArgumentError, "must specify writekey and dataset"
+          end
+          Libhoney::Client.new(options)
         end
-        Libhoney::Client.new(options)
       end
       client.add_field 'meta.beeline_version', Beeline::VERSION
       client.add_field 'meta.local_hostname', Socket.gethostname rescue nil
@@ -56,9 +68,11 @@ module Honeycomb
       raise ArgumentError unless block_given?
 
       hook = if block.arity == 0
-               ->(_) { block.call }
-             elsif block.arity > 1
-               raise ArgumentError, 'Honeycomb.after_init block should take 1 argument'
+               ->(_, _) { block.call }
+             elsif block.arity == 1
+               ->(client, _) { block.call client }
+             elsif block.arity > 2
+               raise ArgumentError, 'Honeycomb.after_init block should take 2 arguments'
              else
                block
              end
@@ -87,6 +101,7 @@ module Honeycomb
       @logger = nil
       @without = nil
       @service_name = nil
+      @debug = nil
       @client = nil
       @initialized = false
     end
@@ -100,14 +115,14 @@ module Honeycomb
       if @without.include?(label)
         @logger.debug "Skipping hook '#{label}' due to opt-out" if @logger
       else
-        block.call @client
+        block.call @client, @logger
       end
     rescue => e
       warn "Honeycomb.init hook '#{label}' raised #{e.class}: #{e}"
     end
   end
 
-  after_init :log do
-    @logger.info "Honeycomb inited" if @logger
+  after_init :log do |_, logger|
+    logger.info "Honeycomb inited" if logger
   end
 end
