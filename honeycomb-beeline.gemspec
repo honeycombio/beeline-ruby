@@ -25,8 +25,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rack-honeycomb', '>= 0.2.1'
   gem.add_dependency 'faraday-honeycomb', '>= 0.2.1'
   gem.add_dependency 'sequel-honeycomb', '>= 0.2.1'
-  # TODO
-  # gem.add_dependency 'honeycomb-rails'
 
 
   gem.add_development_dependency 'activerecord'
