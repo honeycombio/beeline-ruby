@@ -25,7 +25,7 @@ module Honeycomb
 
       @without = without
       @service_name = service_name
-      @logger = logger
+      @logger = logger || Logger.new($stderr).tap {|l| l.level = :warn }
       @debug = debug
       if debug
         @logger ||= Logger.new($stderr)
@@ -47,15 +47,15 @@ module Honeycomb
 
       options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
       if @debug
-        raise ArgumentError, "can't specify both client and debug options" if client
+        raise ArgumentError, "can't specify both client and debug options", caller if client
         @logger.info 'logging events to standard error instead of sending to Honeycomb' if @logger
         client = Libhoney::LogClient.new(verbose: true, **options)
       else
-        client ||= begin
-          unless options[:writekey] && options[:dataset]
-            raise ArgumentError, "must specify writekey and dataset"
-          end
+        client ||= if options[:writekey] && options[:dataset]
           Libhoney::Client.new(options)
+        else
+          @logger.warn "#{self.name}: no #{options[:writekey] ? 'dataset' : 'writekey'} configured, disabling sending events" if @logger
+          Libhoney::NullClient.new(options)
         end
       end
       client.add_field 'meta.beeline_version', Beeline::VERSION
@@ -118,7 +118,7 @@ module Honeycomb
         block.call @client, @logger
       end
     rescue => e
-      warn "Honeycomb.init hook '#{label}' raised #{e.class}: #{e}"
+      @logger.warn "Honeycomb.init hook '#{label}' raised #{e.class}: #{e}" if @logger
     end
   end
 

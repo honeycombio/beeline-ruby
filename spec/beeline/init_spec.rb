@@ -1,15 +1,27 @@
+require 'logger'
+require 'stringio'
+
 require 'honeycomb/client'
 
 RSpec.describe 'Honeycomb.init' do
   after { Honeycomb.reset }
 
   context 'with missing parameters' do
-    it 'complains if writekey is unspecified' do
-      expect { Honeycomb.init dataset: 'dummy_service' }.to raise_error(/writekey/i)
+    let(:log_output) { StringIO.new }
+    let(:logger) do
+      logger = Logger.new(log_output)
+      logger.level = :warn
+      logger
     end
 
-    it 'complains if dataset is unspecified' do
-      expect { Honeycomb.init writekey: 'dummy' }.to raise_error(/dataset/i)
+    it 'logs a warning if writekey is unspecified' do
+      Honeycomb.init dataset: 'dummy_service', logger: logger
+      expect(log_output.string).to match(/writekey/)
+    end
+
+    it 'logs a warning if dataset is unspecified' do
+      Honeycomb.init writekey: 'dummy', logger: logger
+      expect(log_output.string).to match(/dataset/)
     end
   end
 
