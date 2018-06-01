@@ -25,7 +25,7 @@ module Honeycomb
 
       @without = without
       @service_name = service_name
-      @logger = logger || Logger.new($stderr).tap {|l| l.level = :warn }
+      @logger = logger || Logger.new($stderr).tap {|l| l.level = Logger::WARN }
       @debug = debug
       if debug
         @logger ||= Logger.new($stderr)
