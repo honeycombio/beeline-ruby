@@ -93,14 +93,3 @@ whereas a level of `:info` will just print a few progress messages.
 This beeline is still young, so please reach out to
 [support@honeycomb.io](mailto:support@honeycomb.io) or ping us with the chat
 bubble on [our website](https://www.honeycomb.io){target=_blank} for assistance.
-
-## Development
-
-### Releasing a new version
-
-Travis will automatically upload tagged releases to Rubygems. To release a new
-version, run
-```
-bump patch --tag   # Or bump minor --tag, etc.
-git push --follow-tags
-```
