@@ -151,6 +151,22 @@ the listed packages:
 * [Faraday](https://github.com/lostisland/faraday) - via
   [faraday-honeycomb](https://github.com/honeycombio/faraday-honeycomb)
 
+## Known limitations
+
+ * The Beeline will try to autodetect your web framework and automatically
+   install its middleware. Currently this only works for Sinatra apps, and
+   also fails in some more exotic configurations of Sinatra. If you find you
+   aren't seeing any events for processing web requests, you can install the
+   [middleware](https://www.rubydoc.info/gems/rack-honeycomb) manually: e.g.
+   `use Rack::Honeycomb::Middleware`.
+ * Rails apps are not supported currently; instead, use our [Rails
+   integration](https://github.com/honeycombio/honeycomb-rails).
+ * Alternative concurrency models such as EventMachine or Celluloid are not
+   currently supported.
+
+If support for one of these scenarios is important to you, please [let us
+know](#get-in-touch)!
+
 ## Troubleshooting
 
 If you've setup the Beeline as above but you aren't seeing data for your app in
