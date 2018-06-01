@@ -10,7 +10,7 @@ RSpec.describe 'Honeycomb.init' do
     let(:log_output) { StringIO.new }
     let(:logger) do
       logger = Logger.new(log_output)
-      logger.level = :warn
+      logger.level = Logger::WARN
       logger
     end
 
