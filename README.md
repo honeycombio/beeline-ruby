@@ -4,8 +4,8 @@ The Honeycomb Beeline for Ruby is the fastest path to observability for your
 Ruby apps. It understands the common packages you use and automatically
 instruments them to send useful events to Honeycomb.
 
-Sign up for a [Honeycomb trial](https://ui.honeycomb.io/signup) to obtain a
-writekey before starting.
+Currently works with Sinatra. Sign up for a [Honeycomb
+trial](https://ui.honeycomb.io/signup) to obtain a writekey before starting.
 
 ## Installation
 
@@ -24,7 +24,7 @@ place - add the following code:
 ```ruby
 require 'honeycomb-beeline'
 
-Honeycomb.init
+Honeycomb.init # pulls Honeycomb credentials + dataset name from environment
 ```
 
 ## Configuration
@@ -208,7 +208,7 @@ whereas a level of `:info` will just print a few progress messages.
 
 This beeline is still young, so please reach out to
 [support@honeycomb.io](mailto:support@honeycomb.io) or ping us with the chat
-bubble on [our website](https://www.honeycomb.io){target=_blank} for assistance.
+bubble on [our website](https://www.honeycomb.io) for assistance.
 We also welcome [bug
 reports](https://github.com/honeycombio/beeline-ruby/issues) and
 [contributions](https://github.com/honeycombio/beeline-ruby/blob/master/CONTRIBUTING.md).
