@@ -201,8 +201,8 @@ logger.level = Logger::INFO           # determine how much detail you want to se
 Honeycomb.init(logger: logger)
 ```
 
-A level of `:debug` will show you detail about each library being instrumented,
-whereas a level of `:info` will just print a few progress messages.
+A level of `Logger::DEBUG` will show you detail about each library being instrumented,
+whereas a level of `Logger::INFO` will just print a few progress messages.
 
 ### Get in touch
 
