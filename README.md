@@ -197,7 +197,7 @@ detail about what it's doing, you can pass a logger object (compliant with the
 ```ruby
 require 'logger'
 logger = Logger.new($stderr)
-logger.level = :info           # determine how much detail you want to see
+logger.level = Logger::INFO           # determine how much detail you want to see
 Honeycomb.init(logger: logger)
 ```
 
