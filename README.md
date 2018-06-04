@@ -1,5 +1,8 @@
 # Honeycomb Beeline for Ruby
 
+[![Build Status](https://travis-ci.org/honeycombio/beeline-ruby.svg?branch=master)](https://travis-ci.org/honeycombio/beeline-ruby)
+[![Gem Version](https://badge.fury.io/rb/honeycomb-beeline.svg)](https://badge.fury.io/rb/honeycomb-beeline)
+
 The Honeycomb Beeline for Ruby is an easy way to instrument your Ruby web
 application for observability. It understands the common packages you use and
 automatically instruments them to send useful events to
