@@ -1,11 +1,12 @@
 # Honeycomb Beeline for Ruby
 
-The Honeycomb Beeline for Ruby is the fastest path to observability for your
-Ruby apps. It understands the common packages you use and automatically
-instruments them to send useful events to Honeycomb.
+The Honeycomb Beeline for Ruby is an easy way to instrument your Ruby web
+application for observability. It understands the common packages you use and
+automatically instruments them to send useful events to
+[Honeycomb](https://www.honeycomb.io).
 
-Sign up for a [Honeycomb trial](https://ui.honeycomb.io/signup) to obtain a
-writekey before starting.
+Requires Ruby 2.2 or later. Sign up for a [Honeycomb
+trial](https://ui.honeycomb.io/signup) to obtain a writekey before starting.
 
 ## Installation
 
@@ -18,13 +19,13 @@ Now run `bundle install` to install the gem.
 
 ## Setup
 
-In your app's startup script - e.g. for a Rack app "config.ru" is a good
-place - add the following code:
+In your app's startup script - e.g. config.ru or app.rb - add the following
+code:
 
 ```ruby
 require 'honeycomb-beeline'
 
-Honeycomb.init
+Honeycomb.init # pulls configuration from the environment - see below
 ```
 
 ## Configuration
@@ -49,7 +50,11 @@ passing arguments to `Honeycomb.init`:
 ### Configuration via code
 
 ```ruby
-Honeycomb.init(writekey: '<MY HONEYCOMB WRITEKEY>', dataset: 'my-app')
+Honeycomb.init(
+  writekey: '<MY HONEYCOMB WRITEKEY>',
+  dataset: 'my-app',
+  service_name: 'my-app'
+)
 ```
 
 Note that you should not check your Honeycomb writekey into version control, as
@@ -208,7 +213,6 @@ whereas a level of `Logger::INFO` will just print a few progress messages.
 
 This beeline is still young, so please reach out to
 [support@honeycomb.io](mailto:support@honeycomb.io) or ping us with the chat
-bubble on [our website](https://www.honeycomb.io){target=_blank} for assistance.
-We also welcome [bug
-reports](https://github.com/honeycombio/beeline-ruby/issues) and
+bubble on [our website](https://www.honeycomb.io) for assistance.  We also
+welcome [bug reports](https://github.com/honeycombio/beeline-ruby/issues) and
 [contributions](https://github.com/honeycombio/beeline-ruby/blob/master/CONTRIBUTING.md).
