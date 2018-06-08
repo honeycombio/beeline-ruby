@@ -10,6 +10,7 @@ module Honeycomb
 
   class << self
     attr_reader :client
+    attr_reader :logger
     attr_reader :service_name
 
     def init(
