@@ -8,7 +8,8 @@ module TestDB
       attr_reader :connection_pool
 
       def config
-        @config ||= YAML.load_file("#{DB_DIR}/config-activerecord.yml") end
+        @config ||= YAML.load_file("#{DB_DIR}/config-activerecord.yml")
+      end
 
       def establish_connection
         @connection_pool = ::ActiveRecord::Base.establish_connection(config.fetch('test'))
