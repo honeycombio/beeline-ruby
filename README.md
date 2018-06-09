@@ -167,7 +167,8 @@ the listed packages:
    aren't seeing any events for processing web requests, you can install the
    [middleware](https://www.rubydoc.info/gems/rack-honeycomb) manually: e.g.
    `use Rack::Honeycomb::Middleware`.
- * Rails apps are not supported currently; instead, use our [Rails
+ * Rails apps should work after installing the middleware as above, but are
+   currently better supported by our dedicated [Rails
    integration](https://github.com/honeycombio/honeycomb-rails).
  * Alternative concurrency models such as EventMachine or Celluloid are not
    currently supported.
