@@ -13,6 +13,42 @@ module Honeycomb
     attr_reader :logger
     attr_reader :service_name
 
+    # Initialize the Honeycomb Beeline. You should call this only once, as
+    # early as possible in your app's startup process, to automatically
+    # instrument your app and prepare to send events.
+    #
+    # @example Providing config in code
+    #     Honeycomb.init(
+    #       writekey: '0123face4567cafe8901beef2345feed',
+    #       dataset: 'myapp-development',
+    #       service_name: 'myapp'
+    #     )
+    # @example Providing config via environment variables
+    #     # Assumes environment variables e.g.
+    #     #   HONEYCOMB_WRITEKEY=0123face4567cafe8901beef2345feed
+    #     #   HONEYCOMB_DATASET=myapp-development
+    #     #   HONEYCOMB_SERVICE=myapp
+    #
+    #     Honeycomb.init
+    #
+    # @param writekey [String] (required) the Honeycomb API key (aka "write
+    #     key") - get yours from your {https://ui.honeycomb.io/account Account
+    #     Page}. Can also be specified via the HONEYCOMB_WRITEKEY environment
+    #     variable.
+    # @param dataset [String] (required) the name of the Honeycomb
+    #     {https://docs.honeycomb.io/getting-data-in/datasets/best-practices/
+    #     dataset} your app should send events to. Can also be specified via the
+    #     HONEYCOMB_DATASET environment variable.
+    # @param service_name [String] the name of your app, included in all events
+    #     your app will send. Defaults to the dataset name if not specified. Can
+    #     also be specified via the HONEYCOMB_SERVICE environment variable.
+    # @param debug [Boolean] if true, your app will not send any events to
+    #     Honeycomb, but will instead print them to your app's standard error.
+    #     It will also log diagnostic messages to standard error.
+    # @param logger [Logger] provide a logger to receive diagnostic messages,
+    #     e.g. to override the default logging device or verbosity. By default
+    #     warnings and above will be logged to standard error; under normal
+    #     operation nothing will be logged.
     def init(
       writekey: ENV['HONEYCOMB_WRITEKEY'],
       dataset: ENV['HONEYCOMB_DATASET'],
@@ -41,6 +77,37 @@ module Honeycomb
       end
 
       @initialized = true
+    end
+
+    # Call at app shutdown to ensure all pending events have been sent to
+    # Honeycomb.
+    def shutdown
+      if defined?(@client) && @client
+        @client.close
+      end
+    end
+
+    # Reset the Beeline to a pristine state, ready to be `.init`ed again.
+    # Intended for testing purposes only.
+    #
+    # @api private
+    def reset
+      # TODO encapsulate all this into a Beeline object so we don't need
+      # explicit cleanup
+
+      shutdown
+
+      @logger = nil
+      @without = nil
+      @service_name = nil
+      @debug = nil
+      @client = nil
+      @initialized = false
+    end
+
+    private
+    def after_init_hooks
+      @after_init_hooks ||= []
     end
 
     def new_client(options)
@@ -84,32 +151,6 @@ module Honeycomb
       else
         after_init_hooks << [label, hook]
       end
-    end
-
-    def shutdown
-      if defined?(@client) && @client
-        @client.close
-      end
-    end
-
-    # @api private
-    def reset
-      # TODO encapsulate all this into a Beeline object so we don't need
-      # explicit cleanup
-
-      shutdown
-
-      @logger = nil
-      @without = nil
-      @service_name = nil
-      @debug = nil
-      @client = nil
-      @initialized = false
-    end
-
-    private
-    def after_init_hooks
-      @after_init_hooks ||= []
     end
 
     def run_hook(label, block)

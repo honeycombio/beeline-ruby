@@ -1,10 +1,8 @@
 require 'securerandom'
 
 module Honeycomb
-  module Span
-  end
-
   class << self
+    # @api private
     def with_trace_id(trace_id = SecureRandom.uuid)
       Thread.current[:honeycomb_trace_id] = trace_id
       yield trace_id
@@ -12,10 +10,12 @@ module Honeycomb
       Thread.current[:honeycomb_trace_id] = nil
     end
 
+    # @api private
     def trace_id
       Thread.current[:honeycomb_trace_id]
     end
 
+    # @api private
     def with_span_id(span_id)
       parent_span_id = Thread.current[:honeycomb_span_id]
       Thread.current[:honeycomb_span_id] = span_id
@@ -24,7 +24,7 @@ module Honeycomb
       Thread.current[:honeycomb_span_id] = parent_span_id
     end
 
-    # TODO rethink this API
+    # @api private
     def span(service_name:, name:, span_id: SecureRandom.uuid)
       event = client.event
 
