@@ -9,7 +9,7 @@ automatically instruments them to send useful events to
 [Honeycomb](https://www.honeycomb.io).
 
 Requires Ruby 2.2 or later. Sign up for a [Honeycomb
-trial](https://ui.honeycomb.io/signup) to obtain a writekey before starting.
+trial](https://ui.honeycomb.io/signup) to obtain an API key before starting.
 
 ## Installation
 
@@ -33,8 +33,8 @@ Honeycomb.init # pulls configuration from the environment - see below
 
 ## Configuration
 
-You'll need to configure your Honeycomb writekey so that your app can
-identify itself to Honeycomb. You can find your writekey on [your Account
+You'll need to configure your Honeycomb API key so that your app can
+identify itself to Honeycomb. You can find your API key on [your Account
 page](https://ui.honeycomb.io/account).
 
 You'll also need to configure the name of a dataset in your Honeycomb account to
@@ -45,7 +45,7 @@ passing arguments to `Honeycomb.init`:
 
 ### Configuration via environment variables
 
- * `HONEYCOMB_WRITEKEY` - specifies the writekey
+ * `HONEYCOMB_WRITEKEY` - specifies the API key (aka "write key")
  * `HONEYCOMB_DATASET` - specifies the dataset
  * `HONEYCOMB_SERVICE` - specifies the name of your app (defaults to the dataset
    name)
@@ -54,14 +54,16 @@ passing arguments to `Honeycomb.init`:
 
 ```ruby
 Honeycomb.init(
-  writekey: '<MY HONEYCOMB WRITEKEY>',
+  writekey: '<MY HONEYCOMB API KEY>',
   dataset: 'my-app',
   service_name: 'my-app'
 )
 ```
 
-Note that you should not check your Honeycomb writekey into version control, as
-it is sensitive and allows sending data to your Honeycomb account.
+Note that Honeycomb API keys have the ability to create and delete data, and
+should be managed in the same way as your other application secrets. For example
+you might prefer to configure production API keys via environment variables,
+rather than checking them into version control.
 
 ## Example questions
 
