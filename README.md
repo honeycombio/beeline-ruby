@@ -3,10 +3,8 @@
 [![Build Status](https://travis-ci.org/honeycombio/beeline-ruby.svg?branch=master)](https://travis-ci.org/honeycombio/beeline-ruby)
 [![Gem Version](https://badge.fury.io/rb/honeycomb-beeline.svg)](https://badge.fury.io/rb/honeycomb-beeline)
 
-The Honeycomb Beeline for Ruby is an easy way to instrument your Ruby web
-application for observability. It understands the common packages you use and
-automatically instruments them to send useful events to
-[Honeycomb](https://www.honeycomb.io).
+This package makes it easy to instrument your Ruby web app to send useful events to [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.
+- [Usage and Examples](https://docs.honeycomb.io/getting-data-in/beelines/ruby-beeline/)
 
 Requires Ruby 2.2 or later. Sign up for a [Honeycomb
 trial](https://ui.honeycomb.io/signup) to obtain an API key before starting.
