@@ -33,6 +33,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pg'
   gem.add_development_dependency 'rack'
   gem.add_development_dependency 'rack-test'
+  gem.add_development_dependency 'rails'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'sinatra'

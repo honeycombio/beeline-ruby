@@ -41,6 +41,7 @@ namespace :spec do
   TEST_APPS = %i(
     sinatra_activerecord
     sinatra_sequel
+    rails_activerecord
   )
 
   TEST_APPS.each do |app|

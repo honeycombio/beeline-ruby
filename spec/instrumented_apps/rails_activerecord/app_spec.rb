@@ -1,19 +1,21 @@
 require 'socket'
 
-require 'instrumented_apps/sinatra_activerecord/app'
+require 'instrumented_apps/rails_activerecord/app'
 require 'support/fakehoney'
 require 'support/shared_examples_for_tracing'
 
-RSpec.describe SinatraActiveRecordApp do
+RSpec.describe RailsActiveRecordApp do
+  before(:all) { RailsActiveRecordApp.initialize! }
+
   after { $fakehoney.reset }
 
-  let(:app) { SinatraActiveRecordApp }
+  let(:app) { RailsActiveRecordApp }
 
   let(:hostname) { Socket.gethostname }
   let(:beeline_meta_fields) { {
     'meta.local_hostname' => hostname,
     'meta.beeline_version' => Honeycomb::Beeline::VERSION,
-    'service_name' => 'sinatra_activerecord',
+    'service_name' => 'rails_activerecord',
   } }
 
   context 'simple web request' do
@@ -45,13 +47,22 @@ RSpec.describe SinatraActiveRecordApp do
 
     it 'includes beeline meta fields' do
       expect(event_data).to include beeline_meta_fields
-      expect(event_data).to include('meta.package' => 'sinatra')
+      expect(event_data).to include('meta.package' => 'rails')
+    end
+
+    it 'uses the Rails request id as the trace id' do
+      pending 'Not yet implemented'
+
+      expect(last_response.headers).to include('X-Request-Id')
+      request_id = last_response.headers['X-Request-Id']
+
+      expect(event_data).to include('trace.trace_id' => request_id)
     end
   end
 
   context 'web request making several database queries' do
     before do
-      put '/animals', {name: 'Bucky', species: 'Hare'}.to_json
+      post '/animals', {name: 'Bucky', species: 'Hare'}.to_json, {'CONTENT_TYPE' => 'application/json'}
       expect(last_response.status).to be <= 299
     end
 
@@ -91,7 +102,7 @@ RSpec.describe SinatraActiveRecordApp do
 
   context 'web request with user instrumentation' do
     before do
-      get '/microanimals'
+      get '/animals/remote'
       expect(last_response).to be_ok
     end
 
@@ -113,3 +124,4 @@ RSpec.describe SinatraActiveRecordApp do
     include_examples 'tracing'
   end
 end
+
