@@ -7,8 +7,9 @@ require 'support/db_active_record'
 require 'support/fake_auth'
 require 'support/fakehoney'
 require 'support/only_one_app'
+require 'support/test_logger'
 
-Honeycomb.init service_name: 'sinatra_activerecord', client: $fakehoney
+Honeycomb.init service_name: 'sinatra_activerecord', client: $fakehoney, logger: $test_logger
 
 class SinatraActiveRecordApp < Sinatra::Base
   include ThereCanBeOnlyOneApp
