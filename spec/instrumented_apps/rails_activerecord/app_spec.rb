@@ -109,13 +109,11 @@ RSpec.describe RailsActiveRecordApp do
     let(:events) { $fakehoney.events }
 
     it 'emits user instrumentation events followed by an http_server event' do
-      pending 'span should include type'
-
-      expect(events.map {|event| event.data['type'] }).to eq %w(animals_client animals_client render http_server)
+      expect(events.map {|event| event.data['type'] }).to eq %w(app app app http_server)
     end
 
     it 'includes beeline meta fields in all the events' do
-      pending 'span should include something for meta.package'
+      pending 'span_for_existing_event should include something for meta.package'
 
       expect(events.map(&:data)).to all(include beeline_meta_fields)
       expect(events.map(&:data)).to all(include 'meta.package')
