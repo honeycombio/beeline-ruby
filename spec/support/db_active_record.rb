@@ -2,6 +2,8 @@ require 'active_record'
 
 require 'support/db'
 
+ENV['RAILS_ENV'] = 'test'
+
 module TestDB
   module ActiveRecord
     class << self
@@ -12,7 +14,8 @@ module TestDB
       end
 
       def establish_connection
-        @connection_pool = ::ActiveRecord::Base.establish_connection(config.fetch('test'))
+        ::ActiveRecord::Base.configurations = config
+        @connection_pool = ::ActiveRecord::Base.establish_connection#(config.fetch('test'))
       end
 
       def disconnect
