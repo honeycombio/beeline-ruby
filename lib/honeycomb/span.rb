@@ -159,13 +159,23 @@ module Honeycomb
     end
 
     def with_span
+      parent_span_id, span_id = start_span!
+
+      yield parent_span_id, span_id
+    ensure
+      finish_span!(parent_span_id)
+    end
+
+    def start_span!
       span_id = SecureRandom.uuid
 
       parent_span_id = self.active_parent_span_id
       self.active_parent_span_id = span_id
 
-      yield parent_span_id, span_id
-    ensure
+      return parent_span_id, span_id
+    end
+
+    def finish_span!(parent_span_id)
       self.active_parent_span_id = parent_span_id
     end
 
