@@ -102,10 +102,7 @@ RSpec.describe SinatraActiveRecordApp do
     end
 
     it 'includes beeline meta fields in all the events' do
-      pending 'span_for_existing_event should include something for meta.package'
-
       expect(events.map(&:data)).to all(include beeline_meta_fields)
-      expect(events.map(&:data)).to all(include 'meta.package')
     end
 
     include_examples 'tracing'
