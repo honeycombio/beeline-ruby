@@ -85,6 +85,7 @@ module Honeycomb
       when '1'
         decode_payload_v1(payload)
       else
+        warn "#{self}.decode_trace_context: unrecognized trace context version #{version.inspect}"
         nil
       end
     end
@@ -126,6 +127,9 @@ module Honeycomb
     private
     def with_trace(trace_id: nil, parent_span_id: nil, context: nil)
       if self.active_trace_id
+        if trace_id
+          warn "#{self}.with_trace called while another trace is already active; ignoring supplied trace_id and preserving existing one"
+        end
         yield self.active_trace_id, self.active_trace_context
       else
         begin
@@ -192,12 +196,15 @@ module Honeycomb
         when 'context'
           context = decode_payload_context_v1(v)
         else
+          debug "#{self}.decode_payload_v1: unrecognized payload key #{k.inspect}"
         end
       end
 
       if trace_id.nil?
+        warn "#{self}.decode_payload_v1: no trace_id in context"
         return nil
       elsif parent_span_id.nil?
+        warn "#{self}.decode_payload_v1: no parent_id in context"
         return nil
       end
 
@@ -208,6 +215,7 @@ module Honeycomb
       payload[:context] = context if context
       payload
     rescue StandardError => e
+      warn "#{self}.decode_payload_v1: encountered #{e.class} decoding payload: #{e}"
       nil
     end
 
