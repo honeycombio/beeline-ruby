@@ -4,6 +4,10 @@ require 'securerandom'
 
 module Honeycomb
   class << self
+    # Start a new trace. Calling {.span} will automatically start a new trace if
+    # one is not already active, so you do not need to call this explicitly
+    # unless you want to specify the trace id or parent span id (e.g. to
+    # propagate a trace id received from upstream).
     def trace(trace_id: nil, parent_span_id: nil, context: {}, **extra_context)
       context = context.merge(extra_context)
 
@@ -12,6 +16,8 @@ module Honeycomb
       end
     end
 
+    # Continue a trace from a serialized trace context, e.g. propagated from
+    # another process.
     def trace_from_encoded_context(encoded_context = nil, additional_context: {})
       trace_context = decode_trace_context(encoded_context) || {}
       trace_id = trace_context[:trace_id]
@@ -23,6 +29,8 @@ module Honeycomb
       end
     end
 
+    # Start a new span, and send it at the end of the supplied code block. This
+    # will start a new trace if one is not already active.
     def span(name = nil, type: 'app', fields: {}, **extra_fields)
       fields = fields.merge(extra_fields)
 
@@ -54,7 +62,15 @@ module Honeycomb
       end
     end
 
-    # TODO give me a better name
+    # Start a new span, and annotate an existing {Libhoney::Event} with its
+    # tracing fields. Most users should call {.span} instead, since it has
+    # simpler semantics (e.g. it will time the execution of the code block for
+    # you, record any exceptions that were thrown, and send the event at the end
+    # of the code block). This method is mainly useful if you are writing a
+    # library instrumentation which needs to also work independently of the
+    # Beeline, and which therefore needs to implement those semantics itself; or
+    # which needs custom error handling, e.g. adding custom fields in case of
+    # error.
     def span_for_existing_event(event, name:, type:)
       with_trace do |trace_id, context|
         with_span do |parent_span_id, span_id|
@@ -73,9 +89,14 @@ module Honeycomb
       end
     end
 
+    # Add a trace field, which will get added to all spans sent after this call.
     def add_trace_field(name, value)
       self.active_trace_context[name] = value
-      # TODO also add to active span event
+      # TODO right now this will only add the field to all spans *started* after
+      # this call, which unfortunately excludes the actual active span when the
+      # call was made. One way to fix this is to change .span_for_existing_event
+      # to add fields from .active_trace_context _after_ the yield (in a
+      # begin/ensure block) instead of before.
     end
 
     def decode_trace_context(encoded_context)
