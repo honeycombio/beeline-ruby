@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.authors = ['Sam Stokes']
   gem.email = %w(support@honeycomb.io)
   gem.homepage = 'https://github.com/honeycombio/beeline-ruby'
-  gem.license = 'MIT'
+  gem.license = 'Apache-2.0'
 
 
   gem.add_dependency 'libhoney', '>= 1.8.1'
