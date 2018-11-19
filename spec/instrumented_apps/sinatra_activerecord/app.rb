@@ -4,6 +4,7 @@ require 'sinatra/base'
 require 'honeycomb-beeline'
 
 require 'support/db_active_record'
+require 'support/fake_auth'
 require 'support/fakehoney'
 require 'support/only_one_app'
 
@@ -16,11 +17,7 @@ class SinatraActiveRecordApp < Sinatra::Base
   set :raise_errors, true
 
   def auth_client
-    @auth_client ||= Faraday.new('https://auth.example.com') do |conn|
-      conn.adapter :test do |stub|
-        stub.post('/login') { [200, {}, {username: 'Bob'}.to_json] }
-      end
-    end
+    @auth_client ||= FakeAuth::Client.new
   end
 
   get '/' do
@@ -28,15 +25,8 @@ class SinatraActiveRecordApp < Sinatra::Base
   end
 
   post '/login' do
-    response = auth_client.post('/login')
-    if response.status == 200
-      user = JSON.parse(response.body)
-      status 200
-      "logged in as #{user.fetch('username')}"
-    else
-      status 401
-      'not logged in'
-    end
+    user = auth_client.login
+    "logged in as #{user.fetch('username')}"
   end
 
   put '/animals' do

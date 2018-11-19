@@ -16,13 +16,13 @@ Gem::Specification.new do |gem|
   gem.authors = ['Sam Stokes']
   gem.email = %w(support@honeycomb.io)
   gem.homepage = 'https://github.com/honeycombio/beeline-ruby'
-  gem.license = 'MIT'
+  gem.license = 'Apache-2.0'
 
 
   gem.add_dependency 'libhoney', '>= 1.8.1'
 
-  gem.add_dependency 'activerecord-honeycomb', '>= 0.2.1'
-  gem.add_dependency 'rack-honeycomb', '>= 0.2.1'
+  gem.add_dependency 'activerecord-honeycomb', '>= 0.3.0'
+  gem.add_dependency 'rack-honeycomb', '>= 0.3.0'
   gem.add_dependency 'faraday-honeycomb', '>= 0.2.1'
   gem.add_dependency 'sequel-honeycomb', '>= 0.2.1'
 
@@ -33,6 +33,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pg'
   gem.add_development_dependency 'rack'
   gem.add_development_dependency 'rack-test'
+  gem.add_development_dependency 'rails'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'sinatra'
