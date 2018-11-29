@@ -7,8 +7,9 @@ require 'support/db_active_record'
 require 'support/fake_auth'
 require 'support/fakehoney'
 require 'support/only_one_app'
+require 'support/test_logger'
 
-Honeycomb.init service_name: 'sinatra_activerecord', client: $fakehoney
+Honeycomb.init service_name: 'sinatra_activerecord', client: $fakehoney, logger: $test_logger
 
 class SinatraActiveRecordApp < Sinatra::Base
   include ThereCanBeOnlyOneApp
@@ -50,23 +51,18 @@ class SinatraActiveRecordApp < Sinatra::Base
   get '/microanimals' do
     # simulate user instrumentation for calling a couple of microservices
 
-    animals1 = span name: :reindeer_games_service do
+    animals1 = Honeycomb.span :reindeer_games_service do
       %w(Dasher Dancer Prancer Vixen Comet Cupid Donner Blitzen).map do |name|
         Animal.new name: name, species: 'Reindeer'
       end
     end
 
-    animals2 = span name: :nose_so_bright_service do
+    animals2 = Honeycomb.span :nose_so_bright_service do
       [Animal.new(name: 'Rudolph', species: 'Reindeer')]
     end
 
-    span name: :render_json do
+    Honeycomb.span :render_json do
       (animals1 + animals2).to_json
     end
-  end
-
-  private
-  def span(name:)
-    Honeycomb.span(service_name: :sinatra_activerecord, name: name) { yield }
   end
 end

@@ -72,7 +72,7 @@ module Honeycomb
       @client = new_client(options)
 
       after_init_hooks.each do |label, block|
-        @logger.debug "Running hook '#{label}' after Honeycomb.init" if @logger
+        debug "Running hook '#{label}' after Honeycomb.init"
         run_hook(label, block)
       end
 
@@ -106,6 +106,16 @@ module Honeycomb
     end
 
     private
+    def debug(msg)
+      logger.debug msg if logger
+    end
+    def info(msg)
+      logger.info msg if logger
+    end
+    def warn(msg)
+      logger.warn msg if logger
+    end
+
     def after_init_hooks
       @after_init_hooks ||= []
     end
@@ -116,13 +126,13 @@ module Honeycomb
       options = {user_agent_addition: USER_AGENT_SUFFIX}.merge(options)
       if @debug
         raise ArgumentError, "can't specify both client and debug options", caller if client
-        @logger.info 'logging events to standard error instead of sending to Honeycomb' if @logger
+        info 'logging events to standard error instead of sending to Honeycomb'
         client = Libhoney::LogClient.new(verbose: true, **options)
       else
         client ||= if options[:writekey] && options[:dataset]
           Libhoney::Client.new(options)
         else
-          @logger.warn "#{self.name}: no #{options[:writekey] ? 'dataset' : 'writekey'} configured, disabling sending events" if @logger
+          warn "#{self.name}: no #{options[:writekey] ? 'dataset' : 'writekey'} configured, disabling sending events"
           Libhoney::NullClient.new(options)
         end
       end
@@ -146,7 +156,7 @@ module Honeycomb
              end
 
       if defined?(@initialized)
-        @logger.debug "Running hook '#{label}' as Honeycomb already initialized" if @logger
+        debug "Running hook '#{label}' as Honeycomb already initialized"
         run_hook(label, hook)
       else
         after_init_hooks << [label, hook]
@@ -155,12 +165,12 @@ module Honeycomb
 
     def run_hook(label, block)
       if @without.include?(label)
-        @logger.debug "Skipping hook '#{label}' due to opt-out" if @logger
+        debug "Skipping hook '#{label}' due to opt-out"
       else
         block.call @client, @logger
       end
     rescue => e
-      @logger.warn "Honeycomb.init hook '#{label}' raised #{e.class}: #{e}" if @logger
+      warn "Honeycomb.init hook '#{label}' raised #{e.class}: #{e}"
     end
   end
 

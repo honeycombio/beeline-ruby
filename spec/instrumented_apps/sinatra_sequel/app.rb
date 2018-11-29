@@ -6,8 +6,9 @@ require 'honeycomb-beeline'
 require 'support/db_sequel'
 require 'support/fakehoney'
 require 'support/only_one_app'
+require 'support/test_logger'
 
-Honeycomb.init service_name: 'sinatra_sequel', client: $fakehoney
+Honeycomb.init service_name: 'sinatra_sequel', client: $fakehoney, logger: $test_logger
 
 class SinatraSequelApp < Sinatra::Base
   include ThereCanBeOnlyOneApp
