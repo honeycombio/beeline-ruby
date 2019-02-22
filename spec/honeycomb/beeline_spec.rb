@@ -5,3 +5,6 @@ RSpec.describe Honeycomb::Beeline do
     expect(Honeycomb::Beeline::VERSION).not_to be nil
   end
 end
+
+RSpec.describe Honeycomb::Client do
+end
