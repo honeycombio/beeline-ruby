@@ -11,11 +11,13 @@ module Honeycomb
 
     def_delegators :@root_span, :send
 
+    attr_reader :id, :fields
+
     def initialize(builder:)
       @id = SecureRandom.uuid
       @rollup_fields = Hash.new(0)
       @fields = {}
-      @root_span = Span.new(trace: self, event: builder.event)
+      @root_span = Span.new(trace: self, builder: builder)
     end
 
     def add_field(key, value)

@@ -8,6 +8,9 @@ Metrics/BlockLength:
   Exclude:
     - honeycomb-beeline.gemspec
 
+Metrics/AbcSize:
+  Max: 20
+
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
 
