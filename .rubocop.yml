@@ -1,0 +1,9 @@
+AllCops:
+  TargetRubyVersion: 2.2
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Metrics/BlockLength:
+  Exclude:
+    - honeycomb-beeline.gemspec
