@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
-require "honeycomb/beeline"
+require "honeycomb-beeline"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

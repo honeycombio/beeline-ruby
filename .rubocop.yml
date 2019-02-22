@@ -10,3 +10,7 @@ Metrics/BlockLength:
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
+
+Naming/FileName:
+  Exclude:
+    - lib/honeycomb-beeline.rb
