@@ -7,3 +7,6 @@ Style/StringLiterals:
 Metrics/BlockLength:
   Exclude:
     - honeycomb-beeline.gemspec
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: always
