@@ -27,6 +27,18 @@ RSpec.describe Honeycomb::Client do
       client.add_field "test", "wow"
     end
   end
+
+  it "can create a trace without using a block" do
+    outer_span = client.start_span(name: "test")
+    client.add_field "test", "wow"
+    client.start_span(name: "inner-one") do # |inner_span|
+      client.add_field("inner count", 1)
+    end
+    client.start_span(name: "inner-two") do # |inner_span|
+      client.add_field("inner count", 1)
+    end
+    outer_span.send
+  end
 end
 
 RSpec.shared_examples "a tracing object" do

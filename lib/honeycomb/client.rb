@@ -22,8 +22,6 @@ module Honeycomb
     end
 
     def start_span(name:)
-      return unless block_given?
-
       if context.current_trace.nil?
         Trace.new(builder: client.builder, context: context)
       else
@@ -32,14 +30,18 @@ module Honeycomb
 
       context.current_span.add_field("name", name)
 
-      begin
-        yield context.current_span
-      rescue StandardError => e
-        context.current_span.add_field("request.error", e.class.name)
-        context.current_span.add_field("request.error_detail", e.message)
-        raise e
-      ensure
-        context.current_span.send
+      if block_given?
+        begin
+          yield context.current_span
+        rescue StandardError => e
+          context.current_span.add_field("request.error", e.class.name)
+          context.current_span.add_field("request.error_detail", e.message)
+          raise e
+        ensure
+          context.current_span.send
+        end
+      else
+        context.current_span
       end
     end
 

@@ -7,9 +7,10 @@ Style/StringLiterals:
 Metrics/BlockLength:
   Exclude:
     - honeycomb-beeline.gemspec
+    - spec/**/*.rb
 
 Metrics/AbcSize:
-  Max: 30
+  Max: 40
 
 Metrics/MethodLength:
   Max: 20
