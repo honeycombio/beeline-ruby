@@ -2,7 +2,8 @@
 
 require "libhoney"
 
-client = Libhoney::NullClient.new
+# libhoney_client = Libhoney::NullClient.new
+libhoney_client = Libhoney::LogClient.new
 
 RSpec.describe Honeycomb::Beeline do
   it "has a version number" do
@@ -11,6 +12,21 @@ RSpec.describe Honeycomb::Beeline do
 end
 
 RSpec.describe Honeycomb::Client do
+  subject(:client) { Honeycomb::Client.new(client: libhoney_client) }
+  it "can create a trace" do
+    client.start_span(name: "test") do # |span|
+      client.add_field "test", "wow"
+      client.start_span(name: "inner-one") do # |inner_span|
+        client.add_field("inner count", 1)
+      end
+      client.start_span(name: "inner-two") do # |inner_span|
+        client.add_field("inner count", 1)
+      end
+    end
+    client.start_span(name: "second trace") do
+      client.add_field "test", "wow"
+    end
+  end
 end
 
 RSpec.shared_examples "a tracing object" do
@@ -28,13 +44,13 @@ RSpec.shared_examples "a tracing object" do
 end
 
 RSpec.describe Honeycomb::Trace do
-  let(:builder) { client.builder }
+  let(:builder) { libhoney_client.builder }
   subject(:trace) { Honeycomb::Trace.new(builder: builder) }
   it_behaves_like "a tracing object"
 end
 
 RSpec.describe Honeycomb::Span do
-  let(:builder) { client.builder }
+  let(:builder) { libhoney_client.builder }
   let(:trace) { Honeycomb::Trace.new(builder: builder) }
   subject(:span) { Honeycomb::Span.new(trace: trace, builder: builder) }
   it_behaves_like "a tracing object"

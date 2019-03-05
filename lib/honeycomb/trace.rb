@@ -11,7 +11,7 @@ module Honeycomb
 
     def_delegators :@root_span, :send
 
-    attr_reader :id, :fields
+    attr_reader :id, :fields, :root_span, :rollup_fields
 
     def initialize(builder:)
       @id = SecureRandom.uuid

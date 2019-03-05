@@ -9,6 +9,9 @@ Metrics/BlockLength:
     - honeycomb-beeline.gemspec
 
 Metrics/AbcSize:
+  Max: 30
+
+Metrics/MethodLength:
   Max: 20
 
 Style/FrozenStringLiteralComment:
@@ -17,3 +20,7 @@ Style/FrozenStringLiteralComment:
 Naming/FileName:
   Exclude:
     - lib/honeycomb-beeline.rb
+
+Style/SymbolProc:
+  Exclude:
+    - lib/honeycomb/span.rb
