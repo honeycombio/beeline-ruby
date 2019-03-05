@@ -44,15 +44,19 @@ RSpec.shared_examples "a tracing object" do
 end
 
 RSpec.describe Honeycomb::Trace do
+  let(:context) { Honeycomb::Context.new }
   let(:builder) { libhoney_client.builder }
-  subject(:trace) { Honeycomb::Trace.new(builder: builder) }
+  subject(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
   it_behaves_like "a tracing object"
 end
 
 RSpec.describe Honeycomb::Span do
+  let(:context) { Honeycomb::Context.new }
   let(:builder) { libhoney_client.builder }
-  let(:trace) { Honeycomb::Trace.new(builder: builder) }
-  subject(:span) { Honeycomb::Span.new(trace: trace, builder: builder) }
+  let(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
+  subject(:span) do
+    Honeycomb::Span.new(trace: trace, builder: builder, context: context)
+  end
   it_behaves_like "a tracing object"
 
   it "can add hashes" do

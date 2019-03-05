@@ -12,8 +12,14 @@ module Honeycomb
 
     attr_reader :id, :trace
 
-    def initialize(trace:, builder:, parent_id: nil, is_root: parent_id.nil?)
+    def initialize(trace:,
+                   builder:,
+                   context:,
+                   parent_id: nil,
+                   is_root: parent_id.nil?)
       @id = SecureRandom.uuid
+      @context = context
+      @context.current_span = self
       @builder = builder
       @event = builder.event
       @trace = trace
@@ -34,7 +40,10 @@ module Honeycomb
     end
 
     def create_child
-      self.class.new(trace: trace, builder: builder, parent_id: id).tap do |c|
+      self.class.new(trace: trace,
+                     builder: builder,
+                     context: context,
+                     parent_id: id).tap do |c|
         children << c
       end
     end
@@ -56,7 +65,12 @@ module Honeycomb
 
     private
 
-    attr_reader :rollup_fields, :event, :parent_id, :children, :builder
+    attr_reader :rollup_fields,
+                :event,
+                :parent_id,
+                :children,
+                :builder,
+                :context
 
     def sent?
       @sent
@@ -78,6 +92,7 @@ module Honeycomb
       send_children
       event.send
       @sent = true
+      context.span_sent(self)
     end
 
     def send_children

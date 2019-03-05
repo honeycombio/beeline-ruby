@@ -13,11 +13,11 @@ module Honeycomb
 
     attr_reader :id, :fields, :root_span, :rollup_fields
 
-    def initialize(builder:)
+    def initialize(builder:, context:)
       @id = SecureRandom.uuid
       @rollup_fields = Hash.new(0)
       @fields = {}
-      @root_span = Span.new(trace: self, builder: builder)
+      @root_span = Span.new(trace: self, builder: builder, context: context)
     end
 
     def add_field(key, value)

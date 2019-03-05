@@ -3,6 +3,7 @@
 require "socket"
 require "forwardable"
 require "honeycomb/beeline/version"
+require "honeycomb/context"
 
 module Honeycomb
   # The Honeycomb Beeline client
@@ -13,8 +14,7 @@ module Honeycomb
       client.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
       client.add_field "meta.local_hostname", host_name
       @client = client
-      @spans = []
-      @trace = nil
+      @context = Context.new
 
       at_exit do
         client.close
@@ -22,30 +22,31 @@ module Honeycomb
     end
 
     def start_span(name:)
-      new_span
-      spans.last.tap do |current_span|
-        current_span.add_field("name", name)
+      return unless block_given?
 
-        if block_given?
-          begin
-            yield current_span
-          rescue StandardError => e
-            span.add_field("request.error", e.class.name)
-            span.add_field("request.error_detail", e.message)
-            raise e
-          ensure
-            current_span.send
-            spans.pop
-            spans.empty? && self.trace = nil
-          end
-        end
+      if context.current_trace.nil?
+        Trace.new(builder: client.builder, context: context)
+      else
+        context.current_span.create_child
+      end
+
+      context.current_span.add_field("name", name)
+
+      begin
+        yield context.current_span
+      rescue StandardError => e
+        context.current_span.add_field("request.error", e.class.name)
+        context.current_span.add_field("request.error_detail", e.message)
+        raise e
+      ensure
+        context.current_span.send
       end
     end
 
     def add_field(key, value)
-      return if spans.empty?
+      return if context.current_span.nil?
 
-      spans.last.add_field("app.#{key}", value)
+      context.current_span.add_field("app.#{key}", value)
     end
 
     def add_field_to_trace(key, value)
@@ -56,17 +57,7 @@ module Honeycomb
 
     private
 
-    attr_accessor :trace
-    attr_reader :client, :spans
-
-    def new_span
-      if trace.nil?
-        self.trace = Trace.new(builder: client.builder)
-        spans << trace.root_span
-      else
-        spans << spans.last.create_child
-      end
-    end
+    attr_reader :client, :context
 
     def host_name
       # Send the heroku dyno name instead of hostname if available
