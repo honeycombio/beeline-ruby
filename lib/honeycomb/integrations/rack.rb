@@ -36,9 +36,11 @@ module Honeycomb
         end
 
         RACK_FIELDS.each(&add_env_field)
-        SINATRA_FIELDS.each(&add_env_field)
 
         status, headers, body = app.call(env)
+
+        # this is populated after the action is executed
+        SINATRA_FIELDS.each(&add_env_field)
 
         span.add_field("response.status_code", status)
 

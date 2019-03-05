@@ -30,6 +30,7 @@ GEM
     libhoney (1.11.0)
       addressable (~> 2.0)
       http (>= 2.0, < 4.0)
+    mustermann (1.0.3)
     overcommit (0.46.0)
       childprocess (~> 0.6, >= 0.6.3)
       iniparse (~> 1.4)
@@ -40,6 +41,8 @@ GEM
     psych (3.1.0)
     public_suffix (3.0.3)
     rack (2.0.6)
+    rack-protection (2.0.5)
+      rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rainbow (3.0.0)
@@ -67,6 +70,12 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.4.0)
     ruby-progressbar (1.10.0)
+    sinatra (2.0.5)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.5)
+      tilt (~> 2.0)
+    tilt (2.0.9)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.5)
@@ -83,6 +92,7 @@ DEPENDENCIES
   rake
   rspec (~> 3.0)
   rubocop (~> 0.65.0)
+  sinatra
 
 BUNDLED WITH
    1.17.3
