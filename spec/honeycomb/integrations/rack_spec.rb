@@ -19,4 +19,12 @@ RSpec.describe Honeycomb::Rack do
     get "/"
     expect(last_response).to be_ok
   end
+
+  let(:serialized_trace) { "1;trace_id=wow,parent_id=eep,dataset=test_dataset" }
+
+  it "works with encoded_context" do
+    header("X-Honeycomb-Trace", serialized_trace)
+    get "/"
+    expect(last_response).to be_ok
+  end
 end

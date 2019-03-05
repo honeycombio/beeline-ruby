@@ -21,9 +21,11 @@ module Honeycomb
       end
     end
 
-    def start_span(name:)
+    def start_span(name:, serialized_trace: nil)
       if context.current_trace.nil?
-        Trace.new(builder: client.builder, context: context)
+        Trace.new(serialized_trace: serialized_trace,
+                  builder: client.builder,
+                  context: context)
       else
         context.current_span.create_child
       end
