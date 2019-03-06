@@ -73,6 +73,7 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.4.0)
     ruby-progressbar (1.10.0)
+    sequel (5.18.0)
     sinatra (2.0.5)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -96,6 +97,7 @@ DEPENDENCIES
   rake
   rspec (~> 3.0)
   rubocop (~> 0.65.0)
+  sequel
   sinatra
 
 BUNDLED WITH
