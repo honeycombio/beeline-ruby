@@ -34,4 +34,8 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  config.honeycomb.write_key = "{WRITE_KEY}"
+  config.honeycomb.dataset = "rails"
+  config.honeycomb.service_name = "rails_development"
 end
