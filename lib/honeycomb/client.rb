@@ -10,9 +10,11 @@ module Honeycomb
   class Client
     extend Forwardable
 
-    def initialize(client:)
+    def initialize(client:, service_name: nil)
       client.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
       client.add_field "meta.local_hostname", host_name
+      # maybe make `service_name` a required parameter
+      client.add_field "service_name", service_name
       @client = client
       @context = Context.new
 

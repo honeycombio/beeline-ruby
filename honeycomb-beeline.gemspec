@@ -41,6 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "faraday"
   spec.add_development_dependency "overcommit", "~> 0.46.0"
   spec.add_development_dependency "rack-test", "~> 1.1.0"
+  spec.add_development_dependency "rails"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.65.0"
