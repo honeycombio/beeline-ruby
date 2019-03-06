@@ -8,6 +8,7 @@ module Honeycomb
     NOTIFICATION_EVENTS = %w[
       sql.active_record
       render_template.action_view
+      process_action.action_controller
       send_file.action_controller
       send_data.action_controller
       deliver.action_mailer
@@ -18,11 +19,13 @@ module Honeycomb
     initializer "honeycomb.configure" do |app|
       Honeycomb.configure do |config|
         config.write_key = app.config.honeycomb[:write_key]
+        config.dataset = app.config.honeycomb[:dataset]
+        config.service_name = app.config.honeycomb[:service_name]
       end
       # what location should we insert the middleware at?
       app.config.middleware.use Honeycomb::Rack, client: Honeycomb.client
 
-      subscribe_to_events(Honeycomb.client)
+      subscribe_to_events(client: Honeycomb.client)
     end
 
     def subscribe_to_events(client:)

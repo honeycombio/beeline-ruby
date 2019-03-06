@@ -30,7 +30,6 @@ module Honeycomb
     end
 
     def load_integrations
-      require "honeycomb/integrations/railtie" if defined?(Rails::Railtie)
       %i[faraday rack rails sequel].each do |integration|
         begin
           require "honeycomb/integrations/#{integration}"

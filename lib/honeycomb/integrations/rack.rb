@@ -28,7 +28,7 @@ module Honeycomb
     def call(env)
       hny = env["HTTP_X_HONEYCOMB_TRACE"]
       client.start_span(name: "http_request", serialized_trace: hny) do |span|
-        add_env_field = lambda do |env_key, key|
+        add_env_field = lambda do |(env_key, key)|
           env_value = env[env_key]
           next unless env_value && !env_value.empty?
 
