@@ -56,9 +56,9 @@ module Honeycomb
     end
 
     def add_field_to_trace(key, value)
-      return if spans.empty?
+      return if context.current_span.nil?
 
-      spans.last.trace.add_field("app.#{key}", value)
+      context.current_span.trace.add_field("app.#{key}", value)
     end
 
     private

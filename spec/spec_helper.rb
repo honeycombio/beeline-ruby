@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
+require "simplecov"
+require "simplecov-console"
+
+SimpleCov.formatter = SimpleCov::Formatter::Console
+SimpleCov.start do
+  add_filter "/spec/"
+end
+
 require "honeycomb-beeline"
 
 RSpec.configure do |config|

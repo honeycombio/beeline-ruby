@@ -46,5 +46,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.65.0"
   spec.add_development_dependency "sequel"
+  spec.add_development_dependency "simplecov"
+  spec.add_development_dependency "simplecov-console"
   spec.add_development_dependency "sinatra"
 end

@@ -39,6 +39,27 @@ RSpec.describe Honeycomb::Client do
     end
     outer_span.send
   end
+
+  it "can create a trace and add error details" do
+    expect do
+      client.start_span(name: "test error") do
+        raise(ArgumentError, "an argument!")
+      end
+    end.to raise_error(ArgumentError, "an argument!")
+  end
+
+  it "can add field to trace" do
+    client.start_span(name: "trace fields") do
+      client.add_field_to_trace "useless_info", 42
+    end
+  end
+
+  it "send the whole trace when sending the parent" do
+    root_span = client.start_span(name: "root")
+    client.start_span(name: "mid")
+    client.start_span(name: "leaf")
+    root_span.send
+  end
 end
 
 RSpec.shared_examples "a tracing object" do
