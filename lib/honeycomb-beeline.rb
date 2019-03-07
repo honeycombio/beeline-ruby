@@ -42,13 +42,18 @@ module Honeycomb
   # Used to configure the Honeycomb client
   class Configuration
     attr_accessor :write_key,
-                  :dataset,
-                  :service_name
+                  :dataset
+
+    attr_writer :service_name
 
     def initialize
       @write_key = ENV["HONEYCOMB_WRITEKEY"]
       @dataset = ENV["HONEYCOMB_DATASET"]
-      @service_name = ENV["HONEYCOMB_SERVICE"] || dataset
+      @service_name = ENV["HONEYCOMB_SERVICE"]
+    end
+
+    def service_name
+      @service_name || dataset
     end
   end
 end

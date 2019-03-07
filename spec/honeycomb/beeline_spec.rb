@@ -5,6 +5,24 @@ require "libhoney"
 # libhoney_client = Libhoney::NullClient.new
 libhoney_client = Libhoney::LogClient.new
 
+RSpec.describe Honeycomb do
+  it "can be configured" do
+    Honeycomb.configure do |config|
+      config.write_key = "write_key"
+      config.dataset = "dataset"
+      config.service_name = "service_name"
+    end
+  end
+end
+
+RSpec.describe Honeycomb::Configuration do
+  it "uses the dataset name as the service_name when not provided" do
+    configuration = Honeycomb::Configuration.new
+    configuration.dataset = "dataset"
+    expect(configuration.service_name).to eq "dataset"
+  end
+end
+
 RSpec.describe Honeycomb::Beeline do
   it "has a version number" do
     expect(Honeycomb::Beeline::VERSION).not_to be nil
