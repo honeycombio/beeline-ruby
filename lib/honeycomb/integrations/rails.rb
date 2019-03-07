@@ -5,9 +5,11 @@ require "rails"
 module Honeycomb
   # Automatically capture rack requests and create a trace
   class Rails < ::Rails::Railtie
-    NOTIFICATION_EVENTS = %w[
+    DEFAULT_NOTIFICATION_EVENTS = %w[
       sql.active_record
       render_template.action_view
+      render_partial.action_view
+      render_collection.action_view
       process_action.action_controller
       send_file.action_controller
       send_data.action_controller
@@ -25,12 +27,15 @@ module Honeycomb
       # what location should we insert the middleware at?
       app.config.middleware.use Honeycomb::Rack, client: Honeycomb.client
 
-      subscribe_to_events(client: Honeycomb.client)
+      events = app.config.honeycomb[:notification_events] ||
+               DEFAULT_NOTIFICATION_EVENTS
+
+      subscribe_to_events(client: Honeycomb.client, events: events)
     end
 
-    def subscribe_to_events(client:)
+    def subscribe_to_events(client:, events:)
       subscriber = Subscriber.new(client: client)
-      NOTIFICATION_EVENTS.each do |event|
+      events.each do |event|
         ActiveSupport::Notifications.subscribe(event, subscriber)
       end
     end
