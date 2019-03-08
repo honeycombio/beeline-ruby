@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require "forwardable"
+require "honeycomb/propagation"
 
 module Honeycomb
   # Represents a Honeycomb span, which wraps a Honeycomb event and adds specific
   # tracing functionality
   class Span
+    include PropagationSerializer
     extend Forwardable
 
     def_delegators :@event, :add_field, :add

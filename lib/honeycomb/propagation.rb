@@ -4,8 +4,8 @@ require "base64"
 require "json"
 
 module Honeycomb
-  # Parse and serialize trace headers
-  module Propagation
+  # Parse trace headers
+  module PropagationParser
     def parse(serialized_trace)
       unless serialized_trace.nil?
         version, payload = serialized_trace.split(";", 2)
@@ -45,6 +45,14 @@ module Honeycomb
       end
 
       [trace_id, parent_span_id, trace_fields, dataset]
+    end
+  end
+
+  # Serialize trace headers
+  module PropagationSerializer
+    def to_trace_header
+      context = Base64.urlsafe_encode64(JSON.generate(trace.fields)).strip
+      "1;trace_id=#{trace.id},parent_id=#{id},context=#{context}"
     end
   end
 end

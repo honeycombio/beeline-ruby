@@ -2,7 +2,7 @@
 
 require "honeycomb/propagation"
 
-RSpec.describe Honeycomb::Propagation do
+RSpec.describe Honeycomb::PropagationParser do
   let(:propagation) { Class.new.extend(subject) }
 
   it "handles a nil trace" do
@@ -63,5 +63,14 @@ RSpec.describe Honeycomb::Propagation do
       {},
       nil,
     ]
+  end
+end
+
+RSpec.describe Honeycomb::PropagationSerializer do
+  let(:trace) { instance_double("Trace", id: 2, fields: {}) }
+  let(:span) { instance_double("Span", id: 1, trace: trace).extend(subject) }
+
+  it "can serialize a basic span" do
+    expect(span.to_trace_header).to eq "1;trace_id=2,parent_id=1,context=e30="
   end
 end

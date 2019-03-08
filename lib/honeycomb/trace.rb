@@ -8,7 +8,7 @@ require "honeycomb/propagation"
 module Honeycomb
   # Represents a Honeycomb trace, which groups spans together
   class Trace
-    include Propagation
+    include PropagationParser
     extend Forwardable
 
     def_delegators :@root_span, :send
@@ -16,7 +16,8 @@ module Honeycomb
     attr_reader :id, :fields, :root_span, :rollup_fields
 
     def initialize(builder:, context:, serialized_trace: nil)
-      trace_id, parent_span_id, trace_fields, dataset = parse serialized_trace
+      trace_id, parent_span_id, trace_fields, dataset =
+        parse serialized_trace
       dataset && builder.dataset = dataset
       @id = trace_id || SecureRandom.uuid
       @rollup_fields = Hash.new(0)
