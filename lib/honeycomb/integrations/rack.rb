@@ -35,6 +35,14 @@ module Honeycomb
           span.add_field(key, env_value)
         end
 
+        if defined?(::Rails::VERSION::STRING)
+          span.add_field("rails", ::Rails::VERSION::STRING)
+        elsif defined?(::Sinatra::VERSION)
+          span.add_field("sinatra", ::Sinatra::VERSION)
+        elsif defined?(::Rack::VERSION)
+          span.add_field("rack", ::Rack::VERSION.join("."))
+        end
+
         RACK_FIELDS.each(&add_env_field)
 
         status, headers, body = app.call(env)

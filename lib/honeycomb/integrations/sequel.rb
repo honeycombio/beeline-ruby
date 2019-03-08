@@ -9,6 +9,8 @@ module Honeycomb
 
     def log_connection_yield(sql, conn, args = nil)
       honeycomb_client.start_span(name: sql.sub(/\s+.*/, "").upcase) do |span|
+        span.add_field "meta.package", "sequel"
+        span.add_field "meta.package_version", ::Sequel::VERSION
         span.add_field "type", "db"
         span.add_field "db.sql", sql
         super
