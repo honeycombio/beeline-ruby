@@ -34,9 +34,10 @@ module Honeycomb
     end
 
     def subscribe_to_events(client:, events:)
-      subscriber = Subscriber.new(client: client)
-      events.each do |event|
-        ActiveSupport::Notifications.subscribe(event, subscriber)
+      Subscriber.new(client: client).tap do |subscriber|
+        events.each do |event|
+          ActiveSupport::Notifications.subscribe(event, subscriber)
+        end
       end
     end
 
