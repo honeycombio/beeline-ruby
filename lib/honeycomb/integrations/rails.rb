@@ -25,7 +25,15 @@ module Honeycomb
         config.service_name = app.config.honeycomb[:service_name]
       end
       # what location should we insert the middleware at?
-      app.config.middleware.use Honeycomb::Rack, client: Honeycomb.client
+      begin
+        app.config.middleware.insert_before(
+          ::Rails::Rack::Logger,
+          Honeycomb::Rack,
+          client: Honeycomb.client,
+        )
+      rescue StandardError
+        app.config.middleware.use Honeycomb::Rack, client: Honeycomb.client
+      end
 
       events = app.config.honeycomb[:notification_events] ||
                DEFAULT_NOTIFICATION_EVENTS
