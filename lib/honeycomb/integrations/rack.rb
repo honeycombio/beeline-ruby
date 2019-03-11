@@ -36,11 +36,14 @@ module Honeycomb
         end
 
         if defined?(::Rails::VERSION::STRING)
-          span.add_field("rails", ::Rails::VERSION::STRING)
+          span.add_field("meta.package", "rails")
+          span.add_field("meta.package_version", ::Rails::VERSION::STRING)
         elsif defined?(::Sinatra::VERSION)
-          span.add_field("sinatra", ::Sinatra::VERSION)
+          span.add_field("meta.package", "sinatra")
+          span.add_field("meta.package_version", ::Sinatra::VERSION)
         elsif defined?(::Rack::VERSION)
-          span.add_field("rack", ::Rack::VERSION.join("."))
+          span.add_field("meta.package", "rack")
+          span.add_field("meta.package_version", ::Rack::VERSION.join("."))
         end
 
         RACK_FIELDS.each(&add_env_field)
