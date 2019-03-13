@@ -24,7 +24,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'activerecord-honeycomb', '>= 0.4.0'
   gem.add_dependency 'rack-honeycomb', '>= 0.4.0'
   gem.add_dependency 'faraday-honeycomb', '>= 0.3.0'
-  gem.add_dependency 'sequel-honeycomb', '>= 0.4.0'
 
 
   gem.add_development_dependency 'activerecord'
@@ -38,6 +37,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'sinatra', '<= 2.0.4'
   gem.add_development_dependency 'sequel'
+  gem.add_development_dependency 'sequel-honeycomb', '>= 0.4.0'
   gem.add_development_dependency 'yard'
 
 
