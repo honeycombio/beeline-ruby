@@ -4,7 +4,8 @@ require "bundler/setup"
 require "simplecov"
 require "simplecov-console"
 
-SimpleCov.formatter = SimpleCov::Formatter::Console
+Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
+
 SimpleCov.start do
   add_filter "/spec/"
 end

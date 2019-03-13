@@ -43,3 +43,6 @@ Style/TrailingCommaInHashLiteral:
 
 Style/AsciiComments:
   Enabled: false
+
+Style/Alias:
+  EnforcedStyle: prefer_alias_method

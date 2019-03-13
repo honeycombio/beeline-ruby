@@ -2,10 +2,8 @@
 
 require "libhoney"
 
-# libhoney_client = Libhoney::NullClient.new
-libhoney_client = Libhoney::LogClient.new
-
 RSpec.describe Honeycomb::Client do
+  let(:libhoney_client) { Libhoney::TestClient.new }
   subject(:client) { Honeycomb::Client.new(client: libhoney_client) }
   it "can create a trace" do
     client.start_span(name: "test") do # |span|
@@ -20,6 +18,8 @@ RSpec.describe Honeycomb::Client do
     client.start_span(name: "second trace") do
       client.add_field "test", "wow"
     end
+
+    expect(libhoney_client.events.size).to eq 4
   end
 
   it "can create a trace without using a block" do
@@ -32,6 +32,8 @@ RSpec.describe Honeycomb::Client do
       client.add_field("inner count", 1)
     end
     outer_span.send
+
+    expect(libhoney_client.events.size).to eq 3
   end
 
   it "can create a trace and add error details" do
@@ -40,12 +42,14 @@ RSpec.describe Honeycomb::Client do
         raise(ArgumentError, "an argument!")
       end
     end.to raise_error(ArgumentError, "an argument!")
+    expect(libhoney_client.events.size).to eq 1
   end
 
   it "can add field to trace" do
     client.start_span(name: "trace fields") do
       client.add_field_to_trace "useless_info", 42
     end
+    expect(libhoney_client.events.size).to eq 1
   end
 
   it "send the whole trace when sending the parent" do
@@ -53,5 +57,6 @@ RSpec.describe Honeycomb::Client do
     client.start_span(name: "mid")
     client.start_span(name: "leaf")
     root_span.send
+    expect(libhoney_client.events.size).to eq 3
   end
 end
