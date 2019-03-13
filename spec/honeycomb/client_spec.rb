@@ -68,7 +68,9 @@ RSpec.describe Honeycomb::Client do
 
     let(:event_data) { libhoney_client.events.map(&:data) }
 
-    it_behaves_like "event data", package_fields: false
+    it_behaves_like "event data",
+                    package_fields: false,
+                    additional_fields: ["request.error", "request.error_detail"]
   end
 
   describe "can add field to trace" do
@@ -84,7 +86,9 @@ RSpec.describe Honeycomb::Client do
 
     let(:event_data) { libhoney_client.events.map(&:data) }
 
-    it_behaves_like "event data", package_fields: false
+    it_behaves_like "event data",
+                    package_fields: false,
+                    additional_fields: ["app.useless_info"]
   end
 
   describe "send the whole trace when sending the parent" do

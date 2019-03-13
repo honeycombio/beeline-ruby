@@ -25,7 +25,7 @@ HTTP_FIELDS = %w[
   request.protocol
 ].freeze
 
-RSpec.shared_examples "event data" do |package_fields: true, http_fields: false|
+RSpec.shared_examples "event data" do |package_fields: true, http_fields: false, additional_fields: []|
   describe "data" do
     BASE_FIELDS.each do |field|
       it "includes #{field}" do
@@ -46,6 +46,12 @@ RSpec.shared_examples "event data" do |package_fields: true, http_fields: false|
         it "includes #{field}" do
           expect(event_data).to all(include field)
         end
+      end
+    end
+
+    additional_fields.each do |field|
+      it "includes #{field}" do
+        expect(event_data).to all(include field)
       end
     end
   end

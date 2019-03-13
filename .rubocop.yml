@@ -17,6 +17,10 @@ Metrics/AbcSize:
 Metrics/MethodLength:
   Max: 25
 
+Metrics/LineLength:
+  Exclude:
+    - spec/support/event_data_shared_examples.rb
+
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
 
