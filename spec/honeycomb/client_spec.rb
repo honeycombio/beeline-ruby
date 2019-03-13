@@ -31,41 +31,76 @@ RSpec.describe Honeycomb::Client do
     it_behaves_like "event data", package_fields: false
   end
 
-  it "can create a trace without using a block" do
-    outer_span = client.start_span(name: "test")
-    client.add_field "test", "wow"
-    client.start_span(name: "inner-one") do # |inner_span|
-      client.add_field("inner count", 1)
-    end
-    client.start_span(name: "inner-two") do # |inner_span|
-      client.add_field("inner count", 1)
-    end
-    outer_span.send
-
-    expect(libhoney_client.events.size).to eq 3
-  end
-
-  it "can create a trace and add error details" do
-    expect do
-      client.start_span(name: "test error") do
-        raise(ArgumentError, "an argument!")
+  describe "can create a trace without using a block" do
+    before do
+      outer_span = client.start_span(name: "test")
+      client.add_field "test", "wow"
+      client.start_span(name: "inner-one") do # |inner_span|
+        client.add_field("inner count", 1)
       end
-    end.to raise_error(ArgumentError, "an argument!")
-    expect(libhoney_client.events.size).to eq 1
-  end
-
-  it "can add field to trace" do
-    client.start_span(name: "trace fields") do
-      client.add_field_to_trace "useless_info", 42
+      client.start_span(name: "inner-two") do # |inner_span|
+        client.add_field("inner count", 1)
+      end
+      outer_span.send
     end
-    expect(libhoney_client.events.size).to eq 1
+
+    it "sends the right number of events" do
+      expect(libhoney_client.events.size).to eq 3
+    end
+
+    let(:event_data) { libhoney_client.events.map(&:data) }
+
+    it_behaves_like "event data", package_fields: false
   end
 
-  it "send the whole trace when sending the parent" do
-    root_span = client.start_span(name: "root")
-    client.start_span(name: "mid")
-    client.start_span(name: "leaf")
-    root_span.send
-    expect(libhoney_client.events.size).to eq 3
+  describe "can create a trace and add error details" do
+    before do
+      expect do
+        client.start_span(name: "test error") do
+          raise(ArgumentError, "an argument!")
+        end
+      end.to raise_error(ArgumentError, "an argument!")
+    end
+
+    it "sends the right number of events" do
+      expect(libhoney_client.events.size).to eq 1
+    end
+
+    let(:event_data) { libhoney_client.events.map(&:data) }
+
+    it_behaves_like "event data", package_fields: false
+  end
+
+  describe "can add field to trace" do
+    before do
+      client.start_span(name: "trace fields") do
+        client.add_field_to_trace "useless_info", 42
+      end
+    end
+
+    it "sends the right number of events" do
+      expect(libhoney_client.events.size).to eq 1
+    end
+
+    let(:event_data) { libhoney_client.events.map(&:data) }
+
+    it_behaves_like "event data", package_fields: false
+  end
+
+  describe "send the whole trace when sending the parent" do
+    before do
+      root_span = client.start_span(name: "root")
+      client.start_span(name: "mid")
+      client.start_span(name: "leaf")
+      root_span.send
+    end
+
+    it "sends the right number of events" do
+      expect(libhoney_client.events.size).to eq 3
+    end
+
+    let(:event_data) { libhoney_client.events.map(&:data) }
+
+    it_behaves_like "event data", package_fields: false
   end
 end
