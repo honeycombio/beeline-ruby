@@ -14,9 +14,14 @@ RSpec.describe Honeycomb::Rack do
   let(:libhoney_client) { Libhoney::TestClient.new }
   let(:event_data) { libhoney_client.events.map(&:data) }
 
+  before do
+    header("Http-Version", "HTTP/1.0")
+    header("User-Agent", "RackSpec")
+  end
+
   describe "standard request" do
     before do
-      get "/"
+      get "/?honey=bee"
     end
 
     it "returns ok" do
@@ -27,7 +32,7 @@ RSpec.describe Honeycomb::Rack do
       expect(libhoney_client.events.size).to eq 1
     end
 
-    it_behaves_like "event data"
+    it_behaves_like "event data", http_fields: true
   end
 
   describe "trace header request" do
@@ -37,7 +42,7 @@ RSpec.describe Honeycomb::Rack do
 
     before do
       header("X-Honeycomb-Trace", serialized_trace)
-      get "/"
+      get "/?honey=bee"
     end
 
     it "returns ok" do
@@ -48,6 +53,6 @@ RSpec.describe Honeycomb::Rack do
       expect(libhoney_client.events.size).to eq 1
     end
 
-    it_behaves_like "event data"
+    it_behaves_like "event data", http_fields: true
   end
 end

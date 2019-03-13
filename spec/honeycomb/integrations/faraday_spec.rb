@@ -13,10 +13,13 @@ RSpec.describe Honeycomb::Faraday do
     end
   end
 
-  let!(:response) { connection.get "https://www.honeycomb.io/overview/" }
+  let!(:response) do
+    stub_request(:get, "https://www.honeycomb.io")
+    connection.get "https://www.honeycomb.io"
+  end
 
   it "has the right url in the response" do
-    expect(response.env[:url].to_s).to eq("https://www.honeycomb.io/overview/")
+    expect(response.env[:url].to_s).to eq("https://www.honeycomb.io")
   end
 
   it "sends the right amount of events" do

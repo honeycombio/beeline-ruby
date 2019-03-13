@@ -5,21 +5,30 @@ require "libhoney"
 RSpec.describe Honeycomb::Client do
   let(:libhoney_client) { Libhoney::TestClient.new }
   subject(:client) { Honeycomb::Client.new(client: libhoney_client) }
-  it "can create a trace" do
-    client.start_span(name: "test") do # |span|
-      client.add_field "test", "wow"
-      client.start_span(name: "inner-one") do # |inner_span|
-        client.add_field("inner count", 1)
+
+  describe "creating a trace" do
+    before do
+      client.start_span(name: "test") do # |span|
+        client.add_field "test", "wow"
+        client.start_span(name: "inner-one") do # |inner_span|
+          client.add_field("inner count", 1)
+        end
+        client.start_span(name: "inner-two") do # |inner_span|
+          client.add_field("inner count", 1)
+        end
       end
-      client.start_span(name: "inner-two") do # |inner_span|
-        client.add_field("inner count", 1)
+      client.start_span(name: "second trace") do
+        client.add_field "test", "wow"
       end
-    end
-    client.start_span(name: "second trace") do
-      client.add_field "test", "wow"
     end
 
-    expect(libhoney_client.events.size).to eq 4
+    it "sends the right number of events" do
+      expect(libhoney_client.events.size).to eq 4
+    end
+
+    let(:event_data) { libhoney_client.events.map(&:data) }
+
+    it_behaves_like "event data", package_fields: false
   end
 
   it "can create a trace without using a block" do

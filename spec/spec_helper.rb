@@ -3,6 +3,9 @@
 require "bundler/setup"
 require "simplecov"
 require "simplecov-console"
+require "webmock/rspec"
+
+WebMock.disable_net_connect!
 
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
 
