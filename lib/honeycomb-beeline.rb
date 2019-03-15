@@ -19,9 +19,7 @@ module Honeycomb
 
       yield configuration
 
-      libhoney = Libhoney::Client.new(writekey: configuration.write_key,
-                                      dataset: configuration.dataset)
-      @client = Honeycomb::Client.new(client: libhoney,
+      @client = Honeycomb::Client.new(client: configuration.client,
                                       service_name: configuration.service_name)
     end
 
@@ -44,16 +42,22 @@ module Honeycomb
     attr_accessor :write_key,
                   :dataset
 
-    attr_writer :service_name
+    attr_writer :service_name, :client
 
     def initialize
       @write_key = ENV["HONEYCOMB_WRITEKEY"]
       @dataset = ENV["HONEYCOMB_DATASET"]
       @service_name = ENV["HONEYCOMB_SERVICE"]
+      @client = nil
     end
 
     def service_name
       @service_name || dataset
+    end
+
+    def client
+      @client || Libhoney::Client.new(writekey: write_key,
+                                      dataset: dataset)
     end
   end
 end
