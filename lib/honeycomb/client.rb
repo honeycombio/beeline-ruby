@@ -11,8 +11,14 @@ module Honeycomb
     extend Forwardable
 
     def initialize(client:, service_name: nil)
+      # attempt to set the user_agent_addition, this will only work if the
+      # client has not sent an event prior to being passed in here. This should
+      # be most cases
+      client.instance_variable_set(:@user_agent_addition,
+                                   Honeycomb::Beeline::USER_AGENT_SUFFIX)
       client.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
       client.add_field "meta.local_hostname", host_name
+
       # maybe make `service_name` a required parameter
       client.add_field "service_name", service_name
       @client = client

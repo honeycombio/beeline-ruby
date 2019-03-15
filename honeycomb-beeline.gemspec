@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "honeycomb/beeline/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "honeycomb-beeline"
+  spec.name          = Honeycomb::Beeline::NAME
   spec.version       = Honeycomb::Beeline::VERSION
   spec.authors       = ["Martin Holman"]
   spec.email         = ["martin@honeycomb.io"]
