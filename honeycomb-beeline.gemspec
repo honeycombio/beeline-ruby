@@ -37,9 +37,11 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "libhoney", "~> 1.8"
 
+  spec.add_development_dependency "bump"
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "faraday"
   spec.add_development_dependency "overcommit", "~> 0.46.0"
+  spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "rack-test", "~> 1.1.0"
   spec.add_development_dependency "rails"
   spec.add_development_dependency "rake"
