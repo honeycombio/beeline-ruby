@@ -1,0 +1,2 @@
+class Bee < ApplicationRecord
+end
