@@ -47,8 +47,7 @@ module Honeycomb
 
         add_package_information(&add_field)
         extract_fields(env, RACK_FIELDS, &add_field)
-        extract_rails_controller_action(env, &add_field)
-        extract_rails_route(env, &add_field)
+        extract_rails_information(env, &add_field)
 
         status, headers, body = app.call(env)
 
@@ -80,27 +79,22 @@ module Honeycomb
       end
     end
 
-    def extract_rails_controller_action(env)
-      rails_params = env["action_dispatch.request.parameters"]
+    def extract_rails_information(env)
+      return unless defined?(::ActionDispatch::Request)
 
-      return unless rails_params && rails_params.is_a?(Hash)
+      ::ActionDispatch::Request.new(env).tap do |request|
+        yield "request.controller", request.params[:controller]
+        yield "request.action", request.params[:action]
 
-      yield "request.controller", rails_params["controller"]
-      yield "request.action", rails_params["action"]
-    end
+        break if request.routes.nil?
 
-    def extract_rails_route(env)
-      routes = env["action_dispatch.routes"]
+        found_route = false
+        request.routes.router.recognize(request) do |route, _|
+          break if found_route
 
-      return unless routes
-
-      request = ::Rack::Request.new(env)
-      found_route = false
-      routes.router.recognize(request) do |route, _|
-        break if found_route
-
-        found_route = true
-        yield "request.route", "#{env['REQUEST_METHOD']} #{route.path.spec}"
+          found_route = true
+          yield "request.route", "#{env['REQUEST_METHOD']} #{route.path.spec}"
+        end
       end
     end
 

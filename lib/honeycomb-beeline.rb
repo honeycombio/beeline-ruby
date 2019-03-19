@@ -12,15 +12,13 @@ module Honeycomb
     attr_reader :client
 
     def configure
-      # only allow configuration once
-      return if defined?(@client)
+      Configuration.new.tap do |config|
+        yield config
+        @client = Honeycomb::Client.new(client: config.client,
+                                        service_name: config.service_name)
+      end
 
-      configuration = Configuration.new
-
-      yield configuration
-
-      @client = Honeycomb::Client.new(client: configuration.client,
-                                      service_name: configuration.service_name)
+      @client
     end
 
     def start_span(name:)
