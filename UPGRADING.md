@@ -25,7 +25,7 @@
       # honeycomb_metadata[:bees_count] = @bees.count
     end
     ```
-1. If you are manually using the lib honey client as well, it is suggested that you remove the usages of it and rely on the beeline.
+1. If you are manually using the libhoney client as well, it is suggested that you remove the usages of it and rely on the beeline.
 1. Instrument interesting calls using the new `span` API as per the example below
     ```ruby
       class HomeController < ApplicationController
