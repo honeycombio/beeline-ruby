@@ -2,9 +2,6 @@
 
 require "libhoney"
 
-# libhoney_client = Libhoney::NullClient.new
-libhoney_client = Libhoney::LogClient.new
-
 RSpec.describe Honeycomb do
   it "can be configured" do
     Honeycomb.configure do |config|
@@ -44,6 +41,7 @@ RSpec.shared_examples "a tracing object" do
 end
 
 RSpec.describe Honeycomb::Trace do
+  let(:libhoney_client) { Libhoney::TestClient.new }
   let(:context) { Honeycomb::Context.new }
   let(:builder) { libhoney_client.builder }
   subject(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
@@ -82,6 +80,7 @@ RSpec.describe Honeycomb::Trace do
 end
 
 RSpec.describe Honeycomb::Span do
+  let(:libhoney_client) { Libhoney::TestClient.new }
   let(:context) { Honeycomb::Context.new }
   let(:builder) { libhoney_client.builder }
   let(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }

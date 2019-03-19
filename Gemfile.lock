@@ -228,7 +228,7 @@ DEPENDENCIES
   honeycomb-beeline!
   overcommit (~> 0.46.0)
   pry-byebug
-  rack-test (~> 1.1.0)
+  rack-test
   rails
   rake
   rspec (~> 3.0)

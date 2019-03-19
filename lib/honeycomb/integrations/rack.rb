@@ -47,10 +47,10 @@ module Honeycomb
 
         add_package_information(&add_field)
         extract_fields(env, RACK_FIELDS, &add_field)
-        extract_rails_information(env, &add_field)
 
         status, headers, body = app.call(env)
 
+        extract_rails_information(env, &add_field)
         extract_user_information(env, &add_field)
         extract_fields(env, SINATRA_FIELDS, &add_field)
 
@@ -86,7 +86,8 @@ module Honeycomb
         yield "request.controller", request.params[:controller]
         yield "request.action", request.params[:action]
 
-        break if request.routes.nil?
+        break unless request.respond_to? :routes
+        break unless request.routes.respond_to? :router
 
         found_route = false
         request.routes.router.recognize(request) do |route, _|
