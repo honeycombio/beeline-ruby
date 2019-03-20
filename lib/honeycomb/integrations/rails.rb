@@ -26,6 +26,9 @@ module Honeycomb
         config.service_name = app.config.honeycomb[:service_name]
         config.client = app.config.honeycomb[:client]
       end
+    end
+
+    initializer "honeycomb.install_middleware" do |app|
       # what location should we insert the middleware at?
       begin
         app.config.middleware.insert_before(
@@ -36,13 +39,20 @@ module Honeycomb
       rescue StandardError
         app.config.middleware.use Honeycomb::Rack, client: Honeycomb.client
       end
+    end
 
+    initializer "honeycomb.subscribe" do |app|
       events = app.config.honeycomb[:notification_events] ||
                DEFAULT_NOTIFICATION_EVENTS
-
-      Honeycomb::ActiveSupport::Subscriber
-        .new(client: Honeycomb.client, events: events)
-        .subscribe
+      ActiveSupport::Subscriber.new(client: Honeycomb.client).tap do |sub|
+        events.each do |event|
+          sub.subscribe(event) do |span, payload|
+            payload.each do |key, value|
+              span.add_field("#{event}.#{key}", value.to_s)
+            end
+          end
+        end
+      end
     end
   end
 end

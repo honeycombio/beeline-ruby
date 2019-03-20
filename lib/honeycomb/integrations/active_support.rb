@@ -7,18 +7,17 @@ module Honeycomb
     # Handles ActiveSupport::Notification subscriptions, relaying them to a
     # Honeycomb client
     class Subscriber
-      attr_reader :key, :client, :events
-
-      def initialize(client:, events:)
+      def initialize(client:)
         @client = client
-        @events = events
+        @handlers = {}
         @key = ["honeycomb", self.class.name, object_id].join("-")
       end
 
-      def subscribe
-        events.each do |event|
-          ::ActiveSupport::Notifications.subscribe(event, self)
-        end
+      def subscribe(event, &block)
+        return unless block_given?
+
+        handlers[event] = block
+        ::ActiveSupport::Notifications.subscribe(event, self)
       end
 
       def start(name, id, _payload)
@@ -28,12 +27,14 @@ module Honeycomb
       def finish(name, id, payload)
         return unless (span = spans[id].pop)
 
-        payload.each do |key, value|
-          span.add_field("#{name}.#{key}", value.to_s)
-        end
+        handlers[name].call(span, payload)
 
         span.send
       end
+
+      private
+
+      attr_reader :key, :client, :handlers
 
       def spans
         Thread.current[key] ||= Hash.new { |h, id| h[id] = [] }
