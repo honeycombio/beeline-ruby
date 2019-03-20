@@ -51,5 +51,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "simplecov-console"
   spec.add_development_dependency "sinatra"
+  spec.add_development_dependency "warden"
   spec.add_development_dependency "webmock"
 end

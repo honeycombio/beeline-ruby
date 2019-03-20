@@ -210,6 +210,8 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     unicode-display_width (1.4.1)
+    warden (1.2.8)
+      rack (>= 2.0.6)
     webmock (3.5.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -237,6 +239,7 @@ DEPENDENCIES
   simplecov
   simplecov-console
   sinatra
+  warden
   webmock
 
 BUNDLED WITH
