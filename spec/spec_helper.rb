@@ -9,6 +9,7 @@ require "pry"
 WebMock.disable_net_connect!
 
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
+SimpleCov.formatter = SimpleCov::Formatter::Console
 
 SimpleCov.start do
   add_filter "/spec/"
