@@ -12,3 +12,9 @@ gemfile:
   - gemfiles/rails_51.gemfile
   - gemfiles/rails_52.gemfile
 script: bundle exec rake test
+matrix:
+  exclude:
+    - rvm: 2.5
+      gemfile: gemfiles/rails_41.gemfile
+    - rvm: 2.5
+      gemfile: gemfiles/rails_42.gemfile
