@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "libhoney", "~> 1.8"
 
+  spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bump"
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "faraday"

@@ -51,6 +51,10 @@ GEM
     addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
     ansi (1.5.0)
+    appraisal (2.2.0)
+      bundler
+      rake
+      thor (>= 0.14.0)
     arel (9.0.0)
     ast (2.4.0)
     builder (3.2.3)
@@ -113,7 +117,7 @@ GEM
       childprocess (~> 0.6, >= 0.6.3)
       iniparse (~> 1.4)
     parallel (1.14.0)
-    parser (2.6.0.0)
+    parser (2.6.2.0)
       ast (~> 2.4.0)
     powerpack (0.1.2)
     pry (0.12.2)
@@ -224,6 +228,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  appraisal
   bump
   bundler
   faraday

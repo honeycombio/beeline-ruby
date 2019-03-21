@@ -23,6 +23,8 @@ Metrics/LineLength:
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
+  Exclude:
+    - gemfiles/**/*
 
 Naming/FileName:
   Exclude:
