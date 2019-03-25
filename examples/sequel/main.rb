@@ -5,6 +5,7 @@ Honeycomb.configure do |config|
   config.write_key = "write_key"
   config.dataset = "dataset"
   config.service_name = "service_name"
+  config.client = Libhoney::LogClient.new
 end
 
 # connect to an in-memory database

@@ -74,4 +74,5 @@ Rails.application.configure do
     deliver.action_mailer
   ]
   config.honeycomb.notification_events = events
+  config.honeycomb.client = Libhoney::LogClient.new
 end
