@@ -7,7 +7,7 @@ RSpec.describe Honeycomb::Faraday do
   let(:libhoney_client) { Libhoney::TestClient.new }
   let(:connection) do
     Faraday.new do |conn|
-      conn.use Honeycomb::Faraday,
+      conn.use :honeycomb,
                client: Honeycomb::Client.new(client: libhoney_client)
       conn.adapter Faraday.default_adapter
     end

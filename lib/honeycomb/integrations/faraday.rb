@@ -29,3 +29,5 @@ module Honeycomb
     end
   end
 end
+
+Faraday::Middleware.register_middleware honeycomb: -> { Honeycomb::Faraday }
