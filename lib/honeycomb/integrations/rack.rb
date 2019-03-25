@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "rack"
+
 module Honeycomb
   # Automatically capture rack requests and create a trace
   class Rack
@@ -12,10 +14,6 @@ module Honeycomb
       ["REMOTE_ADDR", "request.remote_addr"],
       ["HTTP_USER_AGENT", "request.header.user_agent"],
       ["rack.url_scheme", "request.protocol"],
-    ].freeze
-
-    SINATRA_FIELDS = [
-      ["sinatra.route", "request.route"],
     ].freeze
 
     COMMON_USER_FIELDS = %i[
@@ -45,14 +43,13 @@ module Honeycomb
           span.add_field(key, value)
         end
 
-        add_package_information(&add_field)
         extract_fields(env, RACK_FIELDS, &add_field)
 
         status, headers, body = app.call(env)
 
-        extract_rails_information(env, &add_field)
+        add_package_information(env, &add_field)
+
         extract_user_information(env, &add_field)
-        extract_fields(env, SINATRA_FIELDS, &add_field)
 
         span.add_field("response.status_code", status)
 
@@ -60,42 +57,14 @@ module Honeycomb
       end
     end
 
-    def add_package_information
-      if defined?(::Rails::VERSION::STRING)
-        yield "meta.package", "rails"
-        yield "meta.package_version", ::Rails::VERSION::STRING
-      elsif defined?(::Sinatra::VERSION)
-        yield "meta.package", "sinatra"
-        yield "meta.package_version", ::Sinatra::VERSION
-      elsif defined?(::Rack::VERSION)
-        yield "meta.package", "rack"
-        yield "meta.package_version", ::Rack::VERSION.join(".")
-      end
+    def add_package_information(_env)
+      yield "meta.package", "rack"
+      yield "meta.package_version", ::Rack::VERSION.join(".")
     end
 
     def extract_fields(env, fields)
       fields.each do |key, value|
         yield value, env[key]
-      end
-    end
-
-    def extract_rails_information(env)
-      return unless defined?(::ActionDispatch::Request)
-
-      ::ActionDispatch::Request.new(env).tap do |request|
-        yield "request.controller", request.params[:controller]
-        yield "request.action", request.params[:action]
-
-        break unless request.respond_to? :routes
-        break unless request.routes.respond_to? :router
-
-        found_route = false
-        request.routes.router.recognize(request) do |route, _|
-          break if found_route
-
-          found_route = true
-          yield "request.route", "#{env['REQUEST_METHOD']} #{route.path.spec}"
-        end
       end
     end
 

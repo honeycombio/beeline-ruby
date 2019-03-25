@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+appraise "faraday" do
+  gem "faraday"
+end
+
+appraise "sequel" do
+  gem "sequel"
+end
+
+appraise "sinatra" do
+  gem "sinatra"
+end
+
 appraise "rails-41" do
   gem "rails", "~> 4.1.0"
 end

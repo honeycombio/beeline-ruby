@@ -6,6 +6,9 @@ rvm:
   - 2.4
   - 2.5
 gemfile:
+  - gemfiles/faraday.gemfile
+  - gemfiles/sequel.gemfile
+  - gemfiles/sinatra.gemfile
   - gemfiles/rails_41.gemfile
   - gemfiles/rails_42.gemfile
   - gemfiles/rails_5.gemfile

@@ -11,6 +11,6 @@ RuboCop::RakeTask.new(:rubocop)
 
 task test: :spec
 
-task default: %i[rubocop spec]
+task default: %i[test]
 
 !ENV["APPRAISAL_INITIALIZED"] && !ENV["TRAVIS"] && task(default: :appraisal)

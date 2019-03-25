@@ -26,7 +26,7 @@ module Honeycomb
     end
 
     def load_integrations
-      %i[faraday rack rails sequel active_support].each do |integration|
+      %i[faraday rack sinatra rails sequel active_support].each do |integration|
         begin
           require "honeycomb/integrations/#{integration}"
         rescue LoadError

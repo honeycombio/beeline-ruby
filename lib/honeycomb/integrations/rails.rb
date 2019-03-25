@@ -2,10 +2,35 @@
 
 require "rails"
 require "honeycomb/integrations/active_support"
+require "honeycomb/integrations/rack"
 
 module Honeycomb
+  # Add Rails specific information to the Honeycomb::Rack middleware
+  module Rails
+    def add_package_information(env)
+      yield "meta.package", "rails"
+      yield "meta.package_version", ::Rails::VERSION::STRING
+
+      ::ActionDispatch::Request.new(env).tap do |request|
+        yield "request.controller", request.params[:controller]
+        yield "request.action", request.params[:action]
+
+        break unless request.respond_to? :routes
+        break unless request.routes.respond_to? :router
+
+        found_route = false
+        request.routes.router.recognize(request) do |route, _|
+          break if found_route
+
+          found_route = true
+          yield "request.route", "#{env['REQUEST_METHOD']} #{route.path.spec}"
+        end
+      end
+    end
+  end
+
   # Automatically capture rack requests and create a trace
-  class Rails < ::Rails::Railtie
+  class Railtie < ::Rails::Railtie
     DEFAULT_NOTIFICATION_EVENTS = %w[
       sql.active_record
       render_template.action_view
@@ -56,3 +81,5 @@ module Honeycomb
     end
   end
 end
+
+Honeycomb::Rack.prepend Honeycomb::Rails
