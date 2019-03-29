@@ -4,8 +4,12 @@ appraise "faraday" do
   gem "faraday"
 end
 
-appraise "sequel" do
-  gem "sequel"
+appraise "sequel4" do
+  gem "sequel", "~> 4"
+end
+
+appraise "sequel5" do
+  gem "sequel", "~> 5"
 end
 
 appraise "sinatra" do
