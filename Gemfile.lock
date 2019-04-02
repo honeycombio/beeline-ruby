@@ -60,9 +60,6 @@ GEM
       pry (~> 0.10)
     psych (3.1.0)
     public_suffix (3.0.3)
-    rack (2.0.6)
-    rack-test (1.1.0)
-      rack (>= 1.0, < 3)
     rainbow (3.0.0)
     rake (12.3.2)
     rspec (3.8.0)
@@ -103,8 +100,6 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     unicode-display_width (1.4.1)
-    warden (1.2.8)
-      rack (>= 2.0.6)
     webmock (3.5.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -120,13 +115,11 @@ DEPENDENCIES
   honeycomb-beeline!
   overcommit (~> 0.46.0)
   pry-byebug
-  rack-test
   rake
   rspec (~> 3.0)
   rubocop (~> 0.65.0)
   simplecov
   simplecov-console
-  warden
   webmock
 
 BUNDLED WITH

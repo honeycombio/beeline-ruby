@@ -42,12 +42,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "overcommit", "~> 0.46.0"
   spec.add_development_dependency "pry-byebug"
-  spec.add_development_dependency "rack-test"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.65.0"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "simplecov-console"
-  spec.add_development_dependency "warden"
   spec.add_development_dependency "webmock"
 end
