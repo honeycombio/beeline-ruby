@@ -1,39 +1,36 @@
-# Honeycomb::Beeline
+# Honeycomb Beeline for Ruby
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/honeycomb/beeline`. To experiment with that code, run `bin/console` for an interactive prompt.
+[![Build Status](https://travis-ci.org/honeycombio/beeline-ruby.svg?branch=master)](https://travis-ci.org/honeycombio/beeline-ruby)
+[![Gem Version](https://badge.fury.io/rb/honeycomb-beeline.svg)](https://badge.fury.io/rb/honeycomb-beeline)
 
-TODO: Delete this and the text above, and describe your gem
+This package makes it easy to instrument your Ruby web app to send useful events to [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.
+- [Usage and Examples](https://docs.honeycomb.io/getting-data-in/beelines/ruby-beeline/)
 
-## Installation
+Sign up for a [Honeycomb
+trial](https://ui.honeycomb.io/signup) to obtain an API key before starting.
 
-Add this line to your application's Gemfile:
+## Compatible with
 
-```ruby
-gem 'honeycomb-beeline'
-```
+Requires Ruby version 2.2 or later
 
-And then execute:
+Built in instrumentation for:
 
-    $ bundle
+- Rails
+- Active Support
+- Faraday
+- Sequel
+- Rack
 
-Or install it yourself as:
+## Get in touch
 
-    $ gem install honeycomb-beeline
+Please reach out to [support@honeycomb.io](mailto:support@honeycomb.io) or ping
+us with the chat bubble on [our website](https://www.honeycomb.io) for any
+assistance. We also welcome [bug reports](https://github.com/honeycombio/beeline-ruby/issues).
 
-## Usage
+## Contributions
 
-TODO: Write usage instructions here
+Features, bug fixes and other changes to `beeline-ruby` are gladly accepted. Please
+open issues or a pull request with your change. Remember to add your name to the
+CONTRIBUTORS file!
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/honeycomb-beeline. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-## Code of Conduct
-
-Everyone interacting in the Honeycomb::Beeline project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/honeycomb-beeline/blob/master/CODE_OF_CONDUCT.md).
+All contributions will be released under the Apache License 2.0.
