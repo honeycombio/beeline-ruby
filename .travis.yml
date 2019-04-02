@@ -7,8 +7,10 @@ rvm:
   - 2.5
 gemfile:
   - gemfiles/faraday.gemfile
-  - gemfiles/sequel.gemfile
+  - gemfiles/sequel4.gemfile
+  - gemfiles/sequel5.gemfile
   - gemfiles/sinatra.gemfile
+  - gemfiles/rack.gemfile
   - gemfiles/rails_41.gemfile
   - gemfiles/rails_42.gemfile
   - gemfiles/rails_5.gemfile
