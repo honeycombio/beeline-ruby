@@ -38,7 +38,8 @@ module Honeycomb
   # Used to configure the Honeycomb client
   class Configuration
     attr_accessor :write_key,
-                  :dataset
+                  :dataset,
+                  :api_host
 
     attr_writer :service_name, :client
 
@@ -54,8 +55,13 @@ module Honeycomb
     end
 
     def client
-      @client || Libhoney::Client.new(writekey: write_key,
-                                      dataset: dataset)
+      options = {}.tap do |o|
+        o[:writekey] = write_key
+        o[:dataset] = dataset
+        api_host && o[:api_host] = api_host
+      end
+
+      @client || Libhoney::Client.new(options)
     end
   end
 end

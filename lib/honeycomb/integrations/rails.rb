@@ -49,6 +49,7 @@ module Honeycomb
         config.write_key = app.config.honeycomb[:write_key]
         config.dataset = app.config.honeycomb[:dataset]
         config.service_name = app.config.honeycomb[:service_name]
+        config.api_host = app.config.honeycomb[:api_host]
         config.client = app.config.honeycomb[:client]
       end
     end
