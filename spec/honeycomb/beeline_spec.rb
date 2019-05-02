@@ -3,11 +3,36 @@
 require "libhoney"
 
 RSpec.describe Honeycomb do
-  it "can be configured" do
+  let(:libhoney_client) { Libhoney::TestClient.new }
+
+  before do
     Honeycomb.configure do |config|
       config.write_key = "write_key"
       config.dataset = "dataset"
       config.service_name = "service_name"
+      config.client = libhoney_client
+    end
+  end
+
+  describe "when using a block" do
+    before do
+      Honeycomb.start_span(name: "test") do
+      end
+    end
+
+    it "sends the right amount of events" do
+      expect(libhoney_client.events.size).to eq 1
+    end
+  end
+
+  describe "manually sending" do
+    before do
+      span = Honeycomb.start_span(name: "test")
+      span.send
+    end
+
+    it "sends the right amount of events" do
+      expect(libhoney_client.events.size).to eq 1
     end
   end
 end

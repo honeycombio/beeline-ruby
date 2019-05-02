@@ -21,8 +21,8 @@ module Honeycomb
       @client
     end
 
-    def start_span(name:)
-      client.start_span(name: name)
+    def start_span(name:, &block)
+      client.start_span(name: name, &block)
     end
 
     def load_integrations
