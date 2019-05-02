@@ -30,4 +30,18 @@ module Honeycomb
   end
 end
 
+::Faraday::Connection.module_eval do
+  alias_method :standard_initialize, :initialize
+
+  def initialize(url = nil, options = nil, &block)
+    standard_initialize(url, options, &block)
+
+    return if @builder.handlers.include? Honeycomb::Faraday
+
+    # if the honeycomb faraday middleware has not been added by the user then
+    # add it here using the global honeycomb client
+    @builder.insert(0, Honeycomb::Faraday, client: Honeycomb.client)
+  end
+end
+
 Faraday::Middleware.register_middleware honeycomb: -> { Honeycomb::Faraday }
