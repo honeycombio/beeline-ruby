@@ -44,7 +44,7 @@ module Honeycomb
 
         start = Time.now
 
-        yield span_id, trace_id
+        yield span_id, trace_id, event
       end
     rescue Exception => e
       if event
