@@ -16,6 +16,7 @@ module Honeycomb
         yield config
         @client = Honeycomb::Client.new(client: config.client,
                                         service_name: config.service_name)
+        config.after_initialize(@client)
       end
 
       @client
@@ -62,6 +63,10 @@ module Honeycomb
       end
 
       @client || Libhoney::Client.new(options)
+    end
+
+    def after_initialize(client)
+      super(client) if defined?(super)
     end
   end
 end

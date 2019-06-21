@@ -15,7 +15,6 @@ if defined?(Honeycomb::Rails)
         app.config.logger = Logger.new(STDERR)
         app.config.log_level = :fatal
         app.config.eager_load = false
-        app.config.honeycomb.client = libhoney_client
         app.config.secret_key_base = "3b7cd727ee24e8444053437c36cc66c4"
         app.initialize!
 
@@ -32,6 +31,14 @@ if defined?(Honeycomb::Rails)
     end
 
     before do
+      Honeycomb.configure do |config|
+        config.client = libhoney_client
+        config.notification_events = %w[
+          render_template.action_view
+          process_action.action_controller
+        ].freeze
+      end
+
       header("Http-Version", "HTTP/1.0")
       header("User-Agent", "RackSpec")
 

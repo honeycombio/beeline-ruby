@@ -34,21 +34,4 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
-
-  config.honeycomb.write_key = "{WRITE_KEY}"
-  config.honeycomb.dataset = "rails"
-  config.honeycomb.service_name = "rails_development"
-  events = %w[
-    sql.active_record
-    instantiation.active_record
-    render_template.action_view
-    render_partial.action_view
-    render_collection.action_view
-    process_action.action_controller
-    send_file.action_controller
-    send_data.action_controller
-    deliver.action_mailer
-  ]
-  config.honeycomb.notification_events = events
-  config.honeycomb.client = Libhoney::LogClient.new
 end

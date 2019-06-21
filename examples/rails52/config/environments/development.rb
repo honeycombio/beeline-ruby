@@ -58,21 +58,4 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
-
-  config.honeycomb.write_key = "{WRITE_KEY}"
-  config.honeycomb.dataset = "rails"
-  config.honeycomb.service_name = "rails_development"
-  events = %w[
-    sql.active_record
-    instantiation.active_record
-    render_template.action_view
-    render_partial.action_view
-    render_collection.action_view
-    process_action.action_controller
-    send_file.action_controller
-    send_data.action_controller
-    deliver.action_mailer
-  ]
-  config.honeycomb.notification_events = events
-  config.honeycomb.client = Libhoney::LogClient.new
 end
