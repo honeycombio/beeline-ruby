@@ -30,6 +30,7 @@ module Honeycomb
       @rollup_fields = Hash.new(0)
       @children = []
       @sent = false
+      @started = clock_time
     end
 
     def add_rollup_field(key, value)
@@ -103,12 +104,12 @@ module Honeycomb
       end
     end
 
-    def start_time
-      event.timestamp
+    def duration_ms
+      (clock_time - @started) * 1000
     end
 
-    def duration_ms
-      (Time.now.utc - start_time) * 1000
+    def clock_time
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
 
     def span_type
