@@ -39,6 +39,7 @@ jobs:
     - stage: deploy
       script: skip
       rvm: 2.5
+      gemfile: Gemfile
       deploy:
         provider: rubygems
         api_key:
