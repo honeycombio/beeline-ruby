@@ -16,12 +16,19 @@ gemfile:
   - gemfiles/rails_5.gemfile
   - gemfiles/rails_51.gemfile
   - gemfiles/rails_52.gemfile
+  - gemfiles/rails_6rc1.gemfile
 script: bundle exec rake test
 matrix:
   exclude:
     - rvm: 2.4
-    - gemfile: gemfiles/rails_41.gemfile
+      gemfile: gemfiles/rails_41.gemfile
     - rvm: 2.5
       gemfile: gemfiles/rails_41.gemfile
     - rvm: 2.5
       gemfile: gemfiles/rails_42.gemfile
+    - rvm: 2.2
+      gemfile: gemfiles/rails_6rc1.gemfile
+    - rvm: 2.3
+      gemfile: gemfiles/rails_6rc1.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails_6rc1.gemfile
