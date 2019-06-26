@@ -15,11 +15,12 @@ Requires Ruby version 2.2 or later
 
 Built in instrumentation for:
 
-- Rails
 - Active Support
 - Faraday
-- Sequel
 - Rack
+- Rails
+- Sequel
+- Sinatra
 
 ## Get in touch
 
