@@ -38,9 +38,19 @@ end
 
     return if @builder.handlers.include? Honeycomb::Faraday
 
-    # if the honeycomb faraday middleware has not been added by the user then
-    # add it here using the global honeycomb client
-    @builder.insert(0, Honeycomb::Faraday, client: Honeycomb.client)
+    adapter_index = @builder.handlers.find_index do |handler|
+      handler.klass.ancestors.include? Faraday::Adapter
+    end
+
+    if adapter_index
+      @builder.insert_before(
+        adapter_index,
+        Honeycomb::Faraday,
+        client: Honeycomb.client,
+      )
+    else
+      @builder.use(Honeycomb::Faraday, client: Honeycomb.client)
+    end
   end
 end
 
