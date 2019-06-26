@@ -34,3 +34,16 @@ matrix:
       gemfile: gemfiles/rails_6rc1.gemfile
     - rvm: 2.4
       gemfile: gemfiles/rails_6rc1.gemfile
+jobs:
+  include:
+    - stage: deploy
+      script: skip
+      rvm: 2.5
+      deploy:
+        provider: rubygems
+        api_key:
+          secure: V7GDCgz1myfe4c9EoQcGHGzLVtDaJo+/Iis6i+s5gUvKsITVmoMnTEEwuSXROGAdabyjzkTSxMEC2dOK/7Hlc9z4ryb+LxZSMcQfbACv6rOqvGG+PQ++SZULm3qhfTTHwpq41GspVPPindpcaEcVoOGZm6vhuFx9GZQivFNlUvU2TMFT3/+joMsNP0HoI2KfOKy2ACBrjhsE2ooCTON7dlZzCoGwnm9euODrNUBR7/2PnFxBkUaPlRdRMsmvVfxyAgw4eC9LpZgw9Y2dmjhMPXAnOxe3/kQpJ6Z0wN7sp495PYNHGT3DZxQyo84lZcFsgRJa0aLgpXkZGOBa5L7+ZOrNQ0l06kSsrkOCXCjX/lWvaVzncOYXbq5NOPfuQzP3XTXkBJ7816EqNePo1OwBix7SEJOI45/YvEoJfn7J07zdRFzqaq3mjTEu1B92dO8kzvfFUSkbRUkLDpTg6Ra0LjRvPkqeuErcIzzHCLg8RB6Bd88LlLdhhqiN8kRoNUfjlyViyQXy3DYNFfXLV8up+4jJe4wK+p7qtVqpD3yGH7LRKn/911puy1AtzprQ8dUqHEby29f0J6jLrd9oNTI7haWTC+pO5xY2+YfkeOMQq7QKSuWoiMRCGExd4rBGsV/JD3FRq2O2vu/0xXKL+aep7UgEUMHkXOb0EwL/nTm6Bd0=
+        gem: honeycomb-beeline
+        on:
+          tags: true
+          repo: honeycombio/beeline-ruby
