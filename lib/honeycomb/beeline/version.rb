@@ -3,7 +3,7 @@
 module Honeycomb
   module Beeline
     NAME = "honeycomb-beeline".freeze
-    VERSION = "0.9.0".freeze
+    VERSION = "1.0.0-alpha".freeze
     USER_AGENT_SUFFIX = "#{NAME}/#{VERSION}".freeze
   end
 end
