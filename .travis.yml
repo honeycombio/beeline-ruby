@@ -5,6 +5,7 @@ rvm:
   - 2.3
   - 2.4
   - 2.5
+  - 2.6
 gemfile:
   - gemfiles/faraday.gemfile
   - gemfiles/sequel4.gemfile
@@ -19,12 +20,15 @@ gemfile:
   - gemfiles/rails_6rc1.gemfile
 script: bundle exec rake test
 before_install:
+  - gem update bundler
   - ./bundler_version.sh
 matrix:
   exclude:
     - rvm: 2.4
       gemfile: gemfiles/rails_41.gemfile
     - rvm: 2.5
+      gemfile: gemfiles/rails_41.gemfile
+    - rvm: 2.6
       gemfile: gemfiles/rails_41.gemfile
     - rvm: 2.2
       gemfile: gemfiles/rails_6rc1.gemfile
@@ -40,11 +44,11 @@ jobs:
   include:
     - stage: lint
       script: bundle exec rake rubocop
-      rvm: 2.5
+      rvm: 2.6
       gemfile: Gemfile
     - stage: deploy
       script: skip
-      rvm: 2.5
+      rvm: 2.6
       gemfile: Gemfile
       deploy:
         provider: rubygems
