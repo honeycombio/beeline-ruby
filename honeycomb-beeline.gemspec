@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "Instrument your Ruby apps with Honeycomb"
   spec.homepage      = "https://honeycomb.io"
 
-  spec.license = 'Apache-2.0'
+  spec.license = "Apache-2.0"
 
   spec.required_ruby_version = ">= 2.2.0"
 
