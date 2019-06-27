@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "rails"
+require "rails/railtie"
 require "honeycomb/integrations/active_support"
 require "honeycomb/integrations/rack"
 
