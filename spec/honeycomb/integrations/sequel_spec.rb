@@ -3,10 +3,17 @@
 if defined?(Honeycomb::Sequel)
   RSpec.describe Honeycomb::Sequel do
     let(:libhoney_client) { Libhoney::TestClient.new }
+    let(:configuration) do
+      Honeycomb::Configuration.new.tap do |config|
+        config.client = libhoney_client
+      end
+    end
+    let(:client) { Honeycomb::Client.new(configuration: configuration) }
+
     let(:db) do
       Sequel.mock.tap do |db|
         db.extension :honeycomb
-        db.honeycomb_client = Honeycomb::Client.new(client: libhoney_client)
+        db.honeycomb_client = client
       end
     end
 

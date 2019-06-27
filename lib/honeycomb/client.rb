@@ -3,6 +3,7 @@
 require "socket"
 require "forwardable"
 require "honeycomb/beeline/version"
+require "honeycomb/configuration"
 require "honeycomb/context"
 
 module Honeycomb
@@ -10,19 +11,21 @@ module Honeycomb
   class Client
     extend Forwardable
 
-    def initialize(client:, service_name: nil)
+    def initialize(configuration:)
+      @client = configuration.client
       # attempt to set the user_agent_addition, this will only work if the
       # client has not sent an event prior to being passed in here. This should
       # be most cases
-      client.instance_variable_set(:@user_agent_addition,
-                                   Honeycomb::Beeline::USER_AGENT_SUFFIX)
-      client.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
-      client.add_field "meta.local_hostname", host_name
+      @client.instance_variable_set(:@user_agent_addition,
+                                    Honeycomb::Beeline::USER_AGENT_SUFFIX)
+      @client.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
+      @client.add_field "meta.local_hostname", configuration.host_name
 
       # maybe make `service_name` a required parameter
-      client.add_field "service_name", service_name
-      @client = client
+      @client.add_field "service_name", configuration.service_name
       @context = Context.new
+
+      configuration.after_initialize(self)
 
       at_exit do
         client.close
@@ -70,10 +73,5 @@ module Honeycomb
     private
 
     attr_reader :client, :context
-
-    def host_name
-      # Send the heroku dyno name instead of hostname if available
-      ENV["DYNO"] || Socket.gethostname
-    end
   end
 end

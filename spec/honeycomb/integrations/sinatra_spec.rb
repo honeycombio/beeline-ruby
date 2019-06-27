@@ -14,12 +14,18 @@ if defined?(Honeycomb::Sinatra)
     end
 
     let(:libhoney_client) { Libhoney::TestClient.new }
+    let(:configuration) do
+      Honeycomb::Configuration.new.tap do |config|
+        config.client = libhoney_client
+      end
+    end
+    let(:client) { Honeycomb::Client.new(configuration: configuration) }
 
     let(:app) { App }
 
     before do
       app.use Honeycomb::Rack,
-              client: Honeycomb::Client.new(client: libhoney_client)
+              client: client
     end
 
     before do

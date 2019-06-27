@@ -10,6 +10,16 @@ if defined?(Honeycomb::Rails)
     include Rack::Test::Methods
 
     let(:libhoney_client) { Libhoney::TestClient.new }
+    let(:configuration) do
+      Honeycomb::Configuration.new.tap do |config|
+        config.client = libhoney_client
+        config.notification_events = %w[
+          render_template.action_view
+          process_action.action_controller
+        ].freeze
+      end
+    end
+    let(:client) { Honeycomb::Client.new(configuration: configuration) }
     let(:app) do
       Class.new(Rails::Application).tap do |app|
         app.config.logger = Logger.new(STDERR)
@@ -17,6 +27,11 @@ if defined?(Honeycomb::Rails)
         app.config.eager_load = false
         app.config.secret_key_base = "3b7cd727ee24e8444053437c36cc66c4"
         app.config.respond_to?(:hosts) && app.config.hosts << "example.org"
+        app.config.middleware.insert_before(
+          ::Rails::Rack::Logger,
+          Honeycomb::Rack,
+          client: client,
+        )
         app.initialize!
 
         app.routes.draw do
@@ -32,14 +47,6 @@ if defined?(Honeycomb::Rails)
     end
 
     before do
-      Honeycomb.configure do |config|
-        config.client = libhoney_client
-        config.notification_events = %w[
-          render_template.action_view
-          process_action.action_controller
-        ].freeze
-      end
-
       header("Http-Version", "HTTP/1.0")
       header("User-Agent", "RackSpec")
 

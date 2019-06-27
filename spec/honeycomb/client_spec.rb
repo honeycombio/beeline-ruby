@@ -4,7 +4,12 @@ require "libhoney"
 
 RSpec.describe Honeycomb::Client do
   let(:libhoney_client) { Libhoney::TestClient.new }
-  subject(:client) { Honeycomb::Client.new(client: libhoney_client) }
+  let(:configuration) do
+    Honeycomb::Configuration.new.tap do |config|
+      config.client = libhoney_client
+    end
+  end
+  subject(:client) { Honeycomb::Client.new(configuration: configuration) }
 
   describe "creating a trace" do
     before do

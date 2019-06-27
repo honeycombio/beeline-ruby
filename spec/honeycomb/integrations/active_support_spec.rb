@@ -4,7 +4,12 @@ if defined?(Honeycomb::ActiveSupport)
   RSpec.describe Honeycomb::ActiveSupport do
     describe "custom notifications" do
       let(:libhoney_client) { Libhoney::TestClient.new }
-      let(:client) { Honeycomb::Client.new(client: libhoney_client) }
+      let(:configuration) do
+        Honeycomb::Configuration.new.tap do |config|
+          config.client = libhoney_client
+        end
+      end
+      let(:client) { Honeycomb::Client.new(configuration: configuration) }
       let(:event_data) { libhoney_client.events.map(&:data) }
       let(:subscriber) do
         Honeycomb::ActiveSupport::Subscriber.new(client: client)
