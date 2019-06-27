@@ -1,4 +1,4 @@
-# Honeycomb Beeline Rails 5.2 Sample Application
+# Honeycomb Beeline Rails 4.1 Sample Application
 
 ## Getting started
 
