@@ -32,8 +32,16 @@ matrix:
       gemfile: gemfiles/rails_6rc1.gemfile
     - rvm: 2.4
       gemfile: gemfiles/rails_6rc1.gemfile
+stages:
+  - lint
+  - test
+  - deploy
 jobs:
   include:
+    - stage: lint
+      script: bundle exec rake rubocop
+      rvm: 2.5
+      gemfile: Gemfile
     - stage: deploy
       script: skip
       rvm: 2.5

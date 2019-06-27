@@ -4,6 +4,7 @@ AllCops:
   TargetRubyVersion: 2.2
   Exclude:
     - "examples/**/*"
+    - "vendor/**/*"
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
