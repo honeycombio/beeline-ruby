@@ -2,12 +2,14 @@
 
 require "forwardable"
 require "honeycomb/propagation"
+require "honeycomb/deterministic_sampler"
 
 module Honeycomb
   # Represents a Honeycomb span, which wraps a Honeycomb event and adds specific
   # tracing functionality
   class Span
     include PropagationSerializer
+    include DeterministicSampler
     extend Forwardable
 
     def_delegators :@event, :add_field, :add
@@ -93,7 +95,7 @@ module Honeycomb
       add trace.fields
       span_type == "root" && add(trace.rollup_fields)
       send_children
-      event.send
+      should_sample(event.sample_rate, trace.id) && event.send_presampled
       @sent = true
       context.span_sent(self)
     end
