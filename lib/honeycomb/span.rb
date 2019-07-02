@@ -30,11 +30,21 @@ module Honeycomb
       @builder = builder
       @event = builder.event
       @trace = trace
-      @parent_id = options[:parent_id]
-      @is_root = options[:is_root] || options[:parent_id].nil?
       @children = []
       @sent = false
       @started = clock_time
+      parse_options(**options)
+    end
+
+    def parse_options(parent_id: nil,
+                      is_root: parent_id.nil?,
+                      sample_hook: nil,
+                      presend_hook: nil,
+                      **_options)
+      @parent_id = parent_id
+      @is_root = is_root
+      @presend_hook = presend_hook
+      @sample_hook = sample_hook
     end
 
     def create_child
@@ -67,7 +77,9 @@ module Honeycomb
                 :parent_id,
                 :children,
                 :builder,
-                :context
+                :context,
+                :presend_hook,
+                :sample_hook
 
     def sent?
       @sent
@@ -87,7 +99,17 @@ module Honeycomb
       add trace.fields
       span_type == "root" && add(trace.rollup_fields)
       send_children
-      should_sample(event.sample_rate, trace.id) && event.send_presampled
+      sample = true
+      if sample_hook.nil?
+        sample = should_sample(event.sample_rate, trace.id)
+      else
+        sample, event.sample_rate = sample_hook.call(event.data)
+      end
+
+      if sample
+        presend_hook && presend_hook.call(event.data)
+        event.send_presampled
+      end
       @sent = true
       context.span_sent(self)
     end

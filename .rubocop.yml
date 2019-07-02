@@ -15,7 +15,10 @@ Metrics/BlockLength:
     - spec/**/*.rb
 
 Metrics/AbcSize:
-  Max: 40
+  Max: 50
+
+Metrics/ClassLength:
+  Max: 200
 
 Metrics/MethodLength:
   Max: 25
