@@ -39,3 +39,41 @@ RSpec.describe Honeycomb::DeterministicSampler do
   include_examples "sampling distribution", 2, 0.05
   include_examples "sampling distribution", 10, 0.05
 end
+
+RSpec.describe Honeycomb::DeterministicSampler do
+  subject { Class.new.include(described_class).new }
+
+  EXPECTED_SAMPLES = [
+    ["4YeYygWjTZ41zOBKUoYUaSVxPGm78rdU", false],
+    ["iow4KAFBl9u6lF4EYIcsFz60rXGvu7ph", true],
+    ["EgQMHtruEfqaqQqRs5nwaDXsegFGmB5n", true],
+    ["UnVVepVdyGIiwkHwofyva349tVu8QSDn", true],
+    ["rWuxi2uZmBEprBBpxLLFcKtXHA8bQkvJ", true],
+    ["8PV5LN1IGm5T0ZVIaakb218NvTEABNZz", false],
+    ["EMSmscnxwfrkKd1s3hOJ9bL4zqT1uud5", true],
+    ["YiLx0WGJrQAge2cVoAcCscDDVidbH4uE", true],
+    ["IjD0JHdQdDTwKusrbuiRO4NlFzbPotvg", false],
+    ["ADwiQogJGOS4X8dfIcidcfdT9fY2WpHC", false],
+    ["DyGaS7rfQsMX0E6TD9yORqx7kJgUYvNR", true],
+    ["MjOCkn11liCYZspTAhdULMEfWJGMHvpK", false],
+    ["wtGa41YcFMR5CBNr79lTfRAFi6Vhr6UF", true],
+    ["3AsMjnpTBawWv2AAPDxLjdxx4QYl9XXb", false],
+    ["sa2uMVNPiZLK52zzxlakCUXLaRNXddBz", false],
+    ["NYH9lkdbvXsiUFKwJtjSkQ1RzpHwWloK", false],
+    ["8AwzQeY5cudY8YUhwxm3UEP7Oos61RTY", false],
+    ["ADKWL3p5gloRYO3ptarTCbWUHo5JZi3j", false],
+    ["UAnMARj5x7hkh9kwBiNRfs5aYDsbHKpw", true],
+    ["Aes1rgTLMNnlCkb9s6bH7iT5CbZTdxUw", true],
+    ["eh1LYTOfgISrZ54B7JbldEpvqVur57tv", false],
+    ["u5A1wEYax1kD9HBeIjwyNAoubDreCsZ6", false],
+    ["mv70SFwpAOHRZt4dmuw5n2lAsM1lOrcx", true],
+    ["i4nIu0VZMuh5hLrUm9w2kqNxcfYY7Y3a", true],
+    ["UqfewK2qFZqfJ619RKkRiZeYtO21ngX1", false],
+  ].freeze
+
+  EXPECTED_SAMPLES.each do |id, sample|
+    it "produces the expected sampling decision" do
+      expect(subject.should_sample(2, id)).to eq sample
+    end
+  end
+end
