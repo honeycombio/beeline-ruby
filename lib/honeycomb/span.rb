@@ -3,6 +3,7 @@
 require "forwardable"
 require "honeycomb/propagation"
 require "honeycomb/deterministic_sampler"
+require "honeycomb/rollup_fields"
 
 module Honeycomb
   # Represents a Honeycomb span, which wraps a Honeycomb event and adds specific
@@ -10,6 +11,7 @@ module Honeycomb
   class Span
     include PropagationSerializer
     include DeterministicSampler
+    include RollupFields
     extend Forwardable
 
     def_delegators :@event, :add_field, :add
@@ -29,15 +31,9 @@ module Honeycomb
       @trace = trace
       @parent_id = parent_id
       @is_root = is_root
-      @rollup_fields = Hash.new(0)
       @children = []
       @sent = false
       @started = clock_time
-    end
-
-    def add_rollup_field(key, value)
-      trace.add_rollup_field(key, value)
-      rollup_fields[key] += value
     end
 
     def add_trace_field(key, value)
@@ -70,8 +66,7 @@ module Honeycomb
 
     private
 
-    attr_reader :rollup_fields,
-                :event,
+    attr_reader :event,
                 :parent_id,
                 :children,
                 :builder,
