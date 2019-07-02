@@ -38,5 +38,21 @@ module Honeycomb
       # Send the heroku dyno name instead of hostname if available
       @host_name || ENV["DYNO"] || Socket.gethostname
     end
+
+    def presend_hook(&hook)
+      if block_given?
+        @presend_hook = hook
+      else
+        @presend_hook
+      end
+    end
+
+    def sample_hook(&hook)
+      if block_given?
+        @sample_hook = hook
+      else
+        @sample_hook
+      end
+    end
   end
 end

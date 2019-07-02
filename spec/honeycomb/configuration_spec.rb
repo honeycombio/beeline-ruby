@@ -12,6 +12,18 @@ RSpec.describe Honeycomb::Configuration do
     configuration.write_key = write_key
     configuration.dataset = dataset_name
     configuration.api_host = api_host
+    configuration.presend_hook do
+    end
+    configuration.sample_hook do
+    end
+  end
+
+  it "has a presend_hook" do
+    expect(configuration.presend_hook).to respond_to(:call)
+  end
+
+  it "has a sample_hook" do
+    expect(configuration.sample_hook).to respond_to(:call)
   end
 
   it "has a default service_name" do
