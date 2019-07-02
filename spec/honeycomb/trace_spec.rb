@@ -6,6 +6,31 @@ RSpec.describe Honeycomb::Trace do
   let(:libhoney_client) { Libhoney::TestClient.new }
   let(:context) { Honeycomb::Context.new }
   let(:builder) { libhoney_client.builder }
+  let(:presend_hook) { proc {} }
+  let(:sample_hook) { proc {} }
+
+  it "passes the hooks to the root span" do
+    expect(Honeycomb::Span)
+      .to receive(:new)
+      .with(hash_including(
+              presend_hook: presend_hook,
+              sample_hook: sample_hook,
+            ))
+      .and_call_original
+
+    Honeycomb::Trace.new(
+      builder: builder,
+      context: context,
+      presend_hook: presend_hook,
+      sample_hook: sample_hook,
+    )
+  end
+end
+
+RSpec.describe Honeycomb::Trace do
+  let(:libhoney_client) { Libhoney::TestClient.new }
+  let(:context) { Honeycomb::Context.new }
+  let(:builder) { libhoney_client.builder }
   subject(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
 
   let(:trace_fields) { { "wow" => 420 } }

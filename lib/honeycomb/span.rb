@@ -23,16 +23,15 @@ module Honeycomb
     def initialize(trace:,
                    builder:,
                    context:,
-                   parent_id: nil,
-                   is_root: parent_id.nil?)
+                   **options)
       @id = SecureRandom.uuid
       @context = context
       @context.current_span = self
       @builder = builder
       @event = builder.event
       @trace = trace
-      @parent_id = parent_id
-      @is_root = is_root
+      @parent_id = options[:parent_id]
+      @is_root = options[:is_root] || options[:parent_id].nil?
       @children = []
       @sent = false
       @started = clock_time
