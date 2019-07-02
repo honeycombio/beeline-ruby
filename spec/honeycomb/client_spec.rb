@@ -4,6 +4,32 @@ require "libhoney"
 
 RSpec.describe Honeycomb::Client do
   let(:libhoney_client) { Libhoney::TestClient.new }
+  let(:presend_hook) { proc {} }
+  let(:sample_hook) { proc {} }
+  let(:configuration) do
+    Honeycomb::Configuration.new.tap do |config|
+      config.client = libhoney_client
+      config.presend_hook(&presend_hook)
+      config.sample_hook(&sample_hook)
+    end
+  end
+  subject(:client) { Honeycomb::Client.new(configuration: configuration) }
+
+  it "passes the hooks to the trace on creation" do
+    expect(Honeycomb::Trace)
+      .to receive(:new)
+      .with(hash_including(
+              presend_hook: presend_hook,
+              sample_hook: sample_hook,
+            ))
+      .and_call_original
+
+    client.start_span(name: "hi")
+  end
+end
+
+RSpec.describe Honeycomb::Client do
+  let(:libhoney_client) { Libhoney::TestClient.new }
   let(:configuration) do
     Honeycomb::Configuration.new.tap do |config|
       config.client = libhoney_client

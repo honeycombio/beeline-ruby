@@ -17,7 +17,7 @@ module Honeycomb
 
     attr_reader :id, :fields, :root_span
 
-    def initialize(builder:, context:, serialized_trace: nil)
+    def initialize(builder:, context:, serialized_trace: nil, **_options)
       trace_id, parent_span_id, trace_fields, dataset =
         parse serialized_trace
       dataset && builder.dataset = dataset

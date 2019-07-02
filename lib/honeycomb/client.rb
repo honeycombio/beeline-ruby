@@ -25,6 +25,11 @@ module Honeycomb
       @client.add_field "service_name", configuration.service_name
       @context = Context.new
 
+      @additional_trace_options = {
+        presend_hook: configuration.presend_hook,
+        sample_hook: configuration.sample_hook,
+      }
+
       configuration.after_initialize(self)
 
       at_exit do
@@ -36,7 +41,8 @@ module Honeycomb
       if context.current_trace.nil?
         Trace.new(serialized_trace: serialized_trace,
                   builder: client.builder,
-                  context: context)
+                  context: context,
+                  **@additional_trace_options)
       else
         context.current_span.create_child
       end
