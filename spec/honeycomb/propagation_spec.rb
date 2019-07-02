@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "securerandom"
 require "honeycomb/propagation"
 
 RSpec.describe Honeycomb::PropagationParser do
@@ -67,10 +68,54 @@ RSpec.describe Honeycomb::PropagationParser do
 end
 
 RSpec.describe Honeycomb::PropagationSerializer do
+  let(:builder) { instance_double("Builder", dataset: "rails") }
   let(:trace) { instance_double("Trace", id: 2, fields: {}) }
-  let(:span) { instance_double("Span", id: 1, trace: trace).extend(subject) }
+  let(:span) do
+    instance_double("Span", id: 1, trace: trace, builder: builder)
+      .extend(subject)
+  end
 
   it "can serialize a basic span" do
-    expect(span.to_trace_header).to eq "1;trace_id=2,parent_id=1,context=e30="
+    expect(span.to_trace_header)
+      .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+  end
+end
+
+RSpec.describe "Propagation" do
+  let(:parent_id) { SecureRandom.uuid }
+  let(:dataset) { "rails,tesing/with-%characters%" }
+  let(:trace_id) { SecureRandom.uuid }
+  let(:fields) do
+    {
+      "test" => "honeycomb",
+    }
+  end
+  let(:builder) { instance_double("Builder", dataset: dataset) }
+  let(:trace) { instance_double("Trace", id: trace_id, fields: fields) }
+  let(:span) do
+    instance_double("Span", id: parent_id, trace: trace, builder: builder)
+      .extend(Honeycomb::PropagationSerializer)
+  end
+
+  let(:propagation) { Class.new.extend(Honeycomb::PropagationParser) }
+
+  let(:output) do
+    propagation.parse(span.to_trace_header)
+  end
+
+  it "produces the correct dataset" do
+    expect(output[3]).to eq dataset
+  end
+
+  it "produces the correct trace_id" do
+    expect(output[0]).to eq trace_id
+  end
+
+  it "produces the correct parent_span_id" do
+    expect(output[1]).to eq parent_id
+  end
+
+  it "produces the correct fields" do
+    expect(output[2]).to eq fields
   end
 end

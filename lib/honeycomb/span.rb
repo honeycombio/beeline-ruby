@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "securerandom"
 require "forwardable"
 require "honeycomb/propagation"
 require "honeycomb/deterministic_sampler"

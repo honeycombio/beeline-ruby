@@ -2,6 +2,7 @@
 
 require "base64"
 require "json"
+require "uri"
 
 module Honeycomb
   # Parse trace headers
@@ -28,7 +29,7 @@ module Honeycomb
         key, value = entry.split("=", 2)
         case key
         when "dataset"
-          dataset = value
+          dataset = URI.decode_www_form_component(value)
         when "trace_id"
           trace_id = value
         when "parent_id"
@@ -52,7 +53,14 @@ module Honeycomb
   module PropagationSerializer
     def to_trace_header
       context = Base64.urlsafe_encode64(JSON.generate(trace.fields)).strip
-      "1;trace_id=#{trace.id},parent_id=#{id},context=#{context}"
+      encoded_dataset = URI.encode_www_form_component(builder.dataset)
+      data_to_propogate = [
+        "dataset=#{encoded_dataset}",
+        "trace_id=#{trace.id}",
+        "parent_id=#{id}",
+        "context=#{context}",
+      ]
+      "1;#{data_to_propogate.join(',')}"
     end
   end
 end
