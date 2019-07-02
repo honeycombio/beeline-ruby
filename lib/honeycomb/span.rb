@@ -15,6 +15,7 @@ module Honeycomb
     extend Forwardable
 
     def_delegators :@event, :add_field, :add
+    def_delegator :@trace, :add_field, :add_trace_field
 
     attr_reader :id, :trace
 
@@ -34,10 +35,6 @@ module Honeycomb
       @children = []
       @sent = false
       @started = clock_time
-    end
-
-    def add_trace_field(key, value)
-      trace.add_field(key, value)
     end
 
     def create_child
