@@ -8,7 +8,7 @@ module Honeycomb
   # sampling
   #
   module DeterministicSampler
-    MAX_INT32 = 2.pow(32) - 1
+    MAX_INT32 = 2**32 - 1
 
     def should_sample(rate, value)
       return true if rate == 1
