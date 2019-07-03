@@ -1,12 +1,10 @@
 require 'honeycomb/client'
 
-require 'activerecord-honeycomb/auto_install'
 require 'faraday-honeycomb/auto_install'
 require 'rack-honeycomb/auto_install'
 
 module Honeycomb
   INSTRUMENTATIONS = [
-    ActiveRecord::Honeycomb,
     Faraday::Honeycomb,
     Rack::Honeycomb,
   ].freeze
