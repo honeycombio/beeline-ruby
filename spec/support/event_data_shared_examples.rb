@@ -36,7 +36,10 @@ RSpec.shared_examples "event data" do |package_fields: true, http_fields: false,
     if package_fields
       PACKAGE_FIELDS.each do |field|
         it "includes #{field}" do
-          expect(event_data).to all(include field)
+          # the package fields will only be on the root span which should be
+          # the last event to be sent in each test
+          event = event_data.last
+          expect(event).to include field
         end
       end
     end

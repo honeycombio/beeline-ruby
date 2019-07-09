@@ -63,7 +63,6 @@ if defined?(Honeycomb::Rails)
 
     let(:event_data) { libhoney_client.events.map(&:data) }
 
-    # only the root span will have package_fields so don't require them
-    it_behaves_like "event data", package_fields: false
+    it_behaves_like "event data"
   end
 end
