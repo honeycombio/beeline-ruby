@@ -8,6 +8,15 @@ require "honeycomb/trace"
 
 # main module
 module Honeycomb
+  INTEGRATIONS = %i[
+    active_support
+    faraday
+    rack
+    rails
+    sequel
+    sinatra
+  ].freeze
+
   class << self
     attr_reader :client
 
@@ -25,7 +34,7 @@ module Honeycomb
     end
 
     def load_integrations
-      %i[faraday rack sinatra rails sequel active_support].each do |integration|
+      INTEGRATIONS.each do |integration|
         begin
           require "honeycomb/integrations/#{integration}"
         rescue LoadError
