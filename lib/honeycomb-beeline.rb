@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
+require "forwardable"
 require "libhoney"
-
 require "honeycomb/beeline/version"
 require "honeycomb/client"
 require "honeycomb/trace"
@@ -19,7 +19,10 @@ module Honeycomb
   ].freeze
 
   class << self
+    extend Forwardable
     attr_reader :client
+
+    def_delegators :@client, :start_span, :add_field, :add_field_to_trace
 
     def configure
       Configuration.new.tap do |config|
@@ -28,10 +31,6 @@ module Honeycomb
       end
 
       @client
-    end
-
-    def start_span(name:, &block)
-      client.start_span(name: name, &block)
     end
 
     def load_integrations

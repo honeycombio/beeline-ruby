@@ -35,6 +35,32 @@ RSpec.describe Honeycomb do
       expect(libhoney_client.events.size).to eq 1
     end
   end
+
+  describe "adding fields to span" do
+    before do
+      Honeycomb.start_span(name: "test") do
+        Honeycomb.add_field("interesting", "banana")
+      end
+    end
+
+    it "contains the expected field" do
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("app.interesting" => "banana"))
+    end
+  end
+
+  describe "adding fields to trace" do
+    before do
+      Honeycomb.start_span(name: "test") do
+        Honeycomb.add_field_to_trace("interesting", "banana")
+      end
+    end
+
+    it "contains the expected field" do
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("app.interesting" => "banana"))
+    end
+  end
 end
 
 RSpec.describe Honeycomb::Beeline do
