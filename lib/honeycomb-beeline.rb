@@ -13,6 +13,7 @@ module Honeycomb
     faraday
     rack
     rails
+    rake
     sequel
     sinatra
   ].freeze
