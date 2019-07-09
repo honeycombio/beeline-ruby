@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "socket"
 require "forwardable"
 require "honeycomb/beeline/version"
 require "honeycomb/configuration"

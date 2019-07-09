@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "socket"
+
 module Honeycomb
   # Used to configure the Honeycomb client
   class Configuration
