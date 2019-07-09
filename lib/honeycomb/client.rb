@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "forwardable"
 require "honeycomb/beeline/version"
 require "honeycomb/configuration"
 require "honeycomb/context"
@@ -8,8 +7,6 @@ require "honeycomb/context"
 module Honeycomb
   # The Honeycomb Beeline client
   class Client
-    extend Forwardable
-
     def initialize(configuration:)
       @client = configuration.client
       # attempt to set the user_agent_addition, this will only work if the
