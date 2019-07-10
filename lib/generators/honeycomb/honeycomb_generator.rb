@@ -10,6 +10,8 @@ class HoneycombGenerator < Rails::Generators::Base
 
   argument :write_key, required: true, desc: "required"
 
+  class_option :dataset, type: :string, default: "rails"
+
   gem "honeycomb-beeline"
 
   desc "Configures honeycomb with your write key"
@@ -19,7 +21,7 @@ class HoneycombGenerator < Rails::Generators::Base
       <<-RUBY.strip_heredoc
         Honeycomb.configure do |config|
           config.write_key = #{write_key.inspect}
-          config.dataset = "rails"
+          config.dataset = #{options['dataset'].inspect}
           config.notification_events = %w[
             sql.active_record
             render_template.action_view
