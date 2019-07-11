@@ -24,7 +24,7 @@
 
 ## honeycomb-rails to beeline-ruby
 
-1. Update Gemfile, remove `honeycomb-rails` and add `beeline-ruby`
+1. Update Gemfile, remove `honeycomb-rails` and add `honeycomb-beeline`
 1. Run `bundle install`
 1. Remove the `honeycomb.rb` initializer from `config/initializers`
 1. Add the following to the `config.ru` file
