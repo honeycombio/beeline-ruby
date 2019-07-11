@@ -33,7 +33,7 @@ module Honeycomb
       end
     end
 
-    def start_span(name:, serialized_trace: nil)
+    def start_span(name:, serialized_trace: nil, **fields)
       if context.current_trace.nil?
         Trace.new(serialized_trace: serialized_trace,
                   builder: client.builder,
@@ -41,6 +41,10 @@ module Honeycomb
                   **@additional_trace_options)
       else
         context.current_span.create_child
+      end
+
+      fields.each do |key, value|
+        context.current_span.add_field(key, value)
       end
 
       context.current_span.add_field("name", name)

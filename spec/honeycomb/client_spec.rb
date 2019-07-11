@@ -62,6 +62,23 @@ RSpec.describe Honeycomb::Client do
     it_behaves_like "event data", package_fields: false
   end
 
+  describe "passing additional fields on start_span" do
+    before do
+      client.start_span(name: "trace fields", useless_info: 42) do
+      end
+    end
+
+    it "sends the right number of events" do
+      expect(libhoney_client.events.size).to eq 1
+    end
+
+    let(:event_data) { libhoney_client.events.map(&:data) }
+
+    it_behaves_like "event data",
+                    package_fields: false,
+                    additional_fields: [:useless_info]
+  end
+
   describe "can create a trace without using a block" do
     before do
       outer_span = client.start_span(name: "test")
