@@ -7,7 +7,8 @@ module Honeycomb
   class Configuration
     attr_accessor :write_key,
                   :dataset,
-                  :api_host
+                  :api_host,
+                  :debug
 
     attr_writer :service_name, :client, :host_name
 
@@ -15,6 +16,7 @@ module Honeycomb
       @write_key = ENV["HONEYCOMB_WRITEKEY"]
       @dataset = ENV["HONEYCOMB_DATASET"]
       @service_name = ENV["HONEYCOMB_SERVICE"]
+      @debug = ENV.key?("HONEYCOMB_DEBUG")
       @client = nil
     end
 
@@ -29,7 +31,9 @@ module Honeycomb
         api_host && o[:api_host] = api_host
       end
 
-      @client || Libhoney::Client.new(options)
+      @client ||
+        (debug && Libhoney::LogClient.new) ||
+        Libhoney::Client.new(options)
     end
 
     def after_initialize(client)
