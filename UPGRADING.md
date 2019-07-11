@@ -13,7 +13,7 @@
     ```
 1. Replace any `Rack::Honeycomb.add_field` calls with the following
     ```ruby
-    Honeycomb.client.add_field("name", "value")
+    Honeycomb.add_field("name", "value")
     ```
 1. Replace any `Honeycomb.span` calls with the following
     ```ruby
