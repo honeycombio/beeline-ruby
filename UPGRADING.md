@@ -3,12 +3,12 @@
 ## 0.8.0 - 1.0.0
 
 1. If you have a web application, remove beeline configuration from the `config.ru` file
-1. If you have a rails application, run the honeycomb generator `bundle exec rails generate honeycomb {writekey}`
+1. If you have a rails application, run the honeycomb generator `bundle exec rails generate honeycomb {writekey} --dataset {dataset}`
 1. Replace call to `Honeycomb.init` with the following (if using rails, this will now live in `config/initializers/honeycomb.rb`)
     ```ruby
     Honeycomb.configure do |config|
       config.write_key = "{writekey}"
-      config.dataset = "rails"
+      config.dataset = "{dataset}"
     end
     ```
 1. Replace any `Rack::Honeycomb.add_field` calls with the following
