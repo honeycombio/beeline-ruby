@@ -16,11 +16,25 @@ module Honeycomb
         events = notification_events || []
         ActiveSupport::Subscriber.new(client: client).tap do |sub|
           events.each do |event|
-            sub.subscribe(event) do |span, payload|
-              payload.each do |key, value|
-                span.add_field("#{event}.#{key}", value.to_s)
-              end
-            end
+            sub.subscribe(event, &method(:handle_notification_event))
+          end
+        end
+      end
+
+      def on_notification_event(&hook)
+        if block_given?
+          @on_notification_event = hook
+        else
+          @on_notification_event
+        end
+      end
+
+      def handle_notification_event(name, span, payload)
+        if on_notification_event
+          on_notification_event.call(name, span, payload)
+        else
+          payload.each do |key, value|
+            span.add_field("#{name}.#{key}", value.to_s)
           end
         end
       end
@@ -49,7 +63,7 @@ module Honeycomb
       def finish(name, id, payload)
         return unless (span = spans[id].pop)
 
-        handlers[name].call(span, payload)
+        handlers[name].call(name, span, payload)
 
         span.send
       end
