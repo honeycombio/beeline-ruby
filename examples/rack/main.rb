@@ -19,7 +19,7 @@ class RackApp
 end
 
 app = Rack::Builder.new do |builder|
-  builder.use Honeycomb::Rack, client: Honeycomb.client
+  builder.use Honeycomb::Rack::Middleware, client: Honeycomb.client
   builder.run RackApp.new
 end
 

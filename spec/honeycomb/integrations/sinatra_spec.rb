@@ -24,7 +24,7 @@ if defined?(Honeycomb::Sinatra)
     let(:app) { App }
 
     before do
-      app.use Honeycomb::Rack,
+      app.use Honeycomb::Sinatra::Middleware,
               client: client
     end
 

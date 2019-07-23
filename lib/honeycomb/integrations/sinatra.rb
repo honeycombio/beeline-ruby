@@ -2,9 +2,10 @@
 
 require "sinatra"
 require "honeycomb/integrations/rack"
+require "honeycomb/integrations/warden"
 
 module Honeycomb
-  # Add Sinatra specific information to the Honeycomb::Rack middleware
+  # Sinatra specific methods for building middleware
   module Sinatra
     def add_package_information(env)
       yield "meta.package", "sinatra"
@@ -12,7 +13,12 @@ module Honeycomb
 
       yield "request.route", env["sinatra.route"]
     end
+
+    # Sinatra middleware
+    class Middleware
+      include Rack
+      include Warden
+      include Sinatra
+    end
   end
 end
-
-Honeycomb::Rack.prepend Honeycomb::Sinatra

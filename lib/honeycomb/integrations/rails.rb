@@ -3,9 +3,10 @@
 require "rails/railtie"
 require "honeycomb/integrations/active_support"
 require "honeycomb/integrations/rack"
+require "honeycomb/integrations/warden"
 
 module Honeycomb
-  # Add Rails specific information to the Honeycomb::Rack middleware
+  # Rails specific methods for building middleware
   module Rails
     def add_package_information(env)
       yield "meta.package", "rails"
@@ -27,6 +28,13 @@ module Honeycomb
         end
       end
     end
+
+    # Rails middleware
+    class Middleware
+      include Rack
+      include Warden
+      include Rails
+    end
   end
 
   # Automatically capture rack requests and create a trace
@@ -37,12 +45,10 @@ module Honeycomb
         # what location should we insert the middleware at?
         app.config.middleware.insert_before(
           ::Rails::Rack::Logger,
-          Honeycomb::Rack,
+          Honeycomb::Rails::Middleware,
           client: Honeycomb.client,
         )
       end
     end
   end
 end
-
-Honeycomb::Rack.prepend Honeycomb::Rails

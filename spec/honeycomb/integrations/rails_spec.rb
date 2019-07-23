@@ -29,7 +29,7 @@ if defined?(Honeycomb::Rails)
         app.config.respond_to?(:hosts) && app.config.hosts << "example.org"
         app.config.middleware.insert_before(
           ::Rails::Rack::Logger,
-          Honeycomb::Rack,
+          Honeycomb::Rails::Middleware,
           client: client,
         )
         app.initialize!

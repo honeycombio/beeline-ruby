@@ -17,7 +17,7 @@ if defined?(Honeycomb::Rack)
     end
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
     let(:honeycomb) do
-      Honeycomb::Rack.new(lobster, client: client)
+      Honeycomb::Rack::Middleware.new(lobster, client: client)
     end
     let(:auth) { Authenticate.new(honeycomb) }
     let(:warden) do

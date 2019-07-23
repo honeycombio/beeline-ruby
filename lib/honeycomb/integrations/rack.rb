@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require "rack"
+require "honeycomb/integrations/warden"
 
 module Honeycomb
-  # Automatically capture rack requests and create a trace
-  class Rack
+  # Rack specific methods for building middleware
+  module Rack
     RACK_FIELDS = [
       ["REQUEST_METHOD", "request.method"],
       ["PATH_INFO", "request.path"],
@@ -15,17 +16,6 @@ module Honeycomb
       ["HTTP_USER_AGENT", "request.header.user_agent"],
       ["rack.url_scheme", "request.protocol"],
     ].freeze
-
-    COMMON_USER_FIELDS = %i[
-      email
-      name
-      first_name
-      last_name
-      created_at
-      id
-    ].freeze
-
-    SCOPE_PATTERN = /^warden\.user\.([^.]+)\.key$/.freeze
 
     attr_reader :app, :client
 
@@ -68,27 +58,10 @@ module Honeycomb
       end
     end
 
-    def extract_user_information(env)
-      warden = env["warden"]
-
-      return unless warden
-
-      session = env["rack.session"] || {}
-      keys = session.keys.select do |key|
-        key.match(SCOPE_PATTERN)
-      end
-      warden_scopes = keys.map do |key|
-        key.gsub(SCOPE_PATTERN, "\1")
-      end
-      best_scope = warden_scopes.include?("user") ? "user" : warden_scopes.first
-
-      return unless best_scope
-
-      env["warden"].user(scope: best_scope, run_callbacks: false).tap do |user|
-        COMMON_USER_FIELDS.each do |field|
-          user.respond_to?(field) && yield("user.#{field}", user.send(field))
-        end
-      end
+    # Rack middleware
+    class Middleware
+      include Rack
+      include Warden
     end
   end
 end

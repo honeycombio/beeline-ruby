@@ -8,7 +8,7 @@ Honeycomb.configure do |config|
   config.client = Libhoney::LogClient.new
 end
 
-use Honeycomb::Rack, client: Honeycomb.client
+use Honeycomb::Sinatra::Middleware, client: Honeycomb.client
 
 get "/" do
   "Hello from Honeycomb"
