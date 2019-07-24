@@ -38,6 +38,6 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'sprockets', '~> 2.8.0'
+gem 'sprockets', '~> 2.12.5'
 
 gem 'honeycomb-beeline', path: "../.."
