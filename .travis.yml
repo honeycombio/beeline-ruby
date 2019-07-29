@@ -17,7 +17,7 @@ gemfile:
   - gemfiles/rails_5.gemfile
   - gemfiles/rails_51.gemfile
   - gemfiles/rails_52.gemfile
-  - gemfiles/rails_6rc1.gemfile
+  - gemfiles/rails_6rc2.gemfile
 script: bundle exec rake test
 before_install:
   - gem update bundler
@@ -31,11 +31,11 @@ matrix:
     - rvm: 2.6
       gemfile: gemfiles/rails_41.gemfile
     - rvm: 2.2
-      gemfile: gemfiles/rails_6rc1.gemfile
+      gemfile: gemfiles/rails_6rc2.gemfile
     - rvm: 2.3
-      gemfile: gemfiles/rails_6rc1.gemfile
+      gemfile: gemfiles/rails_6rc2.gemfile
     - rvm: 2.4
-      gemfile: gemfiles/rails_6rc1.gemfile
+      gemfile: gemfiles/rails_6rc2.gemfile
 stages:
   - lint
   - test
