@@ -50,6 +50,14 @@ RSpec.describe Honeycomb::Span do
     end
   end
 
+  describe "when a span creates a child span" do
+    it "sets the sample_hook on the child" do
+      child = span.create_child
+
+      expect(child.sample_hook).to eq sample_hook
+    end
+  end
+
   describe "when the sampling hook returns true" do
     let(:presend_hook) { double("PresendHook") }
     let(:sampling_decision) { true }

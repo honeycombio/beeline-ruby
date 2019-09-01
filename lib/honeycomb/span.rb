@@ -51,7 +51,8 @@ module Honeycomb
       self.class.new(trace: trace,
                      builder: builder,
                      context: context,
-                     parent_id: id).tap do |c|
+                     parent_id: id,
+                     sample_hook: @sample_hook).tap do |c|
         children << c
       end
     end
