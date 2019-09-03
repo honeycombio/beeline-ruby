@@ -52,7 +52,8 @@ module Honeycomb
                      builder: builder,
                      context: context,
                      parent_id: id,
-                     sample_hook: @sample_hook).tap do |c|
+                     sample_hook: sample_hook,
+                     presend_hook: presend_hook).tap do |c|
         children << c
       end
     end
