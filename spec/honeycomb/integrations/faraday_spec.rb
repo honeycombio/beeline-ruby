@@ -140,5 +140,23 @@ if defined?(Honeycomb::Faraday)
                                          ])
       end
     end
+
+    describe "supports config not called" do
+      let(:connection) do
+        Faraday.new do |conn|
+          conn.use :honeycomb, client: nil
+          conn.adapter Faraday.default_adapter
+        end
+      end
+
+      let!(:response) do
+        stub_request(:get, "https://www.honeycomb.io")
+        connection.get "https://www.honeycomb.io"
+      end
+
+      it "has the right url in the response" do
+        expect(response).to be_nil
+      end
+    end
   end
 end
