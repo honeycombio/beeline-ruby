@@ -11,7 +11,7 @@ module Honeycomb
     end
 
     def call(env)
-      return if @client.nil?
+      return @app.call(env) if @client.nil?
 
       @client.start_span(name: "http_client") do |span|
         span.add_field "request.method", env.method.upcase
