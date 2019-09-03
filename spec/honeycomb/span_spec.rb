@@ -50,6 +50,37 @@ RSpec.describe Honeycomb::Span do
     end
   end
 
+  describe "when a span creates a child span" do
+    let(:presend_hook) { double("PresendHook") }
+    let(:sample_hook) { double("SampleHook") }
+
+    before do
+      allow(presend_hook).to receive(:call)
+      # we have to configure the sample_hook here to return the expected value
+      # as the presend_hook will not be called if the event is not going to be
+      # sent
+      allow(sample_hook).to receive(:call).and_return([true, 0])
+    end
+
+    it "sets the sample_hook on the child" do
+      expect(sample_hook).to receive(:call)
+        .with(hash_including("honeycomb" => "bees"))
+
+      child = span.create_child
+      child.add_field("honeycomb", "bees")
+      child.send
+    end
+
+    it "sets the presend_hook on the child" do
+      expect(presend_hook).to receive(:call)
+        .with(hash_including("honeycomb" => "bees"))
+
+      child = span.create_child
+      child.add_field("honeycomb", "bees")
+      child.send
+    end
+  end
+
   describe "when the sampling hook returns true" do
     let(:presend_hook) { double("PresendHook") }
     let(:sampling_decision) { true }
