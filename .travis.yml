@@ -31,11 +31,11 @@ matrix:
     - rvm: 2.6
       gemfile: gemfiles/rails_41.gemfile
     - rvm: 2.2
-      gemfile: gemfiles/rails_6rc2.gemfile
+      gemfile: gemfiles/rails_6.gemfile
     - rvm: 2.3
-      gemfile: gemfiles/rails_6rc2.gemfile
+      gemfile: gemfiles/rails_6.gemfile
     - rvm: 2.4
-      gemfile: gemfiles/rails_6rc2.gemfile
+      gemfile: gemfiles/rails_6.gemfile
 stages:
   - lint
   - test
