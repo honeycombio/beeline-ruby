@@ -51,10 +51,19 @@ RSpec.describe Honeycomb::Span do
   end
 
   describe "when a span creates a child span" do
-    it "sets the sample_hook on the child" do
-      child = span.create_child
+    let(:sample_hook) { double("SampleHook") }
 
-      expect(child.sample_hook).to eq sample_hook
+    before do
+      allow(sample_hook).to receive(:call)
+    end
+
+    it "sets the sample_hook on the child" do
+      expect(sample_hook).to receive(:call)
+        .with(hash_including("honeycomb" => "bees"))
+
+      child = span.create_child
+      child.add_field("honeycomb", "bees")
+      child.send
     end
   end
 
