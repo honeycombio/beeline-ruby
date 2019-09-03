@@ -140,5 +140,39 @@ if defined?(Honeycomb::Faraday)
                                          ])
       end
     end
+
+    describe "supports not having a honeycomb client instance" do
+      class DummyMiddleware
+        def initialize(app)
+          @app = app
+        end
+
+        def call(env)
+          @app.call(env)
+        end
+      end
+
+      let(:connection) do
+        Faraday.new do |conn|
+          conn.use :honeycomb, client: nil
+          conn.use DummyMiddleware
+          conn.adapter Faraday.default_adapter
+        end
+      end
+
+      let(:response) do
+        stub_request(:get, "https://www.honeycomb.io")
+        connection.get "https://www.honeycomb.io"
+      end
+
+      it "has the right url in the response" do
+        expect(response.env[:url].to_s).to eq("https://www.honeycomb.io")
+      end
+
+      it "continues to call middleware" do
+        expect_any_instance_of(DummyMiddleware).to receive(:call)
+        expect(response).to be_nil
+      end
+    end
   end
 end
