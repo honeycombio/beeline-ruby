@@ -1,7 +1,6 @@
 language: ruby
 cache: bundler
 rvm:
-  - 2.2
   - 2.3
   - 2.4
   - 2.5
@@ -30,8 +29,6 @@ matrix:
       gemfile: gemfiles/rails_41.gemfile
     - rvm: 2.6
       gemfile: gemfiles/rails_41.gemfile
-    - rvm: 2.2
-      gemfile: gemfiles/rails_6.gemfile
     - rvm: 2.3
       gemfile: gemfiles/rails_6.gemfile
     - rvm: 2.4
