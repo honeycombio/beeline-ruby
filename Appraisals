@@ -54,8 +54,8 @@ appraise "rails-52" do
   gem "warden"
 end
 
-appraise "rails-6rc2" do
+appraise "rails-6" do
   gem "rack-test"
-  gem "rails", "6.0.0.rc2"
+  gem "rails", "~> 6.0.0"
   gem "warden"
 end
