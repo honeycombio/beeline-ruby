@@ -13,6 +13,7 @@ module Honeycomb
     faraday
     rack
     rails
+    railtie
     rake
     sequel
     sinatra
