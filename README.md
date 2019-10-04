@@ -18,7 +18,7 @@ Built in instrumentation for:
 - Active Support
 - Faraday
 - Rack
-- Rails
+- Rails (tested on versions 4.1 and up)
 - Sequel
 - Sinatra
 
