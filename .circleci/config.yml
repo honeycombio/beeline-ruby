@@ -1,16 +1,16 @@
 version: 2.1
 
 executors:
-  ruby_23:
+  ruby23:
     docker:
       - image: ruby:2.3
-  ruby_24":
+  ruby24":
     docker:
       - image: ruby:2.4
-  ruby_25":
+  ruby25":
     docker:
       - image: ruby:2.5
-  ruby_26":
+  ruby26":
     docker:
       - image: ruby:2.6
 
@@ -82,22 +82,22 @@ rails_6: &rails_6
 
 jobs:
   lint:
-    executor: ruby_26
+    executor: ruby26
     steps:
       - ruby:
           command: bundle exec rake rubocop
-  faraday_ruby_23:
+  faraday_ruby23:
     <<: *faraday
-    executor: ruby_23
-  faraday_ruby_24:
+    executor: ruby23
+  faraday_ruby24:
     <<: *faraday
-    executor: ruby_24
-  faraday_ruby_25:
+    executor: ruby24
+  faraday_ruby25:
     <<: *faraday
-    executor: ruby_25
-  faraday_ruby_26:
+    executor: ruby25
+  faraday_ruby26:
     <<: *faraday
-    executor: ruby_26
+    executor: ruby26
 
 workflows:
   version: 2
@@ -106,7 +106,7 @@ workflows:
       - lint
   test:
     jobs:
-      - faraday_ruby_23
-      - faraday_ruby_24
-      - faraday_ruby_25
-      - faraday_ruby_26
+      - faraday_ruby23
+      - faraday_ruby24
+      - faraday_ruby25
+      - faraday_ruby26
