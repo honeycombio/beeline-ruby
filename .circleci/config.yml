@@ -47,6 +47,10 @@ gemfiles:
     steps:
       - ruby:
           gemfile: gemfiles/sinatra.gemfile
+  rack: &rack
+    steps:
+      - ruby:
+          gemfile: gemfiles/rack.gemfile
   rails-four-one: &rails-four-one
     steps:
       - ruby:
