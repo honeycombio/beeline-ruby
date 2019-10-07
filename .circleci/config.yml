@@ -1,0 +1,30 @@
+version: 2.1
+
+commands:
+  ruby:
+    description: ""
+    parameters:
+      gemfile:
+        type: string
+        default: Gemfile
+      command:
+        type: string
+        default: bundle exec rake test
+    steps:
+      - run: gem update bundler
+      - run: ./bundler_version.sh
+      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << command >>
+
+jobs:
+  lint:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - ruby:
+          command: bundle exec rake rubocop
+
+workflows:
+  version: 2
+  lint:
+    jobs:
+      - lint
