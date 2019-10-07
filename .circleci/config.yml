@@ -4,7 +4,7 @@ executors:
   ruby-two-three:
     docker:
       - image: ruby:2.3
-  ruby-two-four":
+  ruby-two-four:
     docker:
       - image: ruby:2.4
   ruby-two-five:
