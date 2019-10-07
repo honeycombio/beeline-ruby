@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-appraise "faraday-15" do
-  gem "faraday", "~> 0.15.0"
-end
-
 appraise "faraday" do
   gem "faraday"
 end
