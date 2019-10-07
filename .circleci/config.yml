@@ -284,15 +284,6 @@ workflows:
       - rails-four-one-ruby-two-three:
           requires:
             - lint
-      - rails-four-one-ruby-two-four:
-          requires:
-            - lint
-      - rails-four-one-ruby-two-five:
-          requires:
-            - lint
-      - rails-four-one-ruby-two-six:
-          requires:
-            - lint
       - rails-four-two-ruby-two-three:
           requires:
             - lint
@@ -339,12 +330,6 @@ workflows:
           requires:
             - lint
       - rails-five-two-ruby-two-six:
-          requires:
-            - lint
-      - rails-six-ruby-two-three:
-          requires:
-            - lint
-      - rails-six-ruby-two-four:
           requires:
             - lint
       - rails-six-ruby-two-five:
