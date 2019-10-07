@@ -60,14 +60,14 @@ workflows:
     jobs:
       - lint
       - faraday-ruby-two-three:
-        requires:
-          - lint
+          requires:
+            - lint
       - faraday-ruby-two-four:
-        requires:
-          - lint
+          requires:
+            - lint
       - faraday-ruby-two-five:
-        requires:
-          - lint
+          requires:
+            - lint
       - faraday-ruby-two-six:
-        requires:
-          - lint
+          requires:
+            - lint
