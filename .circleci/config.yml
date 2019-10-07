@@ -13,7 +13,7 @@ commands:
     steps:
       - run: gem update bundler
       - run: ./bundler_version.sh
-      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << command >>
+      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
 jobs:
   lint:
