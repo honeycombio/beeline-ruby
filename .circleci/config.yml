@@ -26,7 +26,7 @@ commands:
     steps:
       - checkout
       - run: gem update bundler
-      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> ./bundler_version.sh
+      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> ./.circleci/bundler_version.sh
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> bundle install
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
