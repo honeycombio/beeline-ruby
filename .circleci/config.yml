@@ -126,6 +126,18 @@ jobs:
   sinatra-ruby-two-six:
     <<: *sinatra
     executor: ruby-two-six
+  rack-ruby-two-three:
+    <<: *rack
+    executor: ruby-two-three
+  rack-ruby-two-four:
+    <<: *rack
+    executor: ruby-two-four
+  rack-ruby-two-five:
+    <<: *rack
+    executor: ruby-two-five
+  rack-ruby-two-six:
+    <<: *rack
+    executor: ruby-two-six
   rails-four-one-ruby-two-three:
     <<: *rails-four-one
     executor: ruby-two-three
