@@ -30,10 +30,47 @@ commands:
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> bundle install
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
-faraday: &faraday
-  steps:
-    - ruby:
-        gemfile: gemfiles/faraday.gemfile
+gemfiles:
+  faraday: &faraday
+    steps:
+      - ruby:
+          gemfile: gemfiles/faraday.gemfile
+  sequel-four: &sequel-four
+    steps:
+      - ruby:
+          gemfile: gemfiles/sequel4.gemfile
+  sequel-five: &sequel-five
+    steps:
+      - ruby:
+          gemfile: gemfiles/sequel5.gemfile
+  sinatra: &sinatra
+    steps:
+      - ruby:
+          gemfile: gemfiles/sinatra.gemfile
+  rails-four-one: &rails-four-one
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_41.gemfile
+  rails-four-two: &rails-four-two
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_42.gemfile
+  rails-five: &rails-five
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_5.gemfile
+  rails-five-one: &rails-five-one
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_51.gemfile
+  rails-five-two: &rails-five-two
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_52.gemfile
+  rails-six: &rails-six
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_6.gemfile
 
 jobs:
   lint:
@@ -53,6 +90,115 @@ jobs:
   faraday-ruby-two-six:
     <<: *faraday
     executor: ruby-two-six
+  sequel-four-ruby-two-three:
+    <<: *sequel-four
+    executor: ruby-two-three
+  sequel-four-ruby-two-four:
+    <<: *sequel-four
+    executor: ruby-two-four
+  sequel-four-ruby-two-five:
+    <<: *sequel-four
+    executor: ruby-two-five
+  sequel-four-ruby-two-six:
+    <<: *sequel-four
+    executor: ruby-two-six
+  sequel-five-ruby-two-three:
+    <<: *sequel-five
+    executor: ruby-two-three
+  sequel-five-ruby-two-four:
+    <<: *sequel-five
+    executor: ruby-two-four
+  sequel-five-ruby-two-five:
+    <<: *sequel-five
+    executor: ruby-two-five
+  sequel-five-ruby-two-six:
+    <<: *sequel-five
+    executor: ruby-two-six
+  sinatra-ruby-two-three:
+    <<: *sinatra
+    executor: ruby-two-three
+  sinatra-ruby-two-four:
+    <<: *sinatra
+    executor: ruby-two-four
+  sinatra-ruby-two-five:
+    <<: *sinatra
+    executor: ruby-two-five
+  sinatra-ruby-two-six:
+    <<: *sinatra
+    executor: ruby-two-six
+  rails-four-one-ruby-two-three:
+    <<: *rails-four-one
+    executor: ruby-two-three
+  rails-four-one-ruby-two-four:
+    <<: *rails-four-one
+    executor: ruby-two-four
+  rails-four-one-ruby-two-five:
+    <<: *rails-four-one
+    executor: ruby-two-five
+  rails-four-one-ruby-two-six:
+    <<: *rails-four-one
+    executor: ruby-two-six
+  rails-four-two-ruby-two-three:
+    <<: *rails-four-two
+    executor: ruby-two-three
+  rails-four-two-ruby-two-four:
+    <<: *rails-four-two
+    executor: ruby-two-four
+  rails-four-two-ruby-two-five:
+    <<: *rails-four-two
+    executor: ruby-two-five
+  rails-four-two-ruby-two-six:
+    <<: *rails-four-two
+    executor: ruby-two-six
+  rails-five-ruby-two-three:
+    <<: *rails-five
+    executor: ruby-two-three
+  rails-five-ruby-two-four:
+    <<: *rails-five
+    executor: ruby-two-four
+  rails-five-ruby-two-five:
+    <<: *rails-five
+    executor: ruby-two-five
+  rails-five-ruby-two-six:
+    <<: *rails-five
+    executor: ruby-two-six
+  rails-five-one-ruby-two-three:
+    <<: *rails-five-one
+    executor: ruby-two-three
+  rails-five-one-ruby-two-four:
+    <<: *rails-five-one
+    executor: ruby-two-four
+  rails-five-one-ruby-two-five:
+    <<: *rails-five-one
+    executor: ruby-two-five
+  rails-five-one-ruby-two-six:
+    <<: *rails-five-one
+    executor: ruby-two-six
+  rails-five-two-ruby-two-three:
+    <<: *rails-five-two
+    executor: ruby-two-three
+  rails-five-two-ruby-two-four:
+    <<: *rails-five-two
+    executor: ruby-two-four
+  rails-five-two-ruby-two-five:
+    <<: *rails-five-two
+    executor: ruby-two-five
+  rails-five-two-ruby-two-six:
+    <<: *rails-five-two
+    executor: ruby-two-six
+  rails-six-ruby-two-three:
+    <<: *rails-six
+    executor: ruby-two-three
+  rails-six-ruby-two-four:
+    <<: *rails-six
+    executor: ruby-two-four
+  rails-six-ruby-two-five:
+    <<: *rails-six
+    executor: ruby-two-five
+  rails-six-ruby-two-six:
+    <<: *rails-six
+    executor: ruby-two-six
+
 
 workflows:
   version: 2
@@ -69,5 +215,125 @@ workflows:
           requires:
             - lint
       - faraday-ruby-two-six:
+          requires:
+            - lint
+      - sequel-four-ruby-two-three:
+          requires:
+            - lint
+      - sequel-four-ruby-two-four:
+          requires:
+            - lint
+      - sequel-four-ruby-two-five:
+          requires:
+            - lint
+      - sequel-four-ruby-two-six:
+          requires:
+            - lint
+      - sequel-five-ruby-two-three:
+          requires:
+            - lint
+      - sequel-five-ruby-two-four:
+          requires:
+            - lint
+      - sequel-five-ruby-two-five:
+          requires:
+            - lint
+      - sequel-five-ruby-two-six:
+          requires:
+            - lint
+      - sinatra-ruby-two-three:
+          requires:
+            - lint
+      - sinatra-ruby-two-four:
+          requires:
+            - lint
+      - sinatra-ruby-two-five:
+          requires:
+            - lint
+      - sinatra-ruby-two-six:
+          requires:
+            - lint
+      - rack-ruby-two-three:
+          requires:
+            - lint
+      - rack-ruby-two-four:
+          requires:
+            - lint
+      - rack-ruby-two-five:
+          requires:
+            - lint
+      - rack-ruby-two-six:
+          requires:
+            - lint
+      - rails-four-one-ruby-two-three:
+          requires:
+            - lint
+      - rails-four-one-ruby-two-four:
+          requires:
+            - lint
+      - rails-four-one-ruby-two-five:
+          requires:
+            - lint
+      - rails-four-one-ruby-two-six:
+          requires:
+            - lint
+      - rails-four-two-ruby-two-three:
+          requires:
+            - lint
+      - rails-four-two-ruby-two-four:
+          requires:
+            - lint
+      - rails-four-two-ruby-two-five:
+          requires:
+            - lint
+      - rails-four-two-ruby-two-six:
+          requires:
+            - lint
+      - rails-five-ruby-two-three:
+          requires:
+            - lint
+      - rails-five-ruby-two-four:
+          requires:
+            - lint
+      - rails-five-ruby-two-five:
+          requires:
+            - lint
+      - rails-five-ruby-two-six:
+          requires:
+            - lint
+      - rails-five-one-ruby-two-three:
+          requires:
+            - lint
+      - rails-five-one-ruby-two-four:
+          requires:
+            - lint
+      - rails-five-one-ruby-two-five:
+          requires:
+            - lint
+      - rails-five-one-ruby-two-six:
+          requires:
+            - lint
+      - rails-five-two-ruby-two-three:
+          requires:
+            - lint
+      - rails-five-two-ruby-two-four:
+          requires:
+            - lint
+      - rails-five-two-ruby-two-five:
+          requires:
+            - lint
+      - rails-five-two-ruby-two-six:
+          requires:
+            - lint
+      - rails-six-ruby-two-three:
+          requires:
+            - lint
+      - rails-six-ruby-two-four:
+          requires:
+            - lint
+      - rails-six-ruby-two-five:
+          requires:
+            - lint
+      - rails-six-ruby-two-six:
           requires:
             - lint
