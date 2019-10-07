@@ -56,12 +56,18 @@ jobs:
 
 workflows:
   version: 2
-  lint:
+  beeline:
     jobs:
       - lint
-  test:
-    jobs:
-      - faraday-ruby-two-three
-      - faraday-ruby-two-four
-      - faraday-ruby-two-five
-      - faraday-ruby-two-six
+      - faraday-ruby-two-three:
+        requires:
+          - lint
+      - faraday-ruby-two-four:
+        requires:
+          - lint
+      - faraday-ruby-two-five:
+        requires:
+          - lint
+      - faraday-ruby-two-six:
+        requires:
+          - lint
