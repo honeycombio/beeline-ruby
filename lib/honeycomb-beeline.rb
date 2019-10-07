@@ -13,6 +13,7 @@ module Honeycomb
     faraday
     rack
     rails
+    railtie
     rake
     sequel
     sinatra
@@ -34,11 +35,19 @@ module Honeycomb
     end
 
     def load_integrations
-      INTEGRATIONS.each do |integration|
+      intergations_to_load.each do |integration|
         begin
           require "honeycomb/integrations/#{integration}"
         rescue LoadError
         end
+      end
+    end
+
+    def intergations_to_load
+      if ENV["HONEYCOMB_INTEGRATIONS"]
+        ENV["HONEYCOMB_INTEGRATIONS"].split(",")
+      else
+        INTEGRATIONS
       end
     end
   end
