@@ -35,7 +35,7 @@ module Honeycomb
     end
 
     def load_integrations
-      intergations_to_load.each do |integration|
+      integrations_to_load.each do |integration|
         begin
           require "honeycomb/integrations/#{integration}"
         rescue LoadError
@@ -43,7 +43,7 @@ module Honeycomb
       end
     end
 
-    def intergations_to_load
+    def integrations_to_load
       if ENV["HONEYCOMB_INTEGRATIONS"]
         ENV["HONEYCOMB_INTEGRATIONS"].split(",")
       else
