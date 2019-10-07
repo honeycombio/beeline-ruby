@@ -1,16 +1,16 @@
 version: 2.1
 
 executors:
-  ruby23:
+  ruby-two-three:
     docker:
       - image: ruby:2.3
-  ruby24":
+  ruby-two-four":
     docker:
       - image: ruby:2.4
-  ruby25":
+  ruby-two-five:
     docker:
       - image: ruby:2.5
-  ruby26":
+  ruby-two-six:
     docker:
       - image: ruby:2.6
 
@@ -35,69 +35,24 @@ faraday: &faraday
     - ruby:
         gemfile: gemfiles/faraday.gemfile
 
-sequel4: &sequel4
-  steps:
-    - ruby:
-        gemfile: gemfiles/sequel4.gemfile
-
-sequel5: &sequel5
-  steps:
-    - ruby:
-        gemfile: gemfiles/sequel5.gemfile
-
-sinatra: &sinatra
-  steps:
-    - ruby:
-        gemfile: gemfiles/sinatra.gemfile
-
-rails_41: &rails_41
-  steps:
-    - ruby:
-        gemfile: gemfiles/rails_41.gemfile
-
-rails_42: &rails_42
-  steps:
-    - ruby:
-        gemfile: gemfiles/rails_42.gemfile
-
-rails_5: &rails_5
-  steps:
-    - ruby:
-        gemfile: gemfiles/rails_5.gemfile
-
-rails_51: &rails_51
-  steps:
-    - ruby:
-        gemfile: gemfiles/rails_51.gemfile
-
-rails_52: &rails_52
-  steps:
-    - ruby:
-        gemfile: gemfiles/rails_52.gemfile
-
-rails_6: &rails_6
-  steps:
-    - ruby:
-        gemfile: gemfiles/rails_6.gemfile
-
 jobs:
   lint:
-    executor: ruby26
+    executor: ruby-two-six
     steps:
       - ruby:
           command: bundle exec rake rubocop
-  faraday_ruby23:
+  faraday-ruby-two-three:
     <<: *faraday
-    executor: ruby23
-  faraday_ruby24:
+    executor: ruby-two-three
+  faraday-ruby-two-four:
     <<: *faraday
-    executor: ruby24
-  faraday_ruby25:
+    executor: ruby-two-four
+  faraday-ruby-two-five:
     <<: *faraday
-    executor: ruby25
-  faraday_ruby26:
+    executor: ruby-two-five
+  faraday-ruby-two-six:
     <<: *faraday
-    executor: ruby26
+    executor: ruby-two-six
 
 workflows:
   version: 2
@@ -106,7 +61,7 @@ workflows:
       - lint
   test:
     jobs:
-      - faraday_ruby23
-      - faraday_ruby24
-      - faraday_ruby25
-      - faraday_ruby26
+      - faraday-ruby-two-three
+      - faraday-ruby-two-four
+      - faraday-ruby-two-five
+      - faraday-ruby-two-six
