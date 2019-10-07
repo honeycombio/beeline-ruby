@@ -11,6 +11,7 @@ commands:
         type: string
         default: bundle exec rake test
     steps:
+      - checkout
       - run: gem update bundler
       - run: ./bundler_version.sh
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
