@@ -1,8 +1,21 @@
 version: 2.1
 
+executors:
+  ruby_23:
+    docker:
+      - image: ruby:2.3
+  ruby_24":
+    docker:
+      - image: ruby:2.4
+  ruby_25":
+    docker:
+      - image: ruby:2.5
+  ruby_26":
+    docker:
+      - image: ruby:2.6
+
 commands:
   ruby:
-    description: ""
     parameters:
       gemfile:
         type: string
@@ -17,16 +30,83 @@ commands:
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> bundle install
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
+faraday: &faraday
+  steps:
+    - ruby:
+        gemfile: gemfiles/faraday.gemfile
+
+sequel4: &sequel4
+  steps:
+    - ruby:
+        gemfile: gemfiles/sequel4.gemfile
+
+sequel5: &sequel5
+  steps:
+    - ruby:
+        gemfile: gemfiles/sequel5.gemfile
+
+sinatra: &sinatra
+  steps:
+    - ruby:
+        gemfile: gemfiles/sinatra.gemfile
+
+rails_41: &rails_41
+  steps:
+    - ruby:
+        gemfile: gemfiles/rails_41.gemfile
+
+rails_42: &rails_42
+  steps:
+    - ruby:
+        gemfile: gemfiles/rails_42.gemfile
+
+rails_5: &rails_5
+  steps:
+    - ruby:
+        gemfile: gemfiles/rails_5.gemfile
+
+rails_51: &rails_51
+  steps:
+    - ruby:
+        gemfile: gemfiles/rails_51.gemfile
+
+rails_52: &rails_52
+  steps:
+    - ruby:
+        gemfile: gemfiles/rails_52.gemfile
+
+rails_6: &rails_6
+  steps:
+    - ruby:
+        gemfile: gemfiles/rails_6.gemfile
+
 jobs:
   lint:
-    docker:
-      - image: circleci/ruby:2.6
+    executor: ruby_26
     steps:
       - ruby:
           command: bundle exec rake rubocop
+  faraday_ruby_23:
+    <<: *faraday
+    executor: ruby_23
+  faraday_ruby_24:
+    <<: *faraday
+    executor: ruby_24
+  faraday_ruby_25:
+    <<: *faraday
+    executor: ruby_25
+  faraday_ruby_26:
+    <<: *faraday
+    executor: ruby_26
 
 workflows:
   version: 2
   lint:
     jobs:
       - lint
+  test:
+    jobs:
+      - faraday_ruby_23
+      - faraday_ruby_24
+      - faraday_ruby_25
+      - faraday_ruby_26
