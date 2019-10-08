@@ -1,5 +1,11 @@
 version: 2.1
 
+# required as all of the jobs need to have a tag filter for some reason
+tag_filters: &tag_filters
+  filters:
+      tags:
+        only: /.*/
+
 executors:
   ruby-two-three:
     docker:
@@ -77,6 +83,12 @@ gemfiles:
           gemfile: gemfiles/rails_6.gemfile
 
 jobs:
+  publish:
+    executor: ruby-two-six
+    steps:
+      - checkout
+      - run: gem build honeycomb-beeline.gemspec
+      - run: gem push honeycomb-beeline-*.gem
   lint:
     executor: ruby-two-six
     steps:
@@ -215,126 +227,211 @@ jobs:
     <<: *rails-six
     executor: ruby-two-six
 
-
 workflows:
   version: 2
   beeline:
     jobs:
       - lint
       - faraday-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - faraday-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - faraday-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - faraday-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-four-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-four-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-four-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-four-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-five-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-five-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-five-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - sequel-five-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - sinatra-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - sinatra-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - sinatra-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - sinatra-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - rack-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - rack-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - rack-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - rack-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - rails-four-one-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - rails-four-two-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - rails-four-two-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - rails-four-two-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - rails-four-two-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-one-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-one-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-one-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-one-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-two-ruby-two-three:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-two-ruby-two-four:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-two-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - rails-five-two-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
       - rails-six-ruby-two-five:
+          <<: *tag_filters
           requires:
             - lint
       - rails-six-ruby-two-six:
+          <<: *tag_filters
           requires:
             - lint
+      - publish:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - lint
+            - faraday-ruby-two-three
+            - faraday-ruby-two-four
+            - faraday-ruby-two-five
+            - faraday-ruby-two-six
+            - sequel-four-ruby-two-three
+            - sequel-four-ruby-two-four
+            - sequel-four-ruby-two-five
+            - sequel-four-ruby-two-six
+            - sequel-five-ruby-two-three
+            - sequel-five-ruby-two-four
+            - sequel-five-ruby-two-five
+            - sequel-five-ruby-two-six
+            - sinatra-ruby-two-three
+            - sinatra-ruby-two-four
+            - sinatra-ruby-two-five
+            - sinatra-ruby-two-six
+            - rack-ruby-two-three
+            - rack-ruby-two-four
+            - rack-ruby-two-five
+            - rack-ruby-two-six
+            - rails-four-one-ruby-two-three
+            - rails-four-two-ruby-two-three
+            - rails-four-two-ruby-two-four
+            - rails-four-two-ruby-two-five
+            - rails-four-two-ruby-two-six
+            - rails-five-ruby-two-three
+            - rails-five-ruby-two-four
+            - rails-five-ruby-two-five
+            - rails-five-ruby-two-six
+            - rails-five-one-ruby-two-three
+            - rails-five-one-ruby-two-four
+            - rails-five-one-ruby-two-five
+            - rails-five-one-ruby-two-six
+            - rails-five-two-ruby-two-three
+            - rails-five-two-ruby-two-four
+            - rails-five-two-ruby-two-five
+            - rails-five-two-ruby-two-six
+            - rails-six-ruby-two-five
+            - rails-six-ruby-two-six
