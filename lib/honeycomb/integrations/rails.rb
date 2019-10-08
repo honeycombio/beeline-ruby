@@ -12,8 +12,11 @@ module Honeycomb
       yield "meta.package_version", ::Rails::VERSION::STRING
 
       ::ActionDispatch::Request.new(env).tap do |request|
-        yield "request.controller", request.params[:controller]
-        yield "request.action", request.params[:action]
+        # calling request.params will blow up if raw_post is nil
+        if request.raw_post
+          yield "request.controller", request.params[:controller]
+          yield "request.action", request.params[:action]
+        end
 
         break unless request.respond_to? :routes
         break unless request.routes.respond_to? :router
