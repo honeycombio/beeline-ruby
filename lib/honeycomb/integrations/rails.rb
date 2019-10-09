@@ -13,6 +13,9 @@ module Honeycomb
 
       ::ActionDispatch::Request.new(env).tap do |request|
         # calling request.params will blow up if raw_post is nil
+        # the only known cause of this is when using the
+        # [twirp](https://github.com/twitchtv/twirp-ruby) rack app mounted in
+        # the rails app
         if request.raw_post
           yield "request.controller", request.params[:controller]
           yield "request.action", request.params[:action]
