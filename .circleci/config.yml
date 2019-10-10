@@ -9,16 +9,16 @@ tag_filters: &tag_filters
 executors:
   ruby-two-three:
     docker:
-      - image: ruby:2.3
+      - image: circleci/ruby:2.3
   ruby-two-four:
     docker:
-      - image: ruby:2.4
+      - image: circleci/ruby:2.4
   ruby-two-five:
     docker:
-      - image: ruby:2.5
+      - image: circleci/ruby:2.5
   ruby-two-six:
     docker:
-      - image: ruby:2.6
+      - image: circleci/ruby:2.6
 
 commands:
   ruby:
