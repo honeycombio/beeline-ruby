@@ -1,6 +1,6 @@
 # Honeycomb Beeline for Ruby
 
-[![Build Status](https://travis-ci.org/honeycombio/beeline-ruby.svg?branch=master)](https://travis-ci.org/honeycombio/beeline-ruby)
+[![Build Status](https://circleci.com/gh/honeycombio/libhoney-rb.svg?style=svg)](https://circleci.com/gh/honeycombio/libhoney-rb)
 [![Gem Version](https://badge.fury.io/rb/honeycomb-beeline.svg)](https://badge.fury.io/rb/honeycomb-beeline)
 
 This package makes it easy to instrument your Ruby web app to send useful events to [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.

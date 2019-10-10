@@ -1,0 +1,445 @@
+version: 2.1
+
+# required as all of the jobs need to have a tag filter for some reason
+tag_filters: &tag_filters
+  filters:
+      tags:
+        only: /.*/
+
+executors:
+  ruby-two-three:
+    docker:
+      - image: ruby:2.3
+  ruby-two-four:
+    docker:
+      - image: ruby:2.4
+  ruby-two-five:
+    docker:
+      - image: ruby:2.5
+  ruby-two-six:
+    docker:
+      - image: ruby:2.6
+
+commands:
+  ruby:
+    parameters:
+      gemfile:
+        type: string
+        default: Gemfile
+      command:
+        type: string
+        default: bundle exec rake test
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gems-{{ checksum "Gemfile.lock" }}
+            - gems-
+      - run: gem update bundler
+      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> ./.circleci/bundler_version.sh
+      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> bundle install --jobs=4 --retry=3 --path vendor/bundle
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: gems-{{ checksum "Gemfile.lock" }}
+      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
+
+gemfiles:
+  faraday: &faraday
+    steps:
+      - ruby:
+          gemfile: gemfiles/faraday.gemfile
+  sequel-four: &sequel-four
+    steps:
+      - ruby:
+          gemfile: gemfiles/sequel4.gemfile
+  sequel-five: &sequel-five
+    steps:
+      - ruby:
+          gemfile: gemfiles/sequel5.gemfile
+  sinatra: &sinatra
+    steps:
+      - ruby:
+          gemfile: gemfiles/sinatra.gemfile
+  rack: &rack
+    steps:
+      - ruby:
+          gemfile: gemfiles/rack.gemfile
+  rails-four-one: &rails-four-one
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_41.gemfile
+  rails-four-two: &rails-four-two
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_42.gemfile
+  rails-five: &rails-five
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_5.gemfile
+  rails-five-one: &rails-five-one
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_51.gemfile
+  rails-five-two: &rails-five-two
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_52.gemfile
+  rails-six: &rails-six
+    steps:
+      - ruby:
+          gemfile: gemfiles/rails_6.gemfile
+
+jobs:
+  publish:
+    executor: ruby-two-six
+    steps:
+      - checkout
+      - run: gem build honeycomb-beeline.gemspec
+      - run: gem push honeycomb-beeline-*.gem
+  lint:
+    executor: ruby-two-six
+    steps:
+      - ruby:
+          command: bundle exec rake rubocop
+  faraday-ruby-two-three:
+    <<: *faraday
+    executor: ruby-two-three
+  faraday-ruby-two-four:
+    <<: *faraday
+    executor: ruby-two-four
+  faraday-ruby-two-five:
+    <<: *faraday
+    executor: ruby-two-five
+  faraday-ruby-two-six:
+    <<: *faraday
+    executor: ruby-two-six
+  sequel-four-ruby-two-three:
+    <<: *sequel-four
+    executor: ruby-two-three
+  sequel-four-ruby-two-four:
+    <<: *sequel-four
+    executor: ruby-two-four
+  sequel-four-ruby-two-five:
+    <<: *sequel-four
+    executor: ruby-two-five
+  sequel-four-ruby-two-six:
+    <<: *sequel-four
+    executor: ruby-two-six
+  sequel-five-ruby-two-three:
+    <<: *sequel-five
+    executor: ruby-two-three
+  sequel-five-ruby-two-four:
+    <<: *sequel-five
+    executor: ruby-two-four
+  sequel-five-ruby-two-five:
+    <<: *sequel-five
+    executor: ruby-two-five
+  sequel-five-ruby-two-six:
+    <<: *sequel-five
+    executor: ruby-two-six
+  sinatra-ruby-two-three:
+    <<: *sinatra
+    executor: ruby-two-three
+  sinatra-ruby-two-four:
+    <<: *sinatra
+    executor: ruby-two-four
+  sinatra-ruby-two-five:
+    <<: *sinatra
+    executor: ruby-two-five
+  sinatra-ruby-two-six:
+    <<: *sinatra
+    executor: ruby-two-six
+  rack-ruby-two-three:
+    <<: *rack
+    executor: ruby-two-three
+  rack-ruby-two-four:
+    <<: *rack
+    executor: ruby-two-four
+  rack-ruby-two-five:
+    <<: *rack
+    executor: ruby-two-five
+  rack-ruby-two-six:
+    <<: *rack
+    executor: ruby-two-six
+  rails-four-one-ruby-two-three:
+    <<: *rails-four-one
+    executor: ruby-two-three
+  rails-four-one-ruby-two-four:
+    <<: *rails-four-one
+    executor: ruby-two-four
+  rails-four-one-ruby-two-five:
+    <<: *rails-four-one
+    executor: ruby-two-five
+  rails-four-one-ruby-two-six:
+    <<: *rails-four-one
+    executor: ruby-two-six
+  rails-four-two-ruby-two-three:
+    <<: *rails-four-two
+    executor: ruby-two-three
+  rails-four-two-ruby-two-four:
+    <<: *rails-four-two
+    executor: ruby-two-four
+  rails-four-two-ruby-two-five:
+    <<: *rails-four-two
+    executor: ruby-two-five
+  rails-four-two-ruby-two-six:
+    <<: *rails-four-two
+    executor: ruby-two-six
+  rails-five-ruby-two-three:
+    <<: *rails-five
+    executor: ruby-two-three
+  rails-five-ruby-two-four:
+    <<: *rails-five
+    executor: ruby-two-four
+  rails-five-ruby-two-five:
+    <<: *rails-five
+    executor: ruby-two-five
+  rails-five-ruby-two-six:
+    <<: *rails-five
+    executor: ruby-two-six
+  rails-five-one-ruby-two-three:
+    <<: *rails-five-one
+    executor: ruby-two-three
+  rails-five-one-ruby-two-four:
+    <<: *rails-five-one
+    executor: ruby-two-four
+  rails-five-one-ruby-two-five:
+    <<: *rails-five-one
+    executor: ruby-two-five
+  rails-five-one-ruby-two-six:
+    <<: *rails-five-one
+    executor: ruby-two-six
+  rails-five-two-ruby-two-three:
+    <<: *rails-five-two
+    executor: ruby-two-three
+  rails-five-two-ruby-two-four:
+    <<: *rails-five-two
+    executor: ruby-two-four
+  rails-five-two-ruby-two-five:
+    <<: *rails-five-two
+    executor: ruby-two-five
+  rails-five-two-ruby-two-six:
+    <<: *rails-five-two
+    executor: ruby-two-six
+  rails-six-ruby-two-three:
+    <<: *rails-six
+    executor: ruby-two-three
+  rails-six-ruby-two-four:
+    <<: *rails-six
+    executor: ruby-two-four
+  rails-six-ruby-two-five:
+    <<: *rails-six
+    executor: ruby-two-five
+  rails-six-ruby-two-six:
+    <<: *rails-six
+    executor: ruby-two-six
+
+workflows:
+  version: 2
+  beeline:
+    jobs:
+      - lint
+      - faraday-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - faraday-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - faraday-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - faraday-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-four-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-four-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-four-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-four-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-five-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-five-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-five-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-five-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sinatra-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sinatra-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sinatra-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sinatra-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rack-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rack-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rack-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rack-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-four-one-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-four-two-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-four-two-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-four-two-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-four-two-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-one-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-one-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-one-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-one-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-two-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-two-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-two-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-two-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-six-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-six-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - publish:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - lint
+            - faraday-ruby-two-three
+            - faraday-ruby-two-four
+            - faraday-ruby-two-five
+            - faraday-ruby-two-six
+            - sequel-four-ruby-two-three
+            - sequel-four-ruby-two-four
+            - sequel-four-ruby-two-five
+            - sequel-four-ruby-two-six
+            - sequel-five-ruby-two-three
+            - sequel-five-ruby-two-four
+            - sequel-five-ruby-two-five
+            - sequel-five-ruby-two-six
+            - sinatra-ruby-two-three
+            - sinatra-ruby-two-four
+            - sinatra-ruby-two-five
+            - sinatra-ruby-two-six
+            - rack-ruby-two-three
+            - rack-ruby-two-four
+            - rack-ruby-two-five
+            - rack-ruby-two-six
+            - rails-four-one-ruby-two-three
+            - rails-four-two-ruby-two-three
+            - rails-four-two-ruby-two-four
+            - rails-four-two-ruby-two-five
+            - rails-four-two-ruby-two-six
+            - rails-five-ruby-two-three
+            - rails-five-ruby-two-four
+            - rails-five-ruby-two-five
+            - rails-five-ruby-two-six
+            - rails-five-one-ruby-two-three
+            - rails-five-one-ruby-two-four
+            - rails-five-one-ruby-two-five
+            - rails-five-one-ruby-two-six
+            - rails-five-two-ruby-two-three
+            - rails-five-two-ruby-two-four
+            - rails-five-two-ruby-two-five
+            - rails-five-two-ruby-two-six
+            - rails-six-ruby-two-five
+            - rails-six-ruby-two-six
