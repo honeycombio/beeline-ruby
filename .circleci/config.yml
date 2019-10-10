@@ -33,15 +33,15 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - gems-{{ checksum "Gemfile.lock" }}
-            - gems-
+            - gems-v1-{{ checksum "Gemfile.lock" }}
+            - gems-v1-
       - run: gem update bundler
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> ./.circleci/bundler_version.sh
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> bundle install --jobs=4 --retry=3 --path vendor/bundle
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: gems-{{ checksum "Gemfile.lock" }}
+          key: gems-v1-{{ checksum "Gemfile.lock" }}
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
 gemfiles:
