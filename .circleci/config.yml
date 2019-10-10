@@ -95,6 +95,9 @@ jobs:
     executor: ruby-two-six
     steps:
       - checkout
+      - run:
+          name: Setup Rubygems
+          command: bash .circleci/setup-rubygems.sh
       - run: gem build honeycomb-beeline.gemspec
       - run: gem push honeycomb-beeline-*.gem
   lint:
