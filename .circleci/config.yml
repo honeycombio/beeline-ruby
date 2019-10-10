@@ -239,7 +239,7 @@ workflows:
   version: 2
   beeline:
     jobs:
-      - lint
+      - lint: *tag_filters
       - faraday-ruby-two-three:
           <<: *tag_filters
           requires:
