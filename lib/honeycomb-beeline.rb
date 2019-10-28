@@ -10,6 +10,7 @@ require "honeycomb/trace"
 module Honeycomb
   INTEGRATIONS = %i[
     active_support
+    aws
     faraday
     rack
     rails
