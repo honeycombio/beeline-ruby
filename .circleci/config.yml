@@ -45,6 +45,10 @@ commands:
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
 gemfiles:
+  aws: &aws
+    steps:
+      - ruby:
+          gemfile: gemfiles/aws.gemfile
   faraday: &faraday
     steps:
       - ruby:
@@ -105,6 +109,18 @@ jobs:
     steps:
       - ruby:
           command: bundle exec rake rubocop
+  aws-ruby-two-three:
+    <<: *aws
+    executor: ruby-two-three
+  aws-ruby-two-four:
+    <<: *aws
+    executor: ruby-two-four
+  aws-ruby-two-five:
+    <<: *aws
+    executor: ruby-two-five
+  aws-ruby-two-six:
+    <<: *aws
+    executor: ruby-two-six
   faraday-ruby-two-three:
     <<: *faraday
     executor: ruby-two-three
@@ -243,6 +259,22 @@ workflows:
   beeline:
     jobs:
       - lint: *tag_filters
+      - aws-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
       - faraday-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -407,6 +439,10 @@ workflows:
               ignore: /.*/
           requires:
             - lint
+            - aws-ruby-two-three
+            - aws-ruby-two-four
+            - aws-ruby-two-five
+            - aws-ruby-two-six
             - faraday-ruby-two-three
             - faraday-ruby-two-four
             - faraday-ruby-two-five

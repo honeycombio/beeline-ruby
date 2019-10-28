@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+appraise "aws" do
+  gem "aws-sdk", "~> 3"
+end
+
 appraise "faraday" do
   gem "faraday"
 end
