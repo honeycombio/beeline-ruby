@@ -45,10 +45,14 @@ commands:
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
 gemfiles:
-  aws: &aws
+  aws-two: &aws-two
     steps:
       - ruby:
-          gemfile: gemfiles/aws.gemfile
+          gemfile: gemfiles/aws_2.gemfile
+  aws-three: &aws-three
+    steps:
+      - ruby:
+          gemfile: gemfiles/aws_3.gemfile
   faraday: &faraday
     steps:
       - ruby:
@@ -109,17 +113,29 @@ jobs:
     steps:
       - ruby:
           command: bundle exec rake rubocop
-  aws-ruby-two-three:
-    <<: *aws
+  aws-two-ruby-two-three:
+    <<: *aws-two
     executor: ruby-two-three
-  aws-ruby-two-four:
-    <<: *aws
+  aws-two-ruby-two-four:
+    <<: *aws-two
     executor: ruby-two-four
-  aws-ruby-two-five:
-    <<: *aws
+  aws-two-ruby-two-five:
+    <<: *aws-two
     executor: ruby-two-five
-  aws-ruby-two-six:
-    <<: *aws
+  aws-two-ruby-two-six:
+    <<: *aws-two
+    executor: ruby-two-six
+  aws-three-ruby-two-three:
+    <<: *aws-three
+    executor: ruby-two-three
+  aws-three-ruby-two-four:
+    <<: *aws-three
+    executor: ruby-two-four
+  aws-three-ruby-two-five:
+    <<: *aws-three
+    executor: ruby-two-five
+  aws-three-ruby-two-six:
+    <<: *aws-three
     executor: ruby-two-six
   faraday-ruby-two-three:
     <<: *faraday
@@ -259,19 +275,35 @@ workflows:
   beeline:
     jobs:
       - lint: *tag_filters
-      - aws-ruby-two-three:
+      - aws-two-ruby-two-three:
           <<: *tag_filters
           requires:
             - lint
-      - aws-ruby-two-four:
+      - aws-two-ruby-two-four:
           <<: *tag_filters
           requires:
             - lint
-      - aws-ruby-two-five:
+      - aws-two-ruby-two-five:
           <<: *tag_filters
           requires:
             - lint
-      - aws-ruby-two-six:
+      - aws-two-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-three-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-three-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-three-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-three-ruby-two-six:
           <<: *tag_filters
           requires:
             - lint
@@ -439,10 +471,14 @@ workflows:
               ignore: /.*/
           requires:
             - lint
-            - aws-ruby-two-three
-            - aws-ruby-two-four
-            - aws-ruby-two-five
-            - aws-ruby-two-six
+            - aws-two-ruby-two-three
+            - aws-two-ruby-two-four
+            - aws-two-ruby-two-five
+            - aws-two-ruby-two-six
+            - aws-three-ruby-two-three
+            - aws-three-ruby-two-four
+            - aws-three-ruby-two-five
+            - aws-three-ruby-two-six
             - faraday-ruby-two-three
             - faraday-ruby-two-four
             - faraday-ruby-two-five
