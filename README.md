@@ -20,6 +20,7 @@ Built in instrumentation for:
 - Faraday
 - Rack
 - Rails (tested on versions 4.1 and up)
+- Redis (tested on versions 3.x and 4.x)
 - Sequel
 - Sinatra
 

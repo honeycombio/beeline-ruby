@@ -16,6 +16,7 @@ module Honeycomb
     rails
     railtie
     rake
+    redis
     sequel
     sinatra
   ].freeze
