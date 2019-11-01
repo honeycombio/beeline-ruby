@@ -4,6 +4,16 @@ require "aws-sdk-core"
 
 module Honeycomb
   module Aws
+    # The version of the aws-sdk-core gem.
+    #
+    # Aws::VERSION was removed in aws-sdk-core v3.2.1 in favor of
+    # Aws::CORE_GEM_VERSION. However, it's still present in aws-sdk v2.
+    #
+    # @see https://github.com/aws/aws-sdk-ruby/blob/d0c5f6e5a3e83eeda2d1c81f5dd80e5ac562a6dc/gems/aws-sdk-core/CHANGELOG.md#321-2017-09-06
+    # @see https://github.com/aws/aws-sdk-ruby/blob/4c40f6e67e763a0f392ba5b1449254426b68a600/aws-sdk-core/lib/aws-sdk-core/version.rb#L2
+    SDK_VERSION =
+      defined?(::Aws::VERSION) ? ::Aws::VERSION : ::Aws::CORE_GEM_VERSION
+
     # Instruments AWS clients with Honeycomb events.
     #
     # This plugin is automatically added to any aws-sdk client class your app
@@ -91,8 +101,8 @@ module Honeycomb
         span = context.config.honeycomb_client.start_span(name: "aws-sdk")
         context[:honeycomb_aws_sdk_span] = span
         context[:honeycomb_aws_sdk_data] = {
-          "meta.package" => context[:gem_name],
-          "meta.package_version" => context[:gem_version],
+          "meta.package" => context[:gem_name] || "aws-sdk",
+          "meta.package_version" => context[:gem_version] || SDK_VERSION,
           "aws.region" => context.config.region,
           "aws.service" => context.client.class.identifier,
           "aws.operation" => context.operation_name,

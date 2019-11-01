@@ -16,6 +16,22 @@ if defined?(Honeycomb::Aws)
     end
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
 
+    def gem_for(service)
+      if Honeycomb::Aws::SDK_VERSION.start_with?("2.")
+        "aws-sdk"
+      else
+        "aws-sdk-#{service.const_get(:Client).identifier}"
+      end
+    end
+
+    def version_of(service)
+      if Honeycomb::Aws::SDK_VERSION.start_with?("2.")
+        Honeycomb::Aws::SDK_VERSION
+      else
+        service.const_get(:GEM_VERSION)
+      end
+    end
+
     describe "plugin" do
       before do
         Honeycomb.configure do |config|
@@ -83,8 +99,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
-          "meta.package" => "aws-sdk-s3",
-          "meta.package_version" => Aws::S3::GEM_VERSION,
+          "meta.package" => gem_for(Aws::S3),
+          "meta.package_version" => version_of(Aws::S3),
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= api["duration_ms"],
@@ -105,8 +121,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
-          "meta.package" => "aws-sdk-s3",
-          "meta.package_version" => Aws::S3::GEM_VERSION,
+          "meta.package" => gem_for(Aws::S3),
+          "meta.package_version" => version_of(Aws::S3),
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -168,8 +184,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
-          "meta.package" => "aws-sdk-dynamodb",
-          "meta.package_version" => Aws::DynamoDB::GEM_VERSION,
+          "meta.package" => gem_for(Aws::DynamoDB),
+          "meta.package_version" => version_of(Aws::DynamoDB),
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= api["duration_ms"],
@@ -193,8 +209,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
-          "meta.package" => "aws-sdk-dynamodb",
-          "meta.package_version" => Aws::DynamoDB::GEM_VERSION,
+          "meta.package" => gem_for(Aws::DynamoDB),
+          "meta.package_version" => version_of(Aws::DynamoDB),
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -255,8 +271,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
-          "meta.package" => "aws-sdk-sqs",
-          "meta.package_version" => Aws::SQS::GEM_VERSION,
+          "meta.package" => gem_for(Aws::SQS),
+          "meta.package_version" => version_of(Aws::SQS),
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= api["duration_ms"],
@@ -279,8 +295,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
-          "meta.package" => "aws-sdk-sqs",
-          "meta.package_version" => Aws::SQS::GEM_VERSION,
+          "meta.package" => gem_for(Aws::SQS),
+          "meta.package_version" => version_of(Aws::SQS),
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -338,8 +354,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
-          "meta.package" => "aws-sdk-kinesis",
-          "meta.package_version" => Aws::Kinesis::GEM_VERSION,
+          "meta.package" => gem_for(Aws::Kinesis),
+          "meta.package_version" => version_of(Aws::Kinesis),
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= (
@@ -362,8 +378,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
-          "meta.package" => "aws-sdk-kinesis",
-          "meta.package_version" => Aws::Kinesis::GEM_VERSION,
+          "meta.package" => gem_for(Aws::Kinesis),
+          "meta.package_version" => version_of(Aws::Kinesis),
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -394,8 +410,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
-          "meta.package" => "aws-sdk-kinesis",
-          "meta.package_version" => Aws::Kinesis::GEM_VERSION,
+          "meta.package" => gem_for(Aws::Kinesis),
+          "meta.package_version" => version_of(Aws::Kinesis),
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -465,8 +481,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
-          "meta.package" => "aws-sdk-ec2",
-          "meta.package_version" => Aws::EC2::GEM_VERSION,
+          "meta.package" => gem_for(Aws::EC2),
+          "meta.package_version" => version_of(Aws::EC2),
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= apis.map do |api|
@@ -491,8 +507,8 @@ if defined?(Honeycomb::Aws)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
-          "meta.package" => "aws-sdk-ec2",
-          "meta.package_version" => Aws::EC2::GEM_VERSION,
+          "meta.package" => gem_for(Aws::EC2),
+          "meta.package_version" => version_of(Aws::EC2),
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
