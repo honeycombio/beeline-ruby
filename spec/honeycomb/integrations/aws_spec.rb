@@ -268,7 +268,7 @@ if defined?(Honeycomb::Aws)
           "aws.retries" => 0,
           "aws.retry_limit" => 0,
           "aws.error" => "Seahorse::Client::NetworkingError",
-          "aws.error_detail" => "Operation timed out",
+          "aws.error_detail" => an_instance_of(String),
         )
       end
 
@@ -299,7 +299,7 @@ if defined?(Honeycomb::Aws)
           "request.query" => nil,
           "request.user_agent" => a_string_starting_with("aws-sdk-ruby"),
           "response.error" => "Seahorse::Client::NetworkingError",
-          "response.error_detail" => "Operation timed out",
+          "response.error_detail" => sdk["aws.error_detail"],
         )
       end
     end
