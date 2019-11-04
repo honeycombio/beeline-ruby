@@ -16,6 +16,7 @@ Requires Ruby version 2.3 or later
 Built in instrumentation for:
 
 - Active Support
+- AWS (v2 and v3)
 - Faraday
 - Rack
 - Rails (tested on versions 4.1 and up)
