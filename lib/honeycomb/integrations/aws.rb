@@ -223,13 +223,20 @@ module Honeycomb
 
       def on_done(context)
         context.http_response.on_done(300..599) do
-          span = context[:honeycomb_aws_api_span]
-          error = parse_error_from(context)
-          if error
-            span.add_field "response.error", error.code
-            span.add_field "response.error_detail", error.message
-          end
+          process_api_error(context)
+          process_s3_region(context)
         end
+      end
+
+      def process_api_error(context)
+        span = context[:honeycomb_aws_api_span]
+        error = parse_api_error_from(context)
+        add_api_error_fields(span, error) if error
+      end
+
+      def add_api_error_fields(span, error)
+        span.add_field "response.error", error.code
+        span.add_field "response.error_detail", error.message
       end
 
       # Runs a limited subset of response parsing for AWS-specific errors.
@@ -258,7 +265,7 @@ module Honeycomb
       # @see https://github.com/aws/aws-sdk-ruby/tree/b0ade445ce18b24c53a4548074b214e732b8b627/gems/aws-sdk-core/lib/aws-sdk-core/plugins/protocols
       # @see https://github.com/aws/aws-sdk-ruby/blob/354d36792e47f2e81b4889f322928e848e062818/gems/aws-sdk-s3/lib/aws-sdk-s3/plugins/http_200_errors.rb
       # @see https://github.com/aws/aws-sdk-ruby/blob/354d36792e47f2e81b4889f322928e848e062818/gems/aws-sdk-dynamodb/lib/aws-sdk-dynamodb/plugins/crc32_validation.rb
-      def parse_error_from(context)
+      def parse_api_error_from(context)
         case context.config.api.metadata["protocol"]
         when "query", "rest-xml", "ec2"
           XmlError.new(context)
@@ -292,6 +299,71 @@ module Honeycomb
         rescue ::Aws::Json::ParseError
           @code = http_status_error_code(context)
           @message = ""
+        end
+      end
+
+      # Propagates S3 region redirect information to the next aws-api span.
+      #
+      # When the AWS S3 client is configured with the wrong region, Amazon
+      # responds to API requests with an HTTP 400 indicating the correct region
+      # for the bucket.
+      #
+      # This error is normally caught upstream by stock plugins that trigger a
+      # new API request with the right region, which will create another
+      # aws-api span after this one. However, since the aws.region field set by
+      # {#add_aws_api_fields} comes from the aws-sdk configuration, its value
+      # would continue being wrong in the next aws-api span. Instead, we want
+      # this span to have the wrong region (that triggered the error) and the
+      # next span to have the right region (which won't come from the config).
+      #
+      # To update aws.region to the right value, {#handle_redirect} looks for a
+      # value stashed in the Seahorse::Client::Context#metadata. This is set by
+      # aws-sdk v3 (via the aws-sdk-s3 gem) but not by aws-sdk v2. So, we have
+      # to duplicate some of the upstream v3 logic in order to propagate the
+      # redirected region in the v2 case. We only do this in the v2 case in the
+      # hopes that eventually we don't have to maintain the duplicated logic.
+      #
+      # @see https://github.com/aws/aws-sdk-ruby/blob/379d338406873b0f4b53f118c83fe40761e297ab/gems/aws-sdk-s3/lib/aws-sdk-s3/plugins/s3_signer.rb#L151
+      def process_s3_region(context)
+        return unless SDK_VERSION.start_with?("2.")
+
+        redirect = S3Redirect.new(context)
+        context[:redirect_region] = redirect.region if redirect.happening?
+      end
+
+      # @private
+      # @see https://github.com/aws/aws-sdk-ruby/blob/379d338406873b0f4b53f118c83fe40761e297ab/gems/aws-sdk-s3/lib/aws-sdk-s3/plugins/s3_signer.rb#L102-L182
+      # @see https://github.com/aws/aws-sdk-ruby/blob/4c40f6e67e763a0f392ba5b1449254426b68a600/aws-sdk-core/lib/aws-sdk-core/plugins/s3_request_signer.rb#L81-L153
+      class S3Redirect
+        REGION_TAG = %r{<Region>(.+?)</Region>}.freeze
+
+        def initialize(context)
+          @context = context
+        end
+
+        def original_host
+          @context.http_request.endpoint.host
+        end
+
+        def status
+          @context.http_response.status_code
+        end
+
+        def happening?
+          status == 400 && region && !original_host.include?("fips")
+        end
+
+        def region
+          @region ||= region_from_headers || region_from_body
+        end
+
+        def region_from_headers
+          @context.http_response.headers["x-amz-bucket-region"]
+        end
+
+        def region_from_body
+          body = @context.http_response.body_contents
+          body.match(REGION_TAG) { |tag| tag[1] }
         end
       end
     end

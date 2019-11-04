@@ -549,11 +549,7 @@ if defined?(Honeycomb::Aws)
         s3.stub_responses(
           :list_objects,
           [
-            {
-              status_code: 400,
-              headers: { "x-amz-bucket-region" => "us-stubbed-2" },
-              body: "...",
-            },
+            { status_code: 400, headers: headers, body: body },
             { contents: [] },
           ],
         )
@@ -568,39 +564,51 @@ if defined?(Honeycomb::Aws)
         $VERBOSE = verbose
       end
 
-      it "still creates separate aws-api spans" do
-        expect(libhoney_client.events.size).to eq 3
+      shared_examples "region handling" do
+        it "still creates separate aws-api spans" do
+          expect(libhoney_client.events.size).to eq 3
+        end
+
+        let(:api_failure) { event_data[0] }
+        let(:api_success) { event_data[1] }
+        let(:sdk) { event_data[2] }
+
+        it "doesn't count as a retry" do
+          expect(sdk).to include(
+            "aws.region" => "us-stubbed-1",
+            "aws.retries" => 0,
+          )
+        end
+
+        it "uses the supplied region in the original aws-api span" do
+          expect(api_failure).to include(
+            "aws.region" => "us-stubbed-1",
+            "aws.attempt" => 1,
+            "request.host" => "redirect.s3.us-stubbed-1.amazonaws.com",
+            "response.status_code" => 400,
+          )
+        end
+
+        it "updates the region in the redirect aws-api span" do
+          expect(api_success).to include(
+            "aws.region" => "us-stubbed-2",
+            "aws.attempt" => 1,
+            "request.host" => "redirect.s3.us-stubbed-2.amazonaws.com",
+            "response.status_code" => 200,
+          )
+        end
       end
 
-      let(:api_failure) { event_data[0] }
-      let(:api_success) { event_data[1] }
-      let(:sdk) { event_data[2] }
-
-      it "doesn't count as a retry" do
-        expect(sdk).to include(
-          "aws.region" => "us-stubbed-1",
-          "aws.retries" => 0,
-        )
+      context "given by the response headers" do
+        let(:headers) { { "x-amz-bucket-region" => "us-stubbed-2" } }
+        let(:body) { "whatever" }
+        it_behaves_like "region handling"
       end
 
-      it "uses the supplied region in the original aws-api span" do
-        expect(api_failure).to include(
-          "aws.region" => "us-stubbed-1",
-          "aws.attempt" => 1,
-          "request.host" => "redirect.s3.us-stubbed-1.amazonaws.com",
-          "response.status_code" => 400,
-          "response.x_amz_bucket_region" => "us-stubbed-2",
-        )
-      end
-
-      it "updates the region in the redirect aws-api span" do
-        expect(api_success).to include(
-          "aws.region" => "us-stubbed-2",
-          "aws.attempt" => 1,
-          "request.host" => "redirect.s3.us-stubbed-2.amazonaws.com",
-          "response.status_code" => 200,
-          "response.x_amzn_requestid" => "stubbed-request-id",
-        )
+      context "given by the response body" do
+        let(:headers) { {} }
+        let(:body) { "<Region>us-stubbed-2</Region>" }
+        it_behaves_like "region handling"
       end
     end
 
