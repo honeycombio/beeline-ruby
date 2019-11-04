@@ -612,6 +612,54 @@ if defined?(Honeycomb::Aws)
       end
     end
 
+    describe "s3 location redirect" do
+      before do
+        s3 = Aws::S3::Client.new(honeycomb_client: client)
+        s3.stub_responses(
+          :list_objects,
+          [
+            {
+              status_code: 307,
+              headers: {
+                "location" => "http://bar.s3.us-stubbed-1.amazonaws.com",
+              },
+              body: "",
+            },
+            { contents: [] },
+          ],
+        )
+        s3.list_objects(bucket: "foo")
+      end
+
+      it "still creates separate aws-api spans" do
+        expect(libhoney_client.events.size).to eq 3
+      end
+
+      let(:api_failure) { event_data[0] }
+      let(:api_success) { event_data[1] }
+      let(:sdk) { event_data[2] }
+
+      it "doesn't count as a retry" do
+        expect(sdk).to include("aws.retries" => 0)
+      end
+
+      it "uses the old location in the original aws-api span" do
+        expect(api_failure).to include(
+          "aws.attempt" => 1,
+          "request.host" => "foo.s3.us-stubbed-1.amazonaws.com",
+          "response.status_code" => 307,
+        )
+      end
+
+      it "uses the new location in the redirect aws-api span" do
+        expect(api_success).to include(
+          "aws.attempt" => 1,
+          "request.host" => "bar.s3.us-stubbed-1.amazonaws.com",
+          "response.status_code" => 200,
+        )
+      end
+    end
+
     describe "session token" do
       before do
         sts = Aws::STS::Client.new.stub_data(
