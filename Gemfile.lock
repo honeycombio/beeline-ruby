@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    honeycomb-beeline (1.1.1)
+    honeycomb-beeline (1.2.0)
       libhoney (~> 1.8)
 
 GEM
@@ -27,16 +27,20 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     ffi (1.11.1)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
     hashdiff (0.4.0)
-    http (4.1.1)
+    http (4.2.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.0)
-      http_parser.rb (~> 0.6.0)
+      http-parser (~> 1.2.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     http-form_data (2.1.1)
-    http_parser.rb (0.6.0)
+    http-parser (1.2.1)
+      ffi-compiler (>= 1.0, < 2.0)
     iniparse (1.4.4)
     jaro_winkler (1.5.3)
     json (2.2.0)
