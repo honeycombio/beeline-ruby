@@ -721,7 +721,7 @@ if defined?(Honeycomb::Aws)
         end.to raise_error(Aws::DynamoDB::Errors::Http500Error)
       end
 
-      it "can still extract error fields" do
+      it "still results in error fields" do
         api, sdk = event_data
         expect(sdk).to include(
           "aws.error" => "Aws::DynamoDB::Errors::Http500Error",
