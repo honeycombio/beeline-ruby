@@ -662,15 +662,12 @@ if defined?(Honeycomb::Aws)
 
     describe "session token" do
       before do
-        sts = Aws::STS::Client.new.stub_data(
-          :get_session_token,
-          credentials: {
-            access_key_id: "stubbed-akid",
-            secret_access_key: "stubbed-secret",
-            session_token: "stubbed-session-token",
-          },
+        creds = Aws::Credentials.new(
+          "stubbed-akid",
+          "stubbed-secret",
+          "stubbed-session-token",
         )
-        s3 = Aws::S3::Client.new(credentials: sts, honeycomb_client: client)
+        s3 = Aws::S3::Client.new(credentials: creds, honeycomb_client: client)
         s3.list_objects(bucket: "basic")
       end
 
