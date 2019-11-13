@@ -109,6 +109,10 @@ module Honeycomb
         }
 
         context.params.each do |key, value|
+          if value.respond_to?(:encoding) && value.encoding != Encoding::UTF_8
+            value = "[#{value.encoding} encoded string]"
+          end
+
           context[:honeycomb_aws_sdk_data]["aws.params.#{key}"] = value
         end
 

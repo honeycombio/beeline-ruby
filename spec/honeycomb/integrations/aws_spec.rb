@@ -78,6 +78,91 @@ if defined?(Honeycomb::Aws)
       end
     end
 
+    describe "handles invalid context params" do
+      before do
+        s3 = Aws::S3::Client.new(honeycomb_client: client)
+        bucket = Aws::S3::Resource.new(client: s3).bucket("test")
+        bucket.object("test.txt").put(body: Zlib.deflate("test"))
+      end
+
+      let(:sdk) { event_data.last }
+
+      let(:api) { event_data.first }
+
+      it "sends two events" do
+        expect(libhoney_client.events.size).to eq 2
+      end
+
+      it "sends the expected aws-sdk span" do
+        expect(sdk).to match(
+          "name" => "aws-sdk",
+          "service_name" => "example",
+          "meta.beeline_version" => Honeycomb::Beeline::VERSION,
+          "meta.local_hostname" => an_instance_of(String),
+          "meta.span_type" => "root",
+          "meta.package" => gem_for(Aws::S3),
+          "meta.package_version" => version_of(Aws::S3),
+          "trace.trace_id" => an_instance_of(String),
+          "trace.span_id" => an_instance_of(String),
+          "duration_ms" => a_value >= api["duration_ms"],
+          "aws.region" => "us-stubbed-1",
+          "aws.service" => :s3,
+          "aws.operation" => :put_object,
+          "aws.params.body" => "[ASCII-8BIT encoded string]",
+          "aws.params.bucket" => "test",
+          "aws.params.key" => "test.txt",
+          "aws.request_id" => "stubbed-request-id",
+          "aws.retries" => 0,
+          "aws.retry_limit" => 3,
+        )
+      end
+
+      it "sends the expected aws-api span" do
+        expect(api).to match(
+          "name" => "aws-api",
+          "service_name" => "example",
+          "meta.beeline_version" => Honeycomb::Beeline::VERSION,
+          "meta.local_hostname" => sdk["meta.local_hostname"],
+          "meta.span_type" => "leaf",
+          "meta.package" => gem_for(Aws::S3),
+          "meta.package_version" => version_of(Aws::S3),
+          "trace.trace_id" => sdk["trace.trace_id"],
+          "trace.parent_id" => sdk["trace.span_id"],
+          "trace.span_id" => an_instance_of(String),
+          "duration_ms" => an_instance_of(Float),
+          "aws.region" => "us-stubbed-1",
+          "aws.service" => :s3,
+          "aws.operation" => :put_object,
+          "aws.params.body" => "[ASCII-8BIT encoded string]",
+          "aws.params.bucket" => "test",
+          "aws.params.key" => "test.txt",
+          "aws.attempt" => 1,
+          "aws.access_key_id" => "stubbed-akid",
+          "aws.session_token" => nil,
+          "request.method" => "PUT",
+          "request.scheme" => "https",
+          "request.host" => "test.s3.us-stubbed-1.amazonaws.com",
+          "request.path" => "/test.txt",
+          "request.query" => nil,
+          "request.user_agent" => a_string_starting_with("aws-sdk-ruby"),
+          "response.status_code" => 200,
+          "response.x_amzn_requestid" => "stubbed-request-id",
+          "response.x_amz_expiration" => "Expiration",
+          "response.x_amz_request_charged" => "RequestCharged",
+          "response.x_amz_server_side_encryption" => "ServerSideEncryption",
+          "response.x_amz_server_side_encryption_aws_kms_key_id" =>
+            "SSEKMSKeyId",
+          "response.x_amz_server_side_encryption_context" =>
+            "SSEKMSEncryptionContext",
+          "response.x_amz_server_side_encryption_customer_algorithm" =>
+            "SSECustomerAlgorithm",
+          "response.x_amz_server_side_encryption_customer_key_md5" =>
+            "SSECustomerKeyMD5",
+          "response.x_amz_version_id" => "ObjectVersionId",
+        )
+      end
+    end
+
     describe "basic request" do
       before do
         s3 = Aws::S3::Client.new(honeycomb_client: client)
