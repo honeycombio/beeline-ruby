@@ -274,11 +274,18 @@ module Honeycomb
       # escape it; if the character is printable but non-ASCII, we'll also
       # escape it.
       #
+      # What's more, Ruby's Regexp#=~ method will blow up if the string does
+      # not have a valid encoding (e.g., in UTF-8). In this case, though,
+      # {#escape_with_hex_codes} can still convert the bytes that make up the
+      # invalid character into a hex code. So we preemptively check for
+      # invalidly-encoded characters before testing the above match.
+      #
       # @see https://ruby-doc.org/core-2.6.5/Regexp.html
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L878-L880
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L898-L901
+      # @see https://www.justinweiss.com/articles/3-steps-to-fix-encoding-problems-in-ruby/
       def escape_with_hex_codes?(char)
-        char =~ /[^[:print:]&&[:ascii:]]/
+        !char.valid_encoding? || char =~ /[^[:print:]&&[:ascii:]]/
       end
 
       # Hex-encodes a (presumably non-printable or non-ASCII) character.
@@ -298,7 +305,8 @@ module Honeycomb
       # > specifying the least significant byte of the character.
       #
       # Unlike the C `char` type, Ruby's conception of a character can span
-      # multiple bytes. So we take care to escape the input properly into the
+      # multiple bytes (and possibly bytes that aren't valid in Ruby's string
+      # encoding). So we take care to escape the input properly into the
       # redis-cli compatible version by iterating through each byte and
       # formatting it as a (zero-padded) 2-digit hexadecimal number prefixed by
       # `\x`.

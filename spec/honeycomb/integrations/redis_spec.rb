@@ -2173,6 +2173,11 @@ if defined?(Honeycomb::Redis)
         expect(command).to eq 'ECHO "hi\\xe3\\x82\\x93ho"'
       end
 
+      it "escapes invalid UTF-8" do
+        redis.echo("hi\x89ho".encode("UTF-8"))
+        expect(command).to eq 'ECHO "hi\\x89ho"'
+      end
+
       it "quotes spaces" do
         redis.echo("hi ho")
         expect(command).to eq 'ECHO "hi ho"'
