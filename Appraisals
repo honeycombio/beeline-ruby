@@ -67,3 +67,11 @@ appraise "rails-6" do
   gem "rails", "~> 6.0.0"
   gem "warden"
 end
+
+appraise "redis-3" do
+  gem "redis", "~> 3"
+end
+
+appraise "redis-4" do
+  gem "redis", "~> 4"
+end

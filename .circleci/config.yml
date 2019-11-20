@@ -97,6 +97,14 @@ gemfiles:
     steps:
       - ruby:
           gemfile: gemfiles/rails_6.gemfile
+  redis-three: &redis-three
+    steps:
+      - ruby:
+          gemfile: gemfiles/redis_3.gemfile
+  redis-four: &redis-four
+    steps:
+      - ruby:
+          gemfile: gemfiles/redis_4.gemfile
 
 jobs:
   publish:
@@ -268,6 +276,30 @@ jobs:
     executor: ruby-two-five
   rails-six-ruby-two-six:
     <<: *rails-six
+    executor: ruby-two-six
+  redis-three-ruby-two-three:
+    <<: *redis-three
+    executor: ruby-two-three
+  redis-three-ruby-two-four:
+    <<: *redis-three
+    executor: ruby-two-four
+  redis-three-ruby-two-five:
+    <<: *redis-three
+    executor: ruby-two-five
+  redis-three-ruby-two-six:
+    <<: *redis-three
+    executor: ruby-two-six
+  redis-four-ruby-two-three:
+    <<: *redis-four
+    executor: ruby-two-three
+  redis-four-ruby-two-four:
+    <<: *redis-four
+    executor: ruby-two-four
+  redis-four-ruby-two-five:
+    <<: *redis-four
+    executor: ruby-two-five
+  redis-four-ruby-two-six:
+    <<: *redis-four
     executor: ruby-two-six
 
 workflows:
@@ -463,6 +495,38 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - redis-three-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - redis-three-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - redis-three-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - redis-three-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - redis-four-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - redis-four-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - redis-four-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - redis-four-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
       - publish:
           filters:
             tags:
@@ -518,3 +582,11 @@ workflows:
             - rails-five-two-ruby-two-six
             - rails-six-ruby-two-five
             - rails-six-ruby-two-six
+            - redis-three-ruby-two-three
+            - redis-three-ruby-two-four
+            - redis-three-ruby-two-five
+            - redis-three-ruby-two-six
+            - redis-four-ruby-two-three
+            - redis-four-ruby-two-four
+            - redis-four-ruby-two-five
+            - redis-four-ruby-two-six
