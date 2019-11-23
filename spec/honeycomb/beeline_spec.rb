@@ -40,12 +40,18 @@ RSpec.describe Honeycomb do
     before do
       Honeycomb.start_span(name: "test") do
         Honeycomb.add_field("interesting", "banana")
+        Honeycomb.add_field("fascinating", "apple", namespace: "hmm")
+        Honeycomb.add_field("captivating", "orange", namespace: nil)
       end
     end
 
-    it "contains the expected field" do
-      expect(libhoney_client.events.map(&:data))
-        .to all(include("app.interesting" => "banana"))
+    it "contains the expected fields" do
+      fields = {
+        "app.interesting" => "banana",
+        "hmm.fascinating" => "apple",
+        "captivating" => "orange",
+      }
+      expect(libhoney_client.events.map(&:data)).to all(include(fields))
     end
   end
 
@@ -53,12 +59,18 @@ RSpec.describe Honeycomb do
     before do
       Honeycomb.start_span(name: "test") do
         Honeycomb.add_field_to_trace("interesting", "banana")
+        Honeycomb.add_field_to_trace("fascinating", "apple", namespace: "hmm")
+        Honeycomb.add_field_to_trace("captivating", "orange", namespace: nil)
       end
     end
 
-    it "contains the expected field" do
-      expect(libhoney_client.events.map(&:data))
-        .to all(include("app.interesting" => "banana"))
+    it "contains the expected fields" do
+      fields = {
+        "app.interesting" => "banana",
+        "hmm.fascinating" => "apple",
+        "captivating" => "orange",
+      }
+      expect(libhoney_client.events.map(&:data)).to all(include(fields))
     end
   end
 end

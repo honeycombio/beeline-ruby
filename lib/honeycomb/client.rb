@@ -64,16 +64,18 @@ module Honeycomb
       end
     end
 
-    def add_field(key, value)
+    def add_field(key, value, namespace: "app")
       return if context.current_span.nil?
 
-      context.current_span.add_field("app.#{key}", value)
+      key = "#{namespace}.#{key}" if namespace
+      context.current_span.add_field(key, value)
     end
 
-    def add_field_to_trace(key, value)
+    def add_field_to_trace(key, value, namespace: "app")
       return if context.current_span.nil?
 
-      context.current_span.trace.add_field("app.#{key}", value)
+      key = "#{namespace}.#{key}" if namespace
+      context.current_span.trace.add_field(key, value)
     end
 
     private
