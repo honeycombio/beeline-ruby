@@ -9,12 +9,19 @@ module Honeycomb
     initializer("honeycomb.install_middleware",
                 after: :load_config_initializers) do |app|
       if Honeycomb.client
-        # what location should we insert the middleware at?
-        app.config.middleware.insert_before(
-          ::Rails::Rack::Logger,
-          Honeycomb::Rails::Middleware,
-          client: Honeycomb.client,
-        )
+        if defined? ActionDispatch::ShowExceptions
+          app.config.middleware.insert_after(
+            ActionDispatch::ShowExceptions,
+            Honeycomb::Rails::Middleware,
+            client: Honeycomb.client,
+          )
+        else
+          app.config.middleware.insert_before(
+            ::Rails::Rack::Logger,
+            Honeycomb::Rails::Middleware,
+            client: Honeycomb.client,
+          )
+        end
       end
     end
   end
