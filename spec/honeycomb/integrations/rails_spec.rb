@@ -46,23 +46,25 @@ if defined?(Honeycomb::Rails)
       end
     end
 
-    before do
-      header("Http-Version", "HTTP/1.0")
-      header("User-Agent", "RackSpec")
+    describe "a standard request" do
+      before do
+        header("Http-Version", "HTTP/1.0")
+        header("User-Agent", "RackSpec")
 
-      get "/hello/martin"
+        get "/hello/martin"
+      end
+
+      it "returns ok" do
+        expect(last_response).to be_ok
+      end
+
+      it "sends the right number of events" do
+        expect(libhoney_client.events.size).to eq 3
+      end
+
+      let(:event_data) { libhoney_client.events.map(&:data) }
+
+      it_behaves_like "event data"
     end
-
-    it "returns ok" do
-      expect(last_response).to be_ok
-    end
-
-    it "sends the right number of events" do
-      expect(libhoney_client.events.size).to eq 3
-    end
-
-    let(:event_data) { libhoney_client.events.map(&:data) }
-
-    it_behaves_like "event data"
   end
 end
