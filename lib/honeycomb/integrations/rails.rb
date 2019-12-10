@@ -17,8 +17,13 @@ module Honeycomb
         # [twirp](https://github.com/twitchtv/twirp-ruby) rack app mounted in
         # the rails app
         if request.raw_post
-          yield "request.controller", request.params[:controller]
-          yield "request.action", request.params[:action]
+          begin
+            yield "request.controller", request.params[:controller]
+            yield "request.action", request.params[:action]
+          rescue ::ActionController::BadRequest => e
+            yield "request.controller", e.message
+            yield "request.action", e.message
+          end
         end
 
         break unless request.respond_to? :routes
