@@ -7,6 +7,7 @@ if defined?(Honeycomb::Rails)
   require "action_controller/railtie"
 
   RSpec.describe Honeycomb::Rails do
+    VERSION = Gem::Version.new(::Rails::VERSION::STRING)
     include Rack::Test::Methods
 
     let(:libhoney_client) { Libhoney::TestClient.new }
@@ -67,25 +68,27 @@ if defined?(Honeycomb::Rails)
       it_behaves_like "event data"
     end
 
-    describe "a bad request" do
-      before do
-        header("Http-Version", "HTTP/1.0")
-        header("User-Agent", "RackSpec")
+    if VERSION >= Gem::Version.new("5")
+      describe "a bad request" do
+        before do
+          header("Http-Version", "HTTP/1.0")
+          header("User-Agent", "RackSpec")
 
-        get "/hello/martin?via=%c1"
+          get "/hello/martin?via=%c1"
+        end
+
+        it "returns bad request" do
+          expect(last_response).to be_bad_request
+        end
+
+        it "sends the right number of events" do
+          expect(libhoney_client.events.size).to eq 1
+        end
+
+        let(:event_data) { libhoney_client.events.map(&:data) }
+
+        it_behaves_like "event data"
       end
-
-      it "returns bad request" do
-        expect(last_response).to be_bad_request
-      end
-
-      it "sends the right number of events" do
-        expect(libhoney_client.events.size).to eq 1
-      end
-
-      let(:event_data) { libhoney_client.events.map(&:data) }
-
-      it_behaves_like "event data"
     end
   end
 end
