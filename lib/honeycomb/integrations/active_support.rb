@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_support/notifications"
+require_relative "active_support/standardize"
 
 module Honeycomb
   module ActiveSupport
@@ -33,9 +34,7 @@ module Honeycomb
         if on_notification_event
           on_notification_event.call(name, span, payload)
         else
-          payload.each do |key, value|
-            span.add_field("#{name}.#{key}", value.to_s)
-          end
+          Honeycomb::ActiveSupport::Standardize.add_fields(span, name, payload)
         end
       end
     end
@@ -57,7 +56,8 @@ module Honeycomb
       end
 
       def start(name, id, _payload)
-        spans[id] << client.start_span(name: name)
+        spanname = Honeycomb::ActiveSupport::Standardize.name(name, payload)
+        spans[id] << client.start_span(name: spanname)
       end
 
       def finish(name, id, payload)
