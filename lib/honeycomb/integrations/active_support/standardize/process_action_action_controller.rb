@@ -4,10 +4,10 @@
 module Honeycomb
   module ActiveSupport
     module Standardize
-      module ProcessActionActionController
-        def self.name(name, payload)
+      class ProcessActionActionController < Base
+        def self.canonicalize(name, payload)
           if payload[:controller] && payload[:action]
-            return #{payload[:controller]} #{payload[:action]}"
+            return "#{payload[:controller]} #{payload[:action]}"
           end
           name
         end

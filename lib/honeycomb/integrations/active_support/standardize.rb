@@ -10,8 +10,8 @@ Dir["#{File.dirname(__FILE__)}/standardize/*.rb"].each { |f| require f }
 module Honeycomb
   module ActiveSupport
     module Standardize
-      def self.name(name, payload)
-        module_for(name).name(name, payload)
+      def self.canonicalize(name, payload)
+        module_for(name).canonicalize(name, payload)
       end
 
       def self.add_fields(span, name, payload)

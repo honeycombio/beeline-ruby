@@ -55,8 +55,8 @@ module Honeycomb
         ::ActiveSupport::Notifications.subscribe(event, self)
       end
 
-      def start(name, id, _payload)
-        spanname = Honeycomb::ActiveSupport::Standardize.name(name, payload)
+      def start(name, id, payload)
+        spanname = Honeycomb::ActiveSupport::Standardize.canonicalize(name, payload)
         spans[id] << client.start_span(name: spanname)
       end
 

@@ -4,8 +4,8 @@
 module Honeycomb
   module ActiveSupport
     module Standardize
-      module SqlActiveRecord
-        def self.name(name, payload)
+      class SqlActiveRecord < Base
+        def self.canonicalize(name, payload)
           return payload[:name] if payload[:name]
           name
         end
