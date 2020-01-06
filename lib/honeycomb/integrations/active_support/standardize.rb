@@ -8,11 +8,6 @@ Dir["#{File.dirname(__FILE__)}/standardize/*.rb"].each { |f| require f }
 module Honeycomb
   module ActiveSupport
     module Standardize
-      def self.add_fields(span, name, payload)
-        module_for(name).add_fields(span, name, payload)
-      end
-
-
       def self.canonicalize(notification_name, payload)
         m = methodname(notification_name, "name")
         if methods.include? m.to_sym
@@ -23,14 +18,14 @@ module Honeycomb
       end
 
       def self.add_fields(span, notification_name, payload)
-        span.add_field("name.type", name.to_s)
+        span.add_field("name.type", notification_name.to_s)
 
         m = methodname(notification_name, "add_fields")
         if methods.include? m.to_sym
           return send(m, notification_name, payload)
         else
           payload.each do |key, value|
-            span.add_field("#{name}.#{key}", value.to_s)
+            span.add_field("#{notification_name}.#{key}", value.to_s)
           end
         end
       end
