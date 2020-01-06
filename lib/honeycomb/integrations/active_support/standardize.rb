@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "active_support/inflector"
-
 Dir["#{File.dirname(__FILE__)}/standardize/*.rb"].each { |f| require f }
 
 # For how to canonicalize various notifications, read
