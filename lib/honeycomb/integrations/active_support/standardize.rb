@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-Dir["#{File.dirname(__FILE__)}/standardize/*.rb"].each { |f| require f }
-
 # For how to canonicalize various notifications, read
 # https://guides.rubyonrails.org/active_support_instrumentation.html
 
