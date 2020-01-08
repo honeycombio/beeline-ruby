@@ -27,7 +27,9 @@ def redistest
 
     data = [].tap { |a| rand(50).times { a.append(ULID.generate) } }.join " "
     key = ULID.generate
-    redispool = ConnectionPool.new(size: 5) { ::Redis.new(url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" }) }
+    redispool = ConnectionPool.new(size: 5) do
+      ::Redis.new(url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" })
+    end
     redispool.with do |redis|
       redis.set(key, data)
       redis.expire(key, 60)

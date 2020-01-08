@@ -8,8 +8,8 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 group :benchmark do
-  gem 'benchmark'
-  gem 'connection_pool'
-  gem 'ulid'
-  gem 'redis'
+  gem "benchmark"
+  gem "connection_pool"
+  gem "redis"
+  gem "ulid"
 end
