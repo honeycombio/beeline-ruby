@@ -53,10 +53,10 @@ gemfiles:
     steps:
       - ruby:
           gemfile: gemfiles/aws_3.gemfile
-  faraday: &faraday
+  faraday-zero: &faraday-zero
     steps:
       - ruby:
-          gemfile: gemfiles/faraday.gemfile
+          gemfile: gemfiles/faraday_0.gemfile
   sequel-four: &sequel-four
     steps:
       - ruby:
@@ -145,17 +145,17 @@ jobs:
   aws-three-ruby-two-six:
     <<: *aws-three
     executor: ruby-two-six
-  faraday-ruby-two-three:
-    <<: *faraday
+  faraday-zero-ruby-two-three:
+    <<: *faraday-zero
     executor: ruby-two-three
-  faraday-ruby-two-four:
-    <<: *faraday
+  faraday-zero-ruby-two-four:
+    <<: *faraday-zero
     executor: ruby-two-four
-  faraday-ruby-two-five:
-    <<: *faraday
+  faraday-zero-ruby-two-five:
+    <<: *faraday-zero
     executor: ruby-two-five
-  faraday-ruby-two-six:
-    <<: *faraday
+  faraday-zero-ruby-two-six:
+    <<: *faraday-zero
     executor: ruby-two-six
   sequel-four-ruby-two-three:
     <<: *sequel-four
@@ -339,19 +339,19 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
-      - faraday-ruby-two-three:
+      - faraday-zero-ruby-two-three:
           <<: *tag_filters
           requires:
             - lint
-      - faraday-ruby-two-four:
+      - faraday-zero-ruby-two-four:
           <<: *tag_filters
           requires:
             - lint
-      - faraday-ruby-two-five:
+      - faraday-zero-ruby-two-five:
           <<: *tag_filters
           requires:
             - lint
-      - faraday-ruby-two-six:
+      - faraday-zero-ruby-two-six:
           <<: *tag_filters
           requires:
             - lint
@@ -543,10 +543,10 @@ workflows:
             - aws-three-ruby-two-four
             - aws-three-ruby-two-five
             - aws-three-ruby-two-six
-            - faraday-ruby-two-three
-            - faraday-ruby-two-four
-            - faraday-ruby-two-five
-            - faraday-ruby-two-six
+            - faraday-zero-ruby-two-three
+            - faraday-zero-ruby-two-four
+            - faraday-zero-ruby-two-five
+            - faraday-zero-ruby-two-six
             - sequel-four-ruby-two-three
             - sequel-four-ruby-two-four
             - sequel-four-ruby-two-five

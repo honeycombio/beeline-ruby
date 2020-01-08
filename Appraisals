@@ -8,8 +8,8 @@ appraise "aws-3" do
   gem "aws-sdk", "~> 3"
 end
 
-appraise "faraday" do
-  gem "faraday"
+appraise "faraday-0" do
+  gem "faraday", "~> 0"
 end
 
 appraise "sequel4" do
