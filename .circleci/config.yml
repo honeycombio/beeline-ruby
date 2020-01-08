@@ -57,6 +57,10 @@ gemfiles:
     steps:
       - ruby:
           gemfile: gemfiles/faraday_0.gemfile
+  faraday-one: &faraday-one
+    steps:
+      - ruby:
+          gemfile: gemfiles/faraday_1.gemfile
   sequel-four: &sequel-four
     steps:
       - ruby:
@@ -156,6 +160,18 @@ jobs:
     executor: ruby-two-five
   faraday-zero-ruby-two-six:
     <<: *faraday-zero
+    executor: ruby-two-six
+  faraday-one-ruby-two-three:
+    <<: *faraday-one
+    executor: ruby-two-three
+  faraday-one-ruby-two-four:
+    <<: *faraday-one
+    executor: ruby-two-four
+  faraday-one-ruby-two-five:
+    <<: *faraday-one
+    executor: ruby-two-five
+  faraday-one-ruby-two-six:
+    <<: *faraday-one
     executor: ruby-two-six
   sequel-four-ruby-two-three:
     <<: *sequel-four
@@ -355,6 +371,22 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - faraday-one-ruby-two-three:
+          <<: *tag_filters
+          requires:
+            - lint
+      - faraday-one-ruby-two-four:
+          <<: *tag_filters
+          requires:
+            - lint
+      - faraday-one-ruby-two-five:
+          <<: *tag_filters
+          requires:
+            - lint
+      - faraday-one-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
       - sequel-four-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -547,6 +579,10 @@ workflows:
             - faraday-zero-ruby-two-four
             - faraday-zero-ruby-two-five
             - faraday-zero-ruby-two-six
+            - faraday-one-ruby-two-three
+            - faraday-one-ruby-two-four
+            - faraday-one-ruby-two-five
+            - faraday-one-ruby-two-six
             - sequel-four-ruby-two-three
             - sequel-four-ruby-two-four
             - sequel-four-ruby-two-five

@@ -12,6 +12,10 @@ appraise "faraday-0" do
   gem "faraday", "~> 0"
 end
 
+appraise "faraday-1" do
+  gem "faraday", "~> 1"
+end
+
 appraise "sequel4" do
   gem "sequel", "~> 4"
 end
