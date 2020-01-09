@@ -8,8 +8,12 @@ appraise "aws-3" do
   gem "aws-sdk", "~> 3"
 end
 
-appraise "faraday" do
-  gem "faraday"
+appraise "faraday-0" do
+  gem "faraday", "~> 0"
+end
+
+appraise "faraday-1" do
+  gem "faraday", "~> 1"
 end
 
 appraise "sequel4" do
@@ -35,30 +39,35 @@ end
 appraise "rails-41" do
   gem "rack-test"
   gem "rails", "~> 4.1.0"
+  gem "sprockets", "~> 3"
   gem "warden"
 end
 
 appraise "rails-42" do
   gem "rack-test"
   gem "rails", "~> 4.2.0"
+  gem "sprockets", "~> 3"
   gem "warden"
 end
 
 appraise "rails-5" do
   gem "rack-test"
   gem "rails", "~> 5.0.0"
+  gem "sprockets", "~> 3"
   gem "warden"
 end
 
 appraise "rails-51" do
   gem "rack-test"
   gem "rails", "~> 5.1.0"
+  gem "sprockets", "~> 3"
   gem "warden"
 end
 
 appraise "rails-52" do
   gem "rack-test"
   gem "rails", "~> 5.2.0"
+  gem "sprockets", "~> 3"
   gem "warden"
 end
 
