@@ -11,7 +11,6 @@ module Honeycomb
     extend Forwardable
 
     def_delegators :@context, :current_span, :current_trace
-    def_delegators :@client, :dataset, :service_name
 
     def initialize(configuration:)
       @client = configuration.client
@@ -80,10 +79,6 @@ module Honeycomb
       return if context.current_span.nil?
 
       context.current_span.trace.add_field("app.#{key}", value)
-    end
-
-    def debug?
-      client.debug ? true : false
     end
 
     private
