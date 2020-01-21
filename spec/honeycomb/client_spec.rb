@@ -118,7 +118,7 @@ RSpec.describe Honeycomb::Client do
 
     it_behaves_like "event data",
                     package_fields: false,
-                    additional_fields: ["request.error", "request.error_detail"]
+                    additional_fields: %w[error error_detail]
   end
 
   describe "can add field to trace" do

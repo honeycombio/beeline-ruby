@@ -58,8 +58,8 @@ module Honeycomb
         begin
           yield context.current_span
         rescue StandardError => e
-          context.current_span.add_field("request.error", e.class.name)
-          context.current_span.add_field("request.error_detail", e.message)
+          context.current_span.add_field("error", e.class.name)
+          context.current_span.add_field("error_detail", e.message)
           raise e
         ensure
           context.current_span.send
