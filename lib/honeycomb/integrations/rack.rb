@@ -28,7 +28,7 @@ module Honeycomb
       hny = env["HTTP_X_HONEYCOMB_TRACE"]
       client.start_span(name: "http_request", serialized_trace: hny) do |span|
         add_field = lambda do |key, value|
-          next unless value && !value.empty?
+          next unless value && !value.blank?
 
           span.add_field(key, value)
         end
