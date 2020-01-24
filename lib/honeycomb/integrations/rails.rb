@@ -12,14 +12,18 @@ module Honeycomb
       yield "meta.package_version", ::Rails::VERSION::STRING
 
       ::ActionDispatch::Request.new(env).tap do |request|
-        # calling request.params will blow up if raw_post is nil
-        # the only known cause of this is when using the
-        # [twirp](https://github.com/twitchtv/twirp-ruby) rack app mounted in
-        # the rails app
-        if request.raw_post
-          yield "request.controller", request.params[:controller]
-          yield "request.action", request.params[:action]
+        # calling request.params will blow up if raw_post is nil,
+        # or if the request content-type is JSON but the request
+        # body is not valid JSON.
+        params = {}
+        begin
+          params = request.params
+        rescue StandardError => e
+          yield "request.failed_to_read_params", e.message
         end
+
+        yield "request.controller", params[:controller]
+        yield "request.action", params[:action]
 
         break unless request.respond_to? :routes
         break unless request.routes.respond_to? :router
