@@ -123,7 +123,9 @@ module Honeycomb
     end
 
     def duration_ms
-      (clock_time - @started) * 1000
+      current_time = clock_time
+      return 0 unless @started && current_time
+      (current_time - @started) * 1000
     end
 
     def clock_time
