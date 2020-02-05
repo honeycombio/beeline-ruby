@@ -80,6 +80,8 @@ if defined?(Honeycomb::Rack)
       Warden::Strategies.add(:test, TestStrategy)
       header("Http-Version", "HTTP/1.0")
       header("User-Agent", "RackSpec")
+      header("Content-Type", "text/html; charset=UTF-8")
+      header("Accept", "*/*")
     end
 
     describe "standard request" do

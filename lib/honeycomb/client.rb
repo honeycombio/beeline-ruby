@@ -22,6 +22,10 @@ module Honeycomb
       @client.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
       @client.add_field "meta.local_hostname", configuration.host_name
 
+      integrations = Honeycomb.integrations_to_load
+      @client.add_field "meta.instrumentations_count", integrations.count
+      @client.add_field "meta.instrumentations", integrations.map(&:to_s).to_s
+
       # maybe make `service_name` a required parameter
       @client.add_field "service_name", configuration.service_name
       @context = Context.new
