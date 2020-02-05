@@ -61,7 +61,8 @@ if defined?(Honeycomb::Redis)
     end
 
     shared_examples "the redis span" do |redis_command|
-      it "can be disabled" do
+      it "can be disabled (even if Honeycomb is globally configured)" do
+        Honeycomb.configure { |config| config.client = libhoney_client }
         Redis.honeycomb_client = nil
         command
         expect(libhoney_client.events).to be_empty
