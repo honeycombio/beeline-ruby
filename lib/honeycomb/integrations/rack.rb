@@ -13,8 +13,10 @@ module Honeycomb
       ["HTTP_VERSION", "request.http_version"],
       ["HTTP_HOST", "request.host"],
       ["REMOTE_ADDR", "request.remote_addr"],
+      ["HTTP_ACCEPT", "request.header.accept"],
+      ["CONTENT_TYPE", "request.header.content_type"],
       ["HTTP_USER_AGENT", "request.header.user_agent"],
-      ["rack.url_scheme", "request.protocol"],
+      ["rack.url_scheme", "request.scheme"],
     ].freeze
 
     attr_reader :app, :client
@@ -25,6 +27,7 @@ module Honeycomb
     end
 
     def call(env)
+      req = ::Rack::Request.new(env)
       hny = env["HTTP_X_HONEYCOMB_TRACE"]
       client.start_span(name: "http_request", serialized_trace: hny) do |span|
         add_field = lambda do |key, value|
@@ -35,6 +38,9 @@ module Honeycomb
 
         extract_fields(env, RACK_FIELDS, &add_field)
 
+        span.add_field("request.secure", req.ssl?)
+        span.add_field("request.xhr", req.xhr?)
+
         status, headers, body = app.call(env)
 
         add_package_information(env, &add_field)
@@ -42,6 +48,7 @@ module Honeycomb
         extract_user_information(env, &add_field)
 
         span.add_field("response.status_code", status)
+        span.add_field("response.content_type", headers["Content-Type"])
 
         [status, headers, body]
       end

@@ -5,6 +5,8 @@ BASE_FIELDS = %w[
   meta.beeline_version
   meta.local_hostname
   meta.span_type
+  meta.instrumentations
+  meta.instrumentations_count
   trace.span_id
   trace.trace_id
 ].freeze
@@ -21,8 +23,12 @@ HTTP_FIELDS = %w[
   request.query_string
   request.host
   request.remote_addr
+  request.header.accept
+  request.header.content_type
   request.header.user_agent
-  request.protocol
+  request.secure
+  request.xhr
+  request.scheme
 ].freeze
 
 RSpec.shared_examples "event data" do |package_fields: true, http_fields: false, additional_fields: []|

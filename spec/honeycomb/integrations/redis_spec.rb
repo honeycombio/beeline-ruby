@@ -83,6 +83,8 @@ if defined?(Honeycomb::Redis)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.span_type" => "root",
           "meta.local_hostname" => an_instance_of(String),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "name" => "redis",
           "redis.command" => redis_command,
           "redis.db" => 0,
