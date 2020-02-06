@@ -10,20 +10,22 @@ module Honeycomb
   class Client
     extend Forwardable
 
+    attr_reader :libhoney
+
     def_delegators :@context, :current_span, :current_trace
 
     def initialize(configuration:)
-      @client = configuration.client
+      @libhoney = configuration.client
       # attempt to set the user_agent_addition, this will only work if the
       # client has not sent an event prior to being passed in here. This should
       # be most cases
-      @client.instance_variable_set(:@user_agent_addition,
-                                    Honeycomb::Beeline::USER_AGENT_SUFFIX)
-      @client.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
-      @client.add_field "meta.local_hostname", configuration.host_name
+      @libhoney.instance_variable_set(:@user_agent_addition,
+                                      Honeycomb::Beeline::USER_AGENT_SUFFIX)
+      @libhoney.add_field "meta.beeline_version", Honeycomb::Beeline::VERSION
+      @libhoney.add_field "meta.local_hostname", configuration.host_name
 
       # maybe make `service_name` a required parameter
-      @client.add_field "service_name", configuration.service_name
+      @libhoney.add_field "service_name", configuration.service_name
       @context = Context.new
 
       @additional_trace_options = {
@@ -34,14 +36,14 @@ module Honeycomb
       configuration.after_initialize(self)
 
       at_exit do
-        client.close
+        libhoney.close
       end
     end
 
     def start_span(name:, serialized_trace: nil, **fields)
       if context.current_trace.nil?
         Trace.new(serialized_trace: serialized_trace,
-                  builder: client.builder,
+                  builder: libhoney.builder,
                   context: context,
                   **@additional_trace_options)
       else
@@ -83,6 +85,6 @@ module Honeycomb
 
     private
 
-    attr_reader :client, :context
+    attr_reader :context
   end
 end
