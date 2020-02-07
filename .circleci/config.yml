@@ -275,9 +275,6 @@ jobs:
   rails-four-two-ruby-two-six:
     <<: *rails-four-two
     executor: ruby-two-six
-  rails-four-two-ruby-two-seven:
-    <<: *rails-four-two
-    executor: ruby-two-seven
   rails-five-ruby-two-three:
     <<: *rails-five
     executor: ruby-two-three
@@ -551,10 +548,6 @@ workflows:
           requires:
             - lint
       - rails-four-two-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-seven:
           <<: *tag_filters
           requires:
             - lint
