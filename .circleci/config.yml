@@ -6,6 +6,11 @@ tag_filters: &tag_filters
       tags:
         only: /.*/
 
+lint_tag_filters: &lint_tag_filters
+  <<: *tag_filters
+  requires:
+    - lint
+
 executors:
   ruby-two-three:
     docker:
@@ -371,298 +376,79 @@ workflows:
   beeline:
     jobs:
       - lint: *tag_filters
-      - aws-two-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-two-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-two-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-two-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-two-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-zero-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-zero-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-zero-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-zero-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-zero-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-one-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-one-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-one-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-one-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-one-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-one-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-six-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-six-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-six-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-seven:
-          <<: *tag_filters
-          requires:
-            - lint
+      - aws-two-ruby-two-three: *lint_tag_filters
+      - aws-two-ruby-two-four: *lint_tag_filters
+      - aws-two-ruby-two-five: *lint_tag_filters
+      - aws-two-ruby-two-six: *lint_tag_filters
+      - aws-two-ruby-two-seven: *lint_tag_filters
+      - aws-three-ruby-two-three: *lint_tag_filters
+      - aws-three-ruby-two-four: *lint_tag_filters
+      - aws-three-ruby-two-five: *lint_tag_filters
+      - aws-three-ruby-two-six: *lint_tag_filters
+      - aws-three-ruby-two-seven: *lint_tag_filters
+      - faraday-zero-ruby-two-three: *lint_tag_filters
+      - faraday-zero-ruby-two-four: *lint_tag_filters
+      - faraday-zero-ruby-two-five: *lint_tag_filters
+      - faraday-zero-ruby-two-six: *lint_tag_filters
+      - faraday-zero-ruby-two-seven: *lint_tag_filters
+      - faraday-one-ruby-two-three: *lint_tag_filters
+      - faraday-one-ruby-two-four: *lint_tag_filters
+      - faraday-one-ruby-two-five: *lint_tag_filters
+      - faraday-one-ruby-two-six: *lint_tag_filters
+      - faraday-one-ruby-two-seven: *lint_tag_filters
+      - sequel-four-ruby-two-three: *lint_tag_filters
+      - sequel-four-ruby-two-four: *lint_tag_filters
+      - sequel-four-ruby-two-five: *lint_tag_filters
+      - sequel-four-ruby-two-six: *lint_tag_filters
+      - sequel-four-ruby-two-seven: *lint_tag_filters
+      - sequel-five-ruby-two-three: *lint_tag_filters
+      - sequel-five-ruby-two-four: *lint_tag_filters
+      - sequel-five-ruby-two-five: *lint_tag_filters
+      - sequel-five-ruby-two-six: *lint_tag_filters
+      - sequel-five-ruby-two-seven: *lint_tag_filters
+      - sinatra-ruby-two-three: *lint_tag_filters
+      - sinatra-ruby-two-four: *lint_tag_filters
+      - sinatra-ruby-two-five: *lint_tag_filters
+      - sinatra-ruby-two-six: *lint_tag_filters
+      - sinatra-ruby-two-seven: *lint_tag_filters
+      - rack-ruby-two-three: *lint_tag_filters
+      - rack-ruby-two-four: *lint_tag_filters
+      - rack-ruby-two-five: *lint_tag_filters
+      - rack-ruby-two-six: *lint_tag_filters
+      - rack-ruby-two-seven: *lint_tag_filters
+      - rails-four-one-ruby-two-three: *lint_tag_filters
+      - rails-four-two-ruby-two-three: *lint_tag_filters
+      - rails-four-two-ruby-two-four: *lint_tag_filters
+      - rails-four-two-ruby-two-five: *lint_tag_filters
+      - rails-four-two-ruby-two-six: *lint_tag_filters
+      - rails-five-ruby-two-three: *lint_tag_filters
+      - rails-five-ruby-two-four: *lint_tag_filters
+      - rails-five-ruby-two-five: *lint_tag_filters
+      - rails-five-ruby-two-six: *lint_tag_filters
+      - rails-five-ruby-two-seven: *lint_tag_filters
+      - rails-five-one-ruby-two-three: *lint_tag_filters
+      - rails-five-one-ruby-two-four: *lint_tag_filters
+      - rails-five-one-ruby-two-five: *lint_tag_filters
+      - rails-five-one-ruby-two-six: *lint_tag_filters
+      - rails-five-one-ruby-two-seven: *lint_tag_filters
+      - rails-five-two-ruby-two-three: *lint_tag_filters
+      - rails-five-two-ruby-two-four: *lint_tag_filters
+      - rails-five-two-ruby-two-five: *lint_tag_filters
+      - rails-five-two-ruby-two-six: *lint_tag_filters
+      - rails-five-two-ruby-two-seven: *lint_tag_filters
+      - rails-six-ruby-two-five: *lint_tag_filters
+      - rails-six-ruby-two-six: *lint_tag_filters
+      - rails-six-ruby-two-seven: *lint_tag_filters
+      - redis-three-ruby-two-three: *lint_tag_filters
+      - redis-three-ruby-two-four: *lint_tag_filters
+      - redis-three-ruby-two-five: *lint_tag_filters
+      - redis-three-ruby-two-six: *lint_tag_filters
+      - redis-three-ruby-two-seven: *lint_tag_filters
+      - redis-four-ruby-two-three: *lint_tag_filters
+      - redis-four-ruby-two-four: *lint_tag_filters
+      - redis-four-ruby-two-five: *lint_tag_filters
+      - redis-four-ruby-two-six: *lint_tag_filters
+      - redis-four-ruby-two-seven: *lint_tag_filters
       - publish:
           filters:
             tags:
