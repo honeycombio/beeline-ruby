@@ -19,6 +19,9 @@ executors:
   ruby-two-six:
     docker:
       - image: circleci/ruby:2.6
+  ruby-two-seven:
+    docker:
+      - image: circleci/ruby:2.7
 
 commands:
   ruby:
@@ -112,7 +115,7 @@ gemfiles:
 
 jobs:
   publish:
-    executor: ruby-two-six
+    executor: ruby-two-seven
     steps:
       - checkout
       - run:
@@ -121,7 +124,7 @@ jobs:
       - run: gem build honeycomb-beeline.gemspec
       - run: gem push honeycomb-beeline-*.gem
   lint:
-    executor: ruby-two-six
+    executor: ruby-two-seven
     steps:
       - ruby:
           command: bundle exec rake rubocop
@@ -137,6 +140,9 @@ jobs:
   aws-two-ruby-two-six:
     <<: *aws-two
     executor: ruby-two-six
+  aws-two-ruby-two-seven:
+    <<: *aws-two
+    executor: ruby-two-seven
   aws-three-ruby-two-three:
     <<: *aws-three
     executor: ruby-two-three
@@ -149,6 +155,9 @@ jobs:
   aws-three-ruby-two-six:
     <<: *aws-three
     executor: ruby-two-six
+  aws-three-ruby-two-seven:
+    <<: *aws-three
+    executor: ruby-two-seven
   faraday-zero-ruby-two-three:
     <<: *faraday-zero
     executor: ruby-two-three
@@ -161,6 +170,9 @@ jobs:
   faraday-zero-ruby-two-six:
     <<: *faraday-zero
     executor: ruby-two-six
+  faraday-zero-ruby-two-seven:
+    <<: *faraday-zero
+    executor: ruby-two-seven
   faraday-one-ruby-two-three:
     <<: *faraday-one
     executor: ruby-two-three
@@ -173,6 +185,9 @@ jobs:
   faraday-one-ruby-two-six:
     <<: *faraday-one
     executor: ruby-two-six
+  faraday-one-ruby-two-seven:
+    <<: *faraday-one
+    executor: ruby-two-seven
   sequel-four-ruby-two-three:
     <<: *sequel-four
     executor: ruby-two-three
@@ -185,6 +200,9 @@ jobs:
   sequel-four-ruby-two-six:
     <<: *sequel-four
     executor: ruby-two-six
+  sequel-four-ruby-two-seven:
+    <<: *sequel-four
+    executor: ruby-two-seven
   sequel-five-ruby-two-three:
     <<: *sequel-five
     executor: ruby-two-three
@@ -197,6 +215,9 @@ jobs:
   sequel-five-ruby-two-six:
     <<: *sequel-five
     executor: ruby-two-six
+  sequel-five-ruby-two-seven:
+    <<: *sequel-five
+    executor: ruby-two-seven
   sinatra-ruby-two-three:
     <<: *sinatra
     executor: ruby-two-three
@@ -209,6 +230,9 @@ jobs:
   sinatra-ruby-two-six:
     <<: *sinatra
     executor: ruby-two-six
+  sinatra-ruby-two-seven:
+    <<: *sinatra
+    executor: ruby-two-seven
   rack-ruby-two-three:
     <<: *rack
     executor: ruby-two-three
@@ -221,6 +245,9 @@ jobs:
   rack-ruby-two-six:
     <<: *rack
     executor: ruby-two-six
+  rack-ruby-two-seven:
+    <<: *rack
+    executor: ruby-two-seven
   rails-four-one-ruby-two-three:
     <<: *rails-four-one
     executor: ruby-two-three
@@ -233,6 +260,9 @@ jobs:
   rails-four-one-ruby-two-six:
     <<: *rails-four-one
     executor: ruby-two-six
+  rails-four-one-ruby-two-seven:
+    <<: *rails-four-one
+    executor: ruby-two-seven
   rails-four-two-ruby-two-three:
     <<: *rails-four-two
     executor: ruby-two-three
@@ -245,6 +275,9 @@ jobs:
   rails-four-two-ruby-two-six:
     <<: *rails-four-two
     executor: ruby-two-six
+  rails-four-two-ruby-two-seven:
+    <<: *rails-four-two
+    executor: ruby-two-seven
   rails-five-ruby-two-three:
     <<: *rails-five
     executor: ruby-two-three
@@ -257,6 +290,9 @@ jobs:
   rails-five-ruby-two-six:
     <<: *rails-five
     executor: ruby-two-six
+  rails-five-ruby-two-seven:
+    <<: *rails-five
+    executor: ruby-two-seven
   rails-five-one-ruby-two-three:
     <<: *rails-five-one
     executor: ruby-two-three
@@ -269,6 +305,9 @@ jobs:
   rails-five-one-ruby-two-six:
     <<: *rails-five-one
     executor: ruby-two-six
+  rails-five-one-ruby-two-seven:
+    <<: *rails-five-one
+    executor: ruby-two-seven
   rails-five-two-ruby-two-three:
     <<: *rails-five-two
     executor: ruby-two-three
@@ -281,6 +320,9 @@ jobs:
   rails-five-two-ruby-two-six:
     <<: *rails-five-two
     executor: ruby-two-six
+  rails-five-two-ruby-two-seven:
+    <<: *rails-five-two
+    executor: ruby-two-seven
   rails-six-ruby-two-three:
     <<: *rails-six
     executor: ruby-two-three
@@ -293,6 +335,9 @@ jobs:
   rails-six-ruby-two-six:
     <<: *rails-six
     executor: ruby-two-six
+  rails-six-ruby-two-seven:
+    <<: *rails-six
+    executor: ruby-two-seven
   redis-three-ruby-two-three:
     <<: *redis-three
     executor: ruby-two-three
@@ -305,6 +350,9 @@ jobs:
   redis-three-ruby-two-six:
     <<: *redis-three
     executor: ruby-two-six
+  redis-three-ruby-two-seven:
+    <<: *redis-three
+    executor: ruby-two-seven
   redis-four-ruby-two-three:
     <<: *redis-four
     executor: ruby-two-three
@@ -317,6 +365,9 @@ jobs:
   redis-four-ruby-two-six:
     <<: *redis-four
     executor: ruby-two-six
+  redis-four-ruby-two-seven:
+    <<: *redis-four
+    executor: ruby-two-seven
 
 workflows:
   version: 2
@@ -339,6 +390,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - aws-two-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - aws-three-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -352,6 +407,10 @@ workflows:
           requires:
             - lint
       - aws-three-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - aws-three-ruby-two-seven:
           <<: *tag_filters
           requires:
             - lint
@@ -371,6 +430,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - faraday-zero-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - faraday-one-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -384,6 +447,10 @@ workflows:
           requires:
             - lint
       - faraday-one-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - faraday-one-ruby-two-seven:
           <<: *tag_filters
           requires:
             - lint
@@ -403,6 +470,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - sequel-four-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - sequel-five-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -416,6 +487,10 @@ workflows:
           requires:
             - lint
       - sequel-five-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - sequel-five-ruby-two-seven:
           <<: *tag_filters
           requires:
             - lint
@@ -435,6 +510,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - sinatra-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - rack-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -448,6 +527,10 @@ workflows:
           requires:
             - lint
       - rack-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rack-ruby-two-seven:
           <<: *tag_filters
           requires:
             - lint
@@ -471,6 +554,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - rails-four-two-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - rails-five-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -484,6 +571,10 @@ workflows:
           requires:
             - lint
       - rails-five-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-five-ruby-two-seven:
           <<: *tag_filters
           requires:
             - lint
@@ -503,6 +594,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - rails-five-one-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - rails-five-two-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -519,11 +614,19 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - rails-five-two-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - rails-six-ruby-two-five:
           <<: *tag_filters
           requires:
             - lint
       - rails-six-ruby-two-six:
+          <<: *tag_filters
+          requires:
+            - lint
+      - rails-six-ruby-two-seven:
           <<: *tag_filters
           requires:
             - lint
@@ -543,6 +646,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - redis-three-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - redis-four-ruby-two-three:
           <<: *tag_filters
           requires:
@@ -559,6 +666,10 @@ workflows:
           <<: *tag_filters
           requires:
             - lint
+      - redis-four-ruby-two-seven:
+          <<: *tag_filters
+          requires:
+            - lint
       - publish:
           filters:
             tags:
@@ -571,58 +682,73 @@ workflows:
             - aws-two-ruby-two-four
             - aws-two-ruby-two-five
             - aws-two-ruby-two-six
+            - aws-two-ruby-two-seven
             - aws-three-ruby-two-three
             - aws-three-ruby-two-four
             - aws-three-ruby-two-five
             - aws-three-ruby-two-six
+            - aws-three-ruby-two-seven
             - faraday-zero-ruby-two-three
             - faraday-zero-ruby-two-four
             - faraday-zero-ruby-two-five
             - faraday-zero-ruby-two-six
+            - faraday-zero-ruby-two-seven
             - faraday-one-ruby-two-three
             - faraday-one-ruby-two-four
             - faraday-one-ruby-two-five
             - faraday-one-ruby-two-six
+            - faraday-one-ruby-two-seven
             - sequel-four-ruby-two-three
             - sequel-four-ruby-two-four
             - sequel-four-ruby-two-five
             - sequel-four-ruby-two-six
+            - sequel-four-ruby-two-seven
             - sequel-five-ruby-two-three
             - sequel-five-ruby-two-four
             - sequel-five-ruby-two-five
             - sequel-five-ruby-two-six
+            - sequel-five-ruby-two-seven
             - sinatra-ruby-two-three
             - sinatra-ruby-two-four
             - sinatra-ruby-two-five
             - sinatra-ruby-two-six
+            - sinatra-ruby-two-seven
             - rack-ruby-two-three
             - rack-ruby-two-four
             - rack-ruby-two-five
             - rack-ruby-two-six
+            - rack-ruby-two-seven
             - rails-four-one-ruby-two-three
             - rails-four-two-ruby-two-three
             - rails-four-two-ruby-two-four
             - rails-four-two-ruby-two-five
             - rails-four-two-ruby-two-six
+            - rails-four-two-ruby-two-six
             - rails-five-ruby-two-three
             - rails-five-ruby-two-four
             - rails-five-ruby-two-five
             - rails-five-ruby-two-six
+            - rails-five-ruby-two-seven
             - rails-five-one-ruby-two-three
             - rails-five-one-ruby-two-four
             - rails-five-one-ruby-two-five
             - rails-five-one-ruby-two-six
+            - rails-five-one-ruby-two-seven
             - rails-five-two-ruby-two-three
             - rails-five-two-ruby-two-four
             - rails-five-two-ruby-two-five
             - rails-five-two-ruby-two-six
+            - rails-five-two-ruby-two-seven
             - rails-six-ruby-two-five
             - rails-six-ruby-two-six
+            - rails-six-ruby-two-seven
             - redis-three-ruby-two-three
             - redis-three-ruby-two-four
             - redis-three-ruby-two-five
             - redis-three-ruby-two-six
+            - redis-three-ruby-two-seven
             - redis-four-ruby-two-three
             - redis-four-ruby-two-four
             - redis-four-ruby-two-five
             - redis-four-ruby-two-six
+            - redis-four-ruby-two-seven
