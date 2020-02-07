@@ -25,8 +25,8 @@ module Honeycomb
       @libhoney.add_field "meta.local_hostname", configuration.host_name
 
       integrations = Honeycomb.integrations_to_load
-      @client.add_field "meta.instrumentations_count", integrations.count
-      @client.add_field "meta.instrumentations", integrations.map(&:to_s).to_s
+      @libhoney.add_field "meta.instrumentations_count", integrations.count
+      @libhoney.add_field "meta.instrumentations", integrations.map(&:to_s).to_s
 
       # maybe make `service_name` a required parameter
       @libhoney.add_field "service_name", configuration.service_name
