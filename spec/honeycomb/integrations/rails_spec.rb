@@ -14,10 +14,6 @@ if defined?(Honeycomb::Rails)
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
         config.client = libhoney_client
-        config.notification_events = %w[
-          render_template.action_view
-          process_action.action_controller
-        ].freeze
       end
     end
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
@@ -43,51 +39,127 @@ if defined?(Honeycomb::Rails)
 
     class TestController < ActionController::Base
       def hello
-        render plain: "Hello World!"
+        render plain: "Hello #{params[:name]}!"
+      end
+    end
+
+    shared_examples_for "the rails integration" do
+      let(:event_data) { libhoney_client.events.map(&:data) }
+
+      it_behaves_like "event data"
+
+      it "sends the right number of events" do
+        expect(libhoney_client.events.size).to eq 1
+      end
+
+      let(:event) { event_data.first }
+
+      it "sends the right request.controller" do
+        expect(event["request.controller"]).to eq controller
+      end
+
+      it "sends the right request.action" do
+        expect(event["request.action"]).to eq action
+      end
+
+      it "sends the right request.route" do
+        expect(event["request.route"]).to eq route
       end
     end
 
     describe "a standard request" do
       before do
-        header("Http-Version", "HTTP/1.0")
-        header("User-Agent", "RackSpec")
-
-        get "/hello/martin"
+        get "/hello/world"
       end
 
       it "returns ok" do
         expect(last_response).to be_ok
       end
 
-      it "sends the right number of events" do
-        expect(libhoney_client.events.size).to eq 3
+      include_examples "the rails integration" do
+        let(:controller) { "test" }
+        let(:action) { "hello" }
+        let(:route) { "GET /hello/:name(.:format)" }
       end
-
-      let(:event_data) { libhoney_client.events.map(&:data) }
-
-      it_behaves_like "event data"
     end
 
-    if VERSION >= Gem::Version.new("5")
-      describe "a bad request" do
-        before do
-          header("Http-Version", "HTTP/1.0")
-          header("User-Agent", "RackSpec")
+    describe "a request with invalid parameter encoding" do
+      before do
+        get "/hello/world?via=%c1"
+      end
 
-          get "/hello/martin?via=%c1"
-        end
-
+      if VERSION >= Gem::Version.new("5")
         it "returns bad request" do
           expect(last_response).to be_bad_request
         end
-
-        it "sends the right number of events" do
-          expect(libhoney_client.events.size).to eq 1
+      else
+        it "returns ok" do
+          expect(last_response).to be_ok
         end
+      end
 
-        let(:event_data) { libhoney_client.events.map(&:data) }
+      include_examples "the rails integration" do
+        let(:controller) { "test" }
+        let(:action) { "hello" }
+        let(:route) { "GET /hello/:name(.:format)" }
+      end
+    end
 
-        it_behaves_like "event data"
+    describe "an unrecognized request" do
+      before do
+        get "/unrecognized", action: "action", controller: "controller"
+      end
+
+      it "returns not found" do
+        expect(last_response).to be_not_found
+      end
+
+      include_examples "the rails integration" do
+        let(:controller) { nil }
+        let(:action) { nil }
+        let(:route) { nil }
+      end
+    end
+
+    describe "twirp bug" do
+      before do
+        app.routes.draw do
+          mount TwirpBug, at: "/twirp", via: :post
+        end
+      end
+
+      # Emulates a bug in the twirp gem.
+      #
+      # The twirp middleware calls IO#read on the rack.input without rewinding.
+      # Later, when Rails tries to parse the request parameters by calling
+      # IO#read(n) with the content length, we get back nil, which blows up the
+      # default JSON MIME type handler.
+      #
+      # @see https://github.com/honeycombio/beeline-ruby/issues/31
+      # @see https://github.com/honeycombio/beeline-ruby/pull/39
+      # @see https://github.com/twitchtv/twirp-ruby/blob/c8520030b3e4eb584042b0a8db9ae606a3b6c6f4/lib/twirp/service.rb#L138
+      module TwirpBug
+        def self.call(env)
+          env["rack.input"].read # don't rewind
+          ::Rack::Response.new("OK").finish
+        end
+      end
+
+      before do
+        env "CONTENT_TYPE", "application/json"
+        env "CONTENT_LENGTH", 17
+        env "rack.input", StringIO.new('{"json":"object"}')
+        post "/twirp"
+      end
+
+      it "returns ok" do
+        expect(last_response).to be_ok
+      end
+
+      include_examples "the rails integration" do
+        let(:controller) { nil }
+        let(:action) { nil }
+        let(:route) { "POST /twirp" }
       end
     end
   end
