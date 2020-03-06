@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails/generators"
+require "active_support/core_ext/string/strip"
 
 ##
 # Generates an intializer for configuring the Honeycomb beeline
