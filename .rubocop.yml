@@ -22,6 +22,8 @@ Metrics/ClassLength:
 
 Metrics/MethodLength:
   Max: 25
+  Exclude:
+    - lib/generators/honeycomb/honeycomb_generator.rb
 
 Metrics/LineLength:
   Exclude:
