@@ -70,7 +70,7 @@ if defined?(Honeycomb::Rails)
             let(:data) do
               {
                 "name" => "redis",
-                "redis.command" => "SET PII"
+                "redis.command" => "SET PII",
               }
             end
 
