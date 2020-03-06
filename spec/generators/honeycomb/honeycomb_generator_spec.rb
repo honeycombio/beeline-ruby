@@ -5,6 +5,7 @@ if defined?(Honeycomb::Rails)
 
   RSpec.describe HoneycombGenerator do
     describe "simple execution" do
+      let(:name) { "honeycomb" }
       let(:write_key) { "generator_write_key" }
       let(:dataset) { "generator_dataset" }
       let(:init_file) { File.join(@dir, "config/initializers/honeycomb.rb") }
@@ -20,39 +21,39 @@ if defined?(Honeycomb::Rails)
       end
 
       it "creates the initializer file" do
-        Rails::Generators.invoke("honeycomb", [write_key])
+        Rails::Generators.invoke(name, [write_key])
         expect(File.exist?(init_file)).to eq(true)
       end
 
       describe "configuring honeycomb" do
         before(:each) do
-          class_double("Honeycomb").as_stubbed_const(transfer_nested_constants: true).tap do |h|
-            expect(h).to receive(:configure) do |&block|
-              block.call config
-            end
+          honeycomb = class_double("Honeycomb")
+                      .as_stubbed_const(transfer_nested_constants: true)
+          expect(honeycomb).to receive(:configure) do |&block|
+            block.call config
           end
         end
 
         it "sets the writekey correctly" do
-          Rails::Generators.invoke("honeycomb", [write_key])
+          Rails::Generators.invoke(name, [write_key])
           require init_file
           expect(config.write_key).to eq(write_key)
         end
 
         it "sets the dataset to a default" do
-          Rails::Generators.invoke("honeycomb", [write_key])
+          Rails::Generators.invoke(name, [write_key])
           require init_file
           expect(config.dataset).not_to be_empty
         end
 
         it "sets the dataset correctly" do
-          Rails::Generators.invoke("honeycomb", [write_key, "--dataset", dataset])
+          Rails::Generators.invoke(name, [write_key, "--dataset", dataset])
           require init_file
           expect(config.dataset).to eq(dataset)
         end
 
         it "sets the notification events" do
-          Rails::Generators.invoke("honeycomb", [write_key])
+          Rails::Generators.invoke(name, [write_key])
           require init_file
           expect(config.notification_events).not_to be_empty
         end
@@ -61,7 +62,7 @@ if defined?(Honeycomb::Rails)
           let(:presend_hook) { config.presend_hook }
 
           before(:each) do
-            Rails::Generators.invoke("honeycomb", [write_key])
+            Rails::Generators.invoke(name, [write_key])
             require init_file
             presend_hook.call(data)
           end
