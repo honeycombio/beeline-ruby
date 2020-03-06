@@ -172,5 +172,62 @@ if defined?(Honeycomb::Rails)
         let(:route) { "POST /twirp" }
       end
     end
+
+    describe "an invalid POST body" do
+      before do
+        app.routes.draw do
+          mount Api, at: "/api", via: :post
+        end
+      end
+
+      # Emulates a controller that actually lets the beeline fail, per #65.
+      #
+      # The issue was very sparse on details, but the only way for the old
+      # Honeycomb::Rails invocation of ActionDispatch::Request#params to
+      # actually blow up is if we've never called it on the same Rack env
+      # before.
+      #
+      # This is because ActionDispatch::Request#POST actually rescues JSON
+      # parse errors and memoizes an empty hash in the Rack env for subsequent
+      # lookups. During these tests, I was finding that when we use
+      # ActionController::Base, the ActionController::Instrumentation would
+      # still try to log the request parameters before Honeycomb::Rails ever
+      # got to them. So we couldn't reliably emulate whatever circumstances
+      # were causing the error to bubble up there - even if we *were* calling
+      # ActionDispatch::Request#params anymore, the #POST would come back as an
+      # empty hash.
+      #
+      # So we skirt around all that by using this simple Rack app. The beeline
+      # could still blow up as in #65 if we were triggering any parameter
+      # parsing. But it doesn't so these tests should succeed.
+      module Api
+        def self.call(env)
+          ::Rack::Response.new(::JSON.parse(env["rack.input"].read)).finish
+        rescue JSON::ParserError
+          ::Rack::Response.new("You had invalid JSON").finish
+        end
+      end
+
+      before do
+        post "/api?honey=bee", '{"invalid":"json}'
+      end
+
+      if VERSION >= Gem::Version.new("5")
+        it "returns ok" do
+          expect(last_response).to be_ok
+          expect(last_response.body).to eq "You had invalid JSON"
+        end
+      else
+        it "returns bad request" do
+          expect(last_response).to be_bad_request
+        end
+      end
+
+      include_examples "the rails integration" do
+        let(:controller) { nil }
+        let(:action) { nil }
+        let(:route) { "POST /api" }
+      end
+    end
   end
 end
