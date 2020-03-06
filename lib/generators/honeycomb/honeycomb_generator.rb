@@ -26,7 +26,9 @@ class HoneycombGenerator < Rails::Generators::Base
           config.presend_hook do |fields|
             if fields["name"] == "redis" && fields.has_key?("redis.command")
               # remove potential PII from the redis command
-              fields["redis.command"] = fields["redis.command"].split.first
+              if fields["redis.command"].respond_to? :split
+                fields["redis.command"] = fields["redis.command"].split.first
+              end
             end
             if fields["name"] == "sql.active_record"
               # remove potential PII from the active record events

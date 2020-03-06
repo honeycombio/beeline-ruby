@@ -80,6 +80,19 @@ if defined?(Honeycomb::Rails)
             end
           end
 
+          describe "redis sanitizing with unexpected data" do
+            let(:data) do
+              {
+                "name" => "redis",
+                "redis.command" => 1,
+              }
+            end
+
+            it "removes the PII from the redis command" do
+              expect(data).to include("redis.command" => 1)
+            end
+          end
+
           describe "sql.active_record sanitizing" do
             let(:data) do
               {
