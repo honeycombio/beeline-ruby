@@ -10,6 +10,19 @@ if defined?(Honeycomb::Rails)
     VERSION = Gem::Version.new(::Rails::VERSION::STRING)
     include Rack::Test::Methods
 
+    # These headers are required for the HTTP fields from the Rack integration.
+    #
+    # In order to use the shared examples for event data with HTTP fields
+    # included, these headers have to be present. Additionally, every request
+    # made in this suite has to include a query string, so we just tack on
+    # `?honey=bee` to everything.
+    before do
+      header "Http-Version", "HTTP/1.0"
+      header "User-Agent", "RackSpec"
+      header "Content-Type", "application/json"
+      header "Accept", "application/json"
+    end
+
     let(:libhoney_client) { Libhoney::TestClient.new }
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
@@ -46,7 +59,7 @@ if defined?(Honeycomb::Rails)
     shared_examples_for "the rails integration" do
       let(:event_data) { libhoney_client.events.map(&:data) }
 
-      it_behaves_like "event data"
+      it_behaves_like "event data", http_fields: true
 
       it "sends the right number of events" do
         expect(libhoney_client.events.size).to eq 1
@@ -69,7 +82,7 @@ if defined?(Honeycomb::Rails)
 
     describe "a standard request" do
       before do
-        get "/hello/world"
+        get "/hello/world?honey=bee"
       end
 
       it "returns ok" do
@@ -85,7 +98,7 @@ if defined?(Honeycomb::Rails)
 
     describe "a request with invalid parameter encoding" do
       before do
-        get "/hello/world?via=%c1"
+        get "/hello/world?via=%c1&honey=bee"
       end
 
       if VERSION >= Gem::Version.new("5")
@@ -107,7 +120,7 @@ if defined?(Honeycomb::Rails)
 
     describe "an unrecognized request" do
       before do
-        get "/unrecognized", action: "action", controller: "controller"
+        get "/unrecognized?action=action&controller=controller&honey=bee"
       end
 
       it "returns not found" do
@@ -146,10 +159,7 @@ if defined?(Honeycomb::Rails)
       end
 
       before do
-        env "CONTENT_TYPE", "application/json"
-        env "CONTENT_LENGTH", 17
-        env "rack.input", StringIO.new('{"json":"object"}')
-        post "/twirp"
+        post "/twirp?honey=bee", '{"json":"object"}'
       end
 
       it "returns ok" do
