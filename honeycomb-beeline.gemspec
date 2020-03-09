@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "overcommit", "~> 0.46.0"
   spec.add_development_dependency "pry-byebug"
-  spec.add_development_dependency "rake", ">= 12.3.3"
+  spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "< 0.69"
   spec.add_development_dependency "rubocop-performance", "< 1.3.0"
