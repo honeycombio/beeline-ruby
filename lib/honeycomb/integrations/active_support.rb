@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "active_support/notifications"
-require "libhoney/cleaner"
 
 module Honeycomb
   module ActiveSupport
@@ -9,8 +8,6 @@ module Honeycomb
     # Included in the configuration object to specify events that should be
     # subscribed to
     module Configuration
-      include Libhoney::Cleaner
-
       attr_accessor :notification_events
 
       def after_initialize(client)
@@ -37,8 +34,9 @@ module Honeycomb
           on_notification_event.call(name, span, payload)
         else
           payload.each do |key, value|
-            value = value.to_hash if value.respond_to?(:to_hash)
-            span.add_field("#{name}.#{key}", clean_data(value))
+            # Transforms ActionController::Parameters into something libhoney parses.
+            value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)
+            span.add_field("#{name}.#{key}", value)
           end
         end
       end

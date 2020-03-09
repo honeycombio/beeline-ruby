@@ -64,5 +64,35 @@ if defined?(Honeycomb::ActiveSupport)
         expect(libhoney_client.events.size).to eq 1
       end
     end
+
+    describe "pass ActionController::Parameters as hash" do
+      let(:libhoney_client) { Libhoney::TestClient.new }
+      let(:configuration) do
+        Honeycomb::Configuration.new.tap do |config|
+          config.client = libhoney_client
+          config.notification_events = [event_name]
+        end
+      end
+      let!(:client) { Honeycomb::Client.new(configuration: configuration) }
+      let(:event_data) { libhoney_client.events.map(&:data) }
+      let(:event_name) { "honeycomb.test_event" }
+
+      let(:params) { ActionController::Parameters.new(a: "123", b: "456") }
+      before do
+        ActiveSupport::Notifications.instrument event_name, "honeycomb" => params do
+        end
+      end
+
+      let(:event) { event_data.last }
+      let(:fields) { {"honeycomb.test_event.honeycomb" => {"a" => "123", "b" => "456"}} }
+
+      it "sends the expected fields on success" do
+        expect(event).to include(fields)
+      end
+
+      it "sends a single event" do
+        expect(libhoney_client.events.size).to eq 1
+      end
+    end
   end
 end
