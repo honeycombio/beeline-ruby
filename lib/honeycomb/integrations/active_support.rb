@@ -34,7 +34,7 @@ module Honeycomb
           on_notification_event.call(name, span, payload)
         else
           payload.each do |key, value|
-            # Transforms ActionController::Parameters into something libhoney parses.
+            # Make ActionController::Parameters parseable by libhoney.
             value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)
             span.add_field("#{name}.#{key}", value)
           end

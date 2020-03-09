@@ -75,16 +75,17 @@ if defined?(Honeycomb::ActiveSupport)
       end
       let!(:client) { Honeycomb::Client.new(configuration: configuration) }
       let(:event_data) { libhoney_client.events.map(&:data) }
-      let(:event_name) { "honeycomb.test_event" }
+      let(:event_name) { "hny.test_event" }
 
-      let(:params) { ActionController::Parameters.new(a: "123", b: "456") }
+      let(:params) { ActionController::Parameters.new(a: "1", b: "2") }
       before do
-        ActiveSupport::Notifications.instrument event_name, "honeycomb" => params do
+        ActiveSupport::Notifications.instrument(event_name,
+                                                "params" => params) do
         end
       end
 
       let(:event) { event_data.last }
-      let(:fields) { {"honeycomb.test_event.honeycomb" => {"a" => "123", "b" => "456"}} }
+      let(:fields) { { "hny.test_event.params" => { "a" => "1", "b" => "2" } } }
 
       it "sends the expected fields on success" do
         expect(event).to include(fields)
