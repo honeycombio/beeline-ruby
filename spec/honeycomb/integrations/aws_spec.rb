@@ -52,7 +52,7 @@ if defined?(Honeycomb::Aws)
       end
 
       it "is enabled by default" do
-        aws = aws_clients.sample.new
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io")
         expect(aws.handlers).to include(
           Honeycomb::Aws::SdkHandler,
           Honeycomb::Aws::ApiHandler,
@@ -60,7 +60,8 @@ if defined?(Honeycomb::Aws)
       end
 
       it "can be disabled" do
-        aws = aws_clients.sample.new(honeycomb: false)
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io",
+                                     honeycomb: false)
         expect(aws.handlers).not_to include(
           Honeycomb::Aws::SdkHandler,
           Honeycomb::Aws::ApiHandler,
@@ -68,12 +69,13 @@ if defined?(Honeycomb::Aws)
       end
 
       it "uses the global Honeycomb client by default" do
-        aws = aws_clients.sample.new
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io")
         expect(aws.config.honeycomb_client).to be Honeycomb.client
       end
 
       it "can be configured with a different Honeycomb client" do
-        aws = aws_clients.sample.new(honeycomb_client: client)
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io",
+                                     honeycomb_client: client)
         expect(aws.config.honeycomb_client).to be client
       end
     end
