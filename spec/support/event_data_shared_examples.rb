@@ -24,6 +24,7 @@ HTTP_FIELDS = %w[
   request.host
   request.remote_addr
   request.header.accept
+  request.header.accept_language
   request.header.content_type
   request.header.user_agent
   request.secure

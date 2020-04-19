@@ -82,6 +82,7 @@ if defined?(Honeycomb::Rack)
       header("User-Agent", "RackSpec")
       header("Content-Type", "text/html; charset=UTF-8")
       header("Accept", "*/*")
+      header("Accept-Language", "*")
     end
 
     describe "standard request" do
