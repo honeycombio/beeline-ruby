@@ -33,7 +33,7 @@ module Honeycomb
 
       @client ||
         (debug && Libhoney::LogClient.new) ||
-        Libhoney::Client.new(options)
+        Libhoney::Client.new(**options)
     end
 
     def after_initialize(client)
