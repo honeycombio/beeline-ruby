@@ -6,17 +6,6 @@ tag_filters: &tag_filters
       tags:
         only: /.*/
 
-orbs:
-  ruby: circleci/ruby@0.2.2
-
-executors:
-  linux:
-    docker:
-      - image: cimg/base:2020.01
-  ruby:
-    docker:
-      - image: circleci/ruby:2.6
-
 commands:
   ruby:
     parameters:
@@ -30,8 +19,6 @@ commands:
         default: bundle exec rake test
     steps:
       - checkout
-      - ruby/install:
-          version: << parameters.ruby-version >>
       - restore_cache:
           keys:
             - gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
@@ -56,10 +43,16 @@ jobs:
       - run: gem build honeycomb-beeline.gemspec
       - run: gem push honeycomb-beeline-*.gem
   lint:
-    executor: linux
+    parameters:
+      ruby-version:
+        type: string
+        default: "2.6"
+    executor:
+      docker:
+        - image: circleci/ruby:<< parameters.ruby-version >>
     steps:
       - ruby:
-          ruby-version: "2.6"
+          ruby-version: << parameters.ruby-version >>
           command: bundle exec rake rubocop
   test:
     parameters:
@@ -67,7 +60,9 @@ jobs:
         type: string
       ruby-version:
         type: string
-    executor: linux
+    executor:
+      docker:
+        - image: circleci/ruby:<< parameters.ruby-version >>
     steps:
       - ruby:
           ruby-version: << parameters.ruby-version >>
