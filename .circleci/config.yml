@@ -1,11 +1,4 @@
 version: 2.1
-
-# required as all of the jobs need to have a tag filter for some reason
-tag_filters: &tag_filters
-  filters:
-      tags:
-        only: /.*/
-
 commands:
   ruby:
     parameters:
@@ -71,9 +64,14 @@ jobs:
 workflows:
   beeline:
     jobs:
-      - lint: *tag_filters
+      - lint:
+          filters:
+              tags:
+                only: /.*/
       - test:
-          <<: *tag_filters
+          filters:
+              tags:
+                only: /.*/
           requires:
             - lint
           matrix:
