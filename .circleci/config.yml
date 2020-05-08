@@ -34,7 +34,8 @@ commands:
 
 jobs:
   publish:
-    executor: ruby
+    docker:
+        - image: circleci/ruby:2.6
     steps:
       - checkout
       - run:
@@ -47,8 +48,7 @@ jobs:
       ruby-version:
         type: string
         default: "2.6"
-    executor:
-      docker:
+    docker:
         - image: circleci/ruby:<< parameters.ruby-version >>
     steps:
       - ruby:
@@ -60,8 +60,7 @@ jobs:
         type: string
       ruby-version:
         type: string
-    executor:
-      docker:
+    docker:
         - image: circleci/ruby:<< parameters.ruby-version >>
     steps:
       - ruby:
