@@ -96,6 +96,17 @@ workflows:
                 - gemfiles/rails_6.gemfile
                 - gemfiles/redis_3.gemfile
                 - gemfiles/redis_4.gemfile
+            exclude:
+              - ruby-version: "2.3"
+                gemfile: gemfiles/rails_6.gemfile
+              - ruby-version: "2.4"
+                gemfile: gemfiles/rails_6.gemfile
+              - ruby-version: "2.4"
+                gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.5"
+                gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.6"
+                gemfile: gemfiles/rails_41.gemfile
       - publish:
           filters:
               tags:
