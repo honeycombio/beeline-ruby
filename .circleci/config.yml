@@ -22,7 +22,7 @@ commands:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: gems-v1-{{ checksum "Gemfile.lock" }}
+          key: gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
 jobs:
