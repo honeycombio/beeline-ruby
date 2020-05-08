@@ -9,6 +9,14 @@ tag_filters: &tag_filters
 orbs:
   ruby: circleci/ruby@0.2.2
 
+executors:
+  linux:
+    docker:
+      - image: cimg/base:2020.01
+  ruby:
+    docker:
+      - image: circleci/ruby:2.6
+
 commands:
   ruby:
     parameters:
@@ -20,6 +28,7 @@ commands:
       command:
         type: string
         default: bundle exec rake test
+    executor: linux
     steps:
       - checkout
       - ruby/install:
@@ -39,6 +48,7 @@ commands:
 
 jobs:
   publish:
+    executor: ruby
     steps:
       - checkout
       - run:
