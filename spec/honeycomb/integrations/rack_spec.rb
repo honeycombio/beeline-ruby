@@ -51,7 +51,7 @@ if defined?(Honeycomb::Rack)
       end
 
       def created_at
-        Time.now
+        Time.new 2002, 3, 4, 5, 6, 7
       end
     end
 
@@ -97,7 +97,16 @@ if defined?(Honeycomb::Rack)
         expect(libhoney_client.events.size).to eq 1
       end
 
-      it_behaves_like "event data", http_fields: true
+      USER_FIELDS = [
+        "user.id",
+        "user.email",
+        "user.name",
+        "user.first_name",
+        "user.last_name",
+        "user.created_at",
+      ].freeze
+      it_behaves_like "event data",
+                      http_fields: true, additional_fields: USER_FIELDS
     end
 
     describe "trace header request" do
