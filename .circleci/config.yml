@@ -107,6 +107,8 @@ workflows:
                 gemfile: gemfiles/rails_41.gemfile
               - ruby-version: "2.7"
                 gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.7"
+                gemfile: gemfiles/rails_42.gemfile
       - publish:
           filters:
               tags:
