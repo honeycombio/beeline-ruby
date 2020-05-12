@@ -103,7 +103,7 @@ if defined?(Honeycomb::Rack)
         "user.name",
         "user.first_name",
         "user.last_name",
-        "user.created_at"
+        "user.created_at",
       ].freeze
       it_behaves_like "event data",
                       http_fields: true, additional_fields: USER_FIELDS
