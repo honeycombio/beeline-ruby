@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require "honeycomb/integrations/rack"
 
 if defined?(Honeycomb::Rack)
   require "rack/test"
@@ -98,9 +97,16 @@ if defined?(Honeycomb::Rack)
         expect(libhoney_client.events.size).to eq 1
       end
 
-      USER_FIELDS = ["user.id", "user.email", "user.name", "user.first_name", "user.last_name", "user.created_at"]
-      it_behaves_like "event data", http_fields: true, additional_fields: USER_FIELDS
-
+      USER_FIELDS = [
+        "user.id",
+        "user.email",
+        "user.name",
+        "user.first_name",
+        "user.last_name",
+        "user.created_at"
+      ].freeze
+      it_behaves_like "event data",
+                      http_fields: true, additional_fields: USER_FIELDS
     end
 
     describe "trace header request" do
