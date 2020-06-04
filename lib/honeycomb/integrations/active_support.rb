@@ -80,7 +80,7 @@ module Honeycomb
 
       def handler_for(name)
         handlers.fetch(name) do
-          handlers[handlers.keys.detect {|key| key =~ name}]
+          handlers[handlers.keys.detect { |key| key =~ name }]
         end
       end
     end
