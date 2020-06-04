@@ -21,6 +21,9 @@ if defined?(Honeycomb::Rails)
       header "User-Agent", "RackSpec"
       header "Content-Type", "application/json"
       header "Accept", "application/json"
+      header "X-Forwarded-For", "1.2.3.4"
+      header "X-Forwarded-Proto", "https"
+      header "X-Forwarded-Port", "8000"
     end
 
     let(:libhoney_client) { Libhoney::TestClient.new }
