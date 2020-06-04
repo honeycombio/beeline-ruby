@@ -76,7 +76,7 @@ workflows:
             - lint
           matrix:
             parameters:
-              ruby-version: ["2.3", "2.4", "2.5", "2.6"]
+              ruby-version: ["2.3", "2.4", "2.5", "2.6", "2.7"]
               gemfile:
                 - gemfiles/aws_2.gemfile
                 - gemfiles/aws_3.gemfile
@@ -105,6 +105,10 @@ workflows:
                 gemfile: gemfiles/rails_41.gemfile
               - ruby-version: "2.6"
                 gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.7"
+                gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.7"
+                gemfile: gemfiles/rails_42.gemfile
       - publish:
           filters:
               tags:
