@@ -36,6 +36,39 @@ if defined?(Honeycomb::ActiveSupport)
       end
     end
 
+    describe "custom notifications with regex" do
+      let(:libhoney_client) { Libhoney::TestClient.new }
+      let(:configuration) do
+        Honeycomb::Configuration.new.tap do |config|
+          config.client = libhoney_client
+        end
+      end
+      let(:client) { Honeycomb::Client.new(configuration: configuration) }
+      let(:event_data) { libhoney_client.events.map(&:data) }
+      let(:subscriber) do
+        Honeycomb::ActiveSupport::Subscriber.new(client: client)
+      end
+      let(:event_name) { "honeycomb.test_event" }
+      before do
+        subscriber.subscribe(/honeycomb/) do |_name, span, payload|
+          payload.each do |key, value|
+            span.add_field(key, value)
+          end
+        end
+
+        ActiveSupport::Notifications.instrument event_name, "honeycomb" => 1 do
+        end
+      end
+
+      it_behaves_like "event data", package_fields: false, additional_fields: [
+        "honeycomb",
+      ]
+
+      it "sends a single event" do
+        expect(libhoney_client.events.size).to eq 1
+      end
+    end
+
     describe "custom notifications with custom hook" do
       let(:libhoney_client) { Libhoney::TestClient.new }
       let(:configuration) do
