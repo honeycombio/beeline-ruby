@@ -82,6 +82,9 @@ if defined?(Honeycomb::Rack)
       header("User-Agent", "RackSpec")
       header("Content-Type", "text/html; charset=UTF-8")
       header("Accept", "*/*")
+      header("X-Forwarded-For", "1.2.3.4")
+      header("X-Forwarded-Proto", "https")
+      header("X-Forwarded-Port", "8000")
     end
 
     describe "standard request" do

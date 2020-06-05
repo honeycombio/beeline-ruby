@@ -26,6 +26,9 @@ HTTP_FIELDS = %w[
   request.header.accept
   request.header.content_type
   request.header.user_agent
+  request.header.x_forwarded_for
+  request.header.x_forwarded_proto
+  request.header.x_forwarded_port
   request.secure
   request.xhr
   request.scheme
