@@ -62,16 +62,17 @@ jobs:
           command: bundle exec rake test
 
 workflows:
-  beeline:
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
-      - lint:
-          filters:
-              tags:
-                only: /.*/
-      - test:
-          filters:
-              tags:
-                only: /.*/
+      - lint
+      - test: &test
           requires:
             - lint
           matrix:
@@ -109,6 +110,17 @@ workflows:
                 gemfile: gemfiles/rails_41.gemfile
               - ruby-version: "2.7"
                 gemfile: gemfiles/rails_42.gemfile
+  beeline:
+    jobs:
+      - lint:
+          filters:
+              tags:
+                only: /.*/
+      - test:
+          <<: *test
+          filters:
+              tags:
+                only: /.*/
       - publish:
           filters:
               tags:
