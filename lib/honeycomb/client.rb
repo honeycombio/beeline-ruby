@@ -10,7 +10,9 @@ module Honeycomb
   class Client
     extend Forwardable
 
-    attr_reader :libhoney
+    attr_reader :libhoney,
+                :trace_http_header_propagation_hook,
+                :trace_http_header_parser_hook
 
     def_delegators :@context, :current_span, :current_trace
 
@@ -31,6 +33,11 @@ module Honeycomb
       # maybe make `service_name` a required parameter
       @libhoney.add_field "service_name", configuration.service_name
       @context = Context.new
+
+      @trace_http_header_propagation_hook =
+        configuration.trace_http_header_propagation_hook
+      @trace_http_header_parser_hook =
+        configuration.trace_http_header_parser_hook
 
       @additional_trace_options = {
         presend_hook: configuration.presend_hook,
