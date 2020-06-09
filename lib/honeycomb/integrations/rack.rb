@@ -17,6 +17,7 @@ module Honeycomb
       ["HTTP_X_FORWARDED_PROTO", "request.header.x_forwarded_proto"],
       ["HTTP_X_FORWARDED_PORT", "request.header.x_forwarded_port"],
       ["HTTP_ACCEPT", "request.header.accept"],
+      ["HTTP_ACCEPT_LANGUAGE", "request.header.accept_language"],
       ["CONTENT_TYPE", "request.header.content_type"],
       ["HTTP_USER_AGENT", "request.header.user_agent"],
       ["rack.url_scheme", "request.scheme"],
