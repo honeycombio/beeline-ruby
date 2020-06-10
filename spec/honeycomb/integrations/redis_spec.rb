@@ -147,7 +147,7 @@ if defined?(Honeycomb::Redis)
 
       it "sends the expected fields on success" do
         command
-        expect(event).to match(fields)
+        expect(event).to include(fields)
       end
 
       it "sends the expected fields on failure" do
@@ -155,7 +155,7 @@ if defined?(Honeycomb::Redis)
         expect(connection).to receive(:write).and_raise(exn.new("detail"))
         expect { command }.to raise_error(exn)
         error = { "redis.error" => exn.name, "redis.error_detail" => "detail" }
-        expect(event).to match(fields.merge(error))
+        expect(event).to include(fields.merge(error))
       end
     end
 
@@ -170,7 +170,7 @@ if defined?(Honeycomb::Redis)
               redis.client.command_map[:blah] = "auth"
             end
             redis.blah("password")
-            expect(event).to match(fields)
+            expect(event).to include(fields)
           end
         end
       end
