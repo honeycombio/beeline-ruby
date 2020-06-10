@@ -65,7 +65,7 @@ module Honeycomb
       def finish(name, id, payload)
         return unless (span = spans[id].pop)
 
-        handlers[name].call(name, span, payload)
+        handler_for(name).call(name, span, payload)
 
         span.send
       end
@@ -76,6 +76,16 @@ module Honeycomb
 
       def spans
         Thread.current[key] ||= Hash.new { |h, id| h[id] = [] }
+      end
+
+      def handler_for(name)
+        handlers.fetch(name) do
+          handlers[
+            handlers.keys.detect do |key|
+              key.is_a?(Regexp) && key =~ name
+            end
+          ]
+        end
       end
     end
   end
