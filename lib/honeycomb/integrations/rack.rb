@@ -45,16 +45,19 @@ module Honeycomb
         span.add_field("request.secure", req.ssl?)
         span.add_field("request.xhr", req.xhr?)
 
-        status, headers, body = app.call(env)
+        begin
+          status, headers, body = app.call(env)
 
-        add_package_information(env, &add_field)
+          add_package_information(env, &add_field)
 
-        extract_user_information(env, &add_field)
+          extract_user_information(env, &add_field)
 
-        span.add_field("response.status_code", status)
-        span.add_field("response.content_type", headers["Content-Type"])
+          span.add_field("response.content_type", headers["Content-Type"])
 
-        [status, headers, body]
+          [status, headers, body]
+        ensure
+          span.add_field("response.status_code", status || 500)
+        end
       end
     end
 
