@@ -92,14 +92,7 @@ module Honeycomb
     end
 
     def send_internal
-      add_field "duration_ms", duration_ms
-      add_field "trace.trace_id", trace.id
-      add_field "trace.span_id", id
-      add_field "meta.span_type", span_type
-      parent_id && add_field("trace.parent_id", parent_id)
-      add rollup_fields
-      add trace.fields
-      span_type == "root" && add(trace.rollup_fields)
+      add_additional_fields
       send_children
       sample = true
       if sample_hook.nil?
@@ -114,6 +107,17 @@ module Honeycomb
       end
       @sent = true
       context.span_sent(self)
+    end
+
+    def add_additional_fields
+      add_field "duration_ms", duration_ms
+      add_field "trace.trace_id", trace.id
+      add_field "trace.span_id", id
+      add_field "meta.span_type", span_type
+      parent_id && add_field("trace.parent_id", parent_id)
+      add rollup_fields
+      add trace.fields
+      span_type == "root" && add(trace.rollup_fields)
     end
 
     def send_children
