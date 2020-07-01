@@ -36,11 +36,16 @@ module Honeycomb
       parse_options(**options)
     end
 
-    def parse_options(parent_id: nil,
+    def parse_options(parent: nil,
+                      parent_id: nil,
                       is_root: parent_id.nil?,
                       sample_hook: nil,
                       presend_hook: nil,
                       **_options)
+      @parent = parent
+      # parent_id should be removed in the next major version bump. It has been
+      # replaced with passing the actual parent in. This is kept for backwards
+      # compatability
       @parent_id = parent_id
       @is_root = is_root
       @presend_hook = presend_hook
@@ -51,6 +56,7 @@ module Honeycomb
       self.class.new(trace: trace,
                      builder: builder,
                      context: context,
+                     parent: self,
                      parent_id: id,
                      sample_hook: sample_hook,
                      presend_hook: presend_hook).tap do |c|
@@ -73,9 +79,14 @@ module Honeycomb
       send_internal
     end
 
+    def remove_child(child)
+      children.delete child
+    end
+
     private
 
     attr_reader :event,
+                :parent,
                 :parent_id,
                 :children,
                 :builder,
@@ -107,6 +118,8 @@ module Honeycomb
       end
       @sent = true
       context.span_sent(self)
+
+      parent && parent.remove_child(self)
     end
 
     def add_additional_fields

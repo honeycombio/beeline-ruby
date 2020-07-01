@@ -110,4 +110,21 @@ RSpec.describe Honeycomb::Span do
       end
     end
   end
+
+  describe "sending children and parents" do
+    let(:parent) do
+      Honeycomb::Span.new(trace: trace,
+                          builder: builder,
+                          context: context)
+    end
+
+    subject(:child) { parent.create_child }
+
+    it "will remove itself from it's parent after being sent" do
+      expect(child).not_to receive(:send_by_parent)
+
+      child.send
+      parent.send
+    end
+  end
 end
