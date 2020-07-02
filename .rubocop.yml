@@ -29,6 +29,9 @@ Metrics/LineLength:
   Exclude:
     - spec/support/event_data_shared_examples.rb
 
+Metrics/ParameterLists:
+  Max: 6
+
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
   Exclude:

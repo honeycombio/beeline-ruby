@@ -36,11 +36,16 @@ module Honeycomb
       parse_options(**options)
     end
 
-    def parse_options(parent_id: nil,
+    def parse_options(parent: nil,
+                      parent_id: nil,
                       is_root: parent_id.nil?,
                       sample_hook: nil,
                       presend_hook: nil,
                       **_options)
+      @parent = parent
+      # parent_id should be removed in the next major version bump. It has been
+      # replaced with passing the actual parent in. This is kept for backwards
+      # compatability
       @parent_id = parent_id
       @is_root = is_root
       @presend_hook = presend_hook
@@ -51,6 +56,7 @@ module Honeycomb
       self.class.new(trace: trace,
                      builder: builder,
                      context: context,
+                     parent: self,
                      parent_id: id,
                      sample_hook: sample_hook,
                      presend_hook: presend_hook).tap do |c|
@@ -73,9 +79,14 @@ module Honeycomb
       send_internal
     end
 
+    def remove_child(child)
+      children.delete child
+    end
+
     private
 
     attr_reader :event,
+                :parent,
                 :parent_id,
                 :children,
                 :builder,
@@ -92,14 +103,7 @@ module Honeycomb
     end
 
     def send_internal
-      add_field "duration_ms", duration_ms
-      add_field "trace.trace_id", trace.id
-      add_field "trace.span_id", id
-      add_field "meta.span_type", span_type
-      parent_id && add_field("trace.parent_id", parent_id)
-      add rollup_fields
-      add trace.fields
-      span_type == "root" && add(trace.rollup_fields)
+      add_additional_fields
       send_children
       sample = true
       if sample_hook.nil?
@@ -114,6 +118,19 @@ module Honeycomb
       end
       @sent = true
       context.span_sent(self)
+
+      parent && parent.remove_child(self)
+    end
+
+    def add_additional_fields
+      add_field "duration_ms", duration_ms
+      add_field "trace.trace_id", trace.id
+      add_field "trace.span_id", id
+      add_field "meta.span_type", span_type
+      parent_id && add_field("trace.parent_id", parent_id)
+      add rollup_fields
+      add trace.fields
+      span_type == "root" && add(trace.rollup_fields)
     end
 
     def send_children
