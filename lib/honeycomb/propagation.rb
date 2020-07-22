@@ -50,20 +50,21 @@ module Honeycomb
 
     private
 
+    INVALID_SPAN_ID = ("0" * 16).b
+    INVALID_TRACE_ID = ("0" * 32).b
+
     def parse_span_id(string)
-      INVALID_SPAN_ID = ("0" * 16).b
       raise "invalid span id" if string == INVALID_SPAN_ID
 
       value.downcase!
-      Array(value).pack('H*')
+      Array(string).pack('H*')
     end
 
     def parse_trace_id(string)
-      INVALID_TRACE_ID = ("0" * 32).b
       raise "invalid trace id" if string == INVALID_TRACE_ID
 
       value.downcase!
-      Array(value).pack('H*')
+      Array(string).pack('H*')
     end
   end
 
