@@ -22,7 +22,6 @@ module Honeycomb
         parse serialized_trace
       dataset && builder.dataset = dataset
       @id = trace_id || OpenTelemetry::Trace.generate_trace_id
-      puts @id
       @fields = trace_fields || {}
       @root_span = Span.new(trace: self,
                             parent_id: parent_span_id,
