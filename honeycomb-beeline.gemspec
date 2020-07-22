@@ -42,7 +42,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bump"
   spec.add_development_dependency "bundler"
-  spec.add_development_dependency "opentelemetry-api"
   spec.add_development_dependency "overcommit", "~> 0.46.0"
   spec.add_development_dependency "pry", "< 0.13.0"
   spec.add_development_dependency "pry-byebug", "~> 3.7.0"

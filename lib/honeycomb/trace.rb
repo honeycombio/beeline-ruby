@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "forwardable"
-require "opentelemetry-api"
 require "honeycomb/span"
 require "honeycomb/propagation"
 require "honeycomb/rollup_fields"
@@ -13,15 +12,26 @@ module Honeycomb
     include RollupFields
     extend Forwardable
 
+    INVALID_TRACE_ID = ("\0" * 16).b
+
     def_delegators :@root_span, :send
 
     attr_reader :id, :fields, :root_span
+
+    INVALID_TRACE_ID = ("\0" * 16).b
+
+    def generate_trace_id()
+      loop do
+        id = Random::DEFAULT.bytes(16)
+        return id unless id == INVALID_TRACE_ID
+      end
+    end
 
     def initialize(builder:, context:, serialized_trace: nil, **options)
       trace_id, parent_span_id, trace_fields, dataset =
         parse serialized_trace
       dataset && builder.dataset = dataset
-      @id = trace_id || OpenTelemetry::Trace.generate_trace_id
+      @id = trace_id || generate_trace_id()
       @fields = trace_fields || {}
       @root_span = Span.new(trace: self,
                             parent_id: parent_span_id,

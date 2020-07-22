@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "opentelemetry-api"
 require "forwardable"
 require "honeycomb/propagation"
 require "honeycomb/deterministic_sampler"
@@ -20,11 +19,20 @@ module Honeycomb
 
     attr_reader :id, :trace
 
+    INVALID_SPAN_ID = ("\0" * 8).b
+
+    def generate_span_id()
+      loop do
+        id = Random::DEFAULT.bytes(8)
+        return id unless id == INVALID_SPAN_ID
+      end
+    end
+
     def initialize(trace:,
                    builder:,
                    context:,
                    **options)
-      @id = OpenTelemetry::Trace.generate_span_id
+      @id = generate_span_id()
       @context = context
       @context.current_span = self
       @builder = builder
