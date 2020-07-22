@@ -161,7 +161,7 @@ module Honeycomb
 
     def generate_span_id
       loop do
-        id = SecureRandom.hex(8)
+        id = Random::DEFAULT.bytes(8)
         return id unless id == INVALID_SPAN_ID
       end
     end

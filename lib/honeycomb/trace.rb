@@ -41,10 +41,10 @@ module Honeycomb
 
     def generate_trace_id
       loop do
-        id = SecureRandom.hex(16)
+        id = Random::DEFAULT.bytes(16)
         return id unless id == INVALID_TRACE_ID
       end
     end
-    
+
   end
 end
