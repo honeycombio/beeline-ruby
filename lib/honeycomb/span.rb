@@ -20,15 +20,6 @@ module Honeycomb
 
     attr_reader :id, :trace
 
-    INVALID_SPAN_ID = ("\0" * 8).b
-
-    def generate_span_id
-      loop do
-        id = SecureRandom.hex(8)
-        return id unless id == INVALID_SPAN_ID
-      end
-    end
-
     def initialize(trace:,
                    builder:,
                    context:,
@@ -93,6 +84,8 @@ module Honeycomb
     end
 
     private
+
+    INVALID_SPAN_ID = ("\0" * 8).b
 
     attr_reader :event,
                 :parent,
@@ -165,5 +158,13 @@ module Honeycomb
         "mid"
       end
     end
+
+    def generate_span_id
+      loop do
+        id = SecureRandom.hex(8)
+        return id unless id == INVALID_SPAN_ID
+      end
+    end
+
   end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "forwardable"
+require "securerandom"
 require "honeycomb/span"
 require "honeycomb/propagation"
 require "honeycomb/rollup_fields"
@@ -15,15 +16,6 @@ module Honeycomb
     def_delegators :@root_span, :send
 
     attr_reader :id, :fields, :root_span
-
-    INVALID_TRACE_ID = ("\0" * 16).b
-
-    def generate_trace_id
-      loop do
-        id = SecureRandom.hex(16)
-        return id unless id == INVALID_TRACE_ID
-      end
-    end
 
     def initialize(builder:, context:, serialized_trace: nil, **options)
       trace_id, parent_span_id, trace_fields, dataset =
@@ -42,5 +34,17 @@ module Honeycomb
     def add_field(key, value)
       @fields[key] = value
     end
+
+    private
+    
+    INVALID_TRACE_ID = ("\0" * 16).b
+
+    def generate_trace_id
+      loop do
+        id = SecureRandom.hex(16)
+        return id unless id == INVALID_TRACE_ID
+      end
+    end
+    
   end
 end
