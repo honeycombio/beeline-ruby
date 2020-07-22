@@ -36,15 +36,14 @@ module Honeycomb
     end
 
     private
-    
-    INVALID_TRACE_ID = ("\0" * 16).b
+
+    INVALID_TRACE_ID = ("00" * 16)
 
     def generate_trace_id
       loop do
-        id = Random::DEFAULT.bytes(16)
+        id = SecureRandom.hex(16)
         return id unless id == INVALID_TRACE_ID
       end
     end
-
   end
 end

@@ -85,7 +85,7 @@ module Honeycomb
 
     private
 
-    INVALID_SPAN_ID = ("\0" * 8).b
+    INVALID_SPAN_ID = ("00" * 8)
 
     attr_reader :event,
                 :parent,
@@ -161,10 +161,9 @@ module Honeycomb
 
     def generate_span_id
       loop do
-        id = Random::DEFAULT.bytes(8)
+        id = SecureRandom.hex(8)
         return id unless id == INVALID_SPAN_ID
       end
     end
-
   end
 end
