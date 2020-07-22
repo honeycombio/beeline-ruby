@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "securerandom"
 require "forwardable"
+require "securerandom"
 require "honeycomb/propagation"
 require "honeycomb/deterministic_sampler"
 require "honeycomb/rollup_fields"
@@ -24,7 +24,7 @@ module Honeycomb
                    builder:,
                    context:,
                    **options)
-      @id = SecureRandom.uuid
+      @id = generate_span_id
       @context = context
       @context.current_span = self
       @builder = builder
@@ -84,6 +84,8 @@ module Honeycomb
     end
 
     private
+
+    INVALID_SPAN_ID = ("00" * 8)
 
     attr_reader :event,
                 :parent,
@@ -154,6 +156,13 @@ module Honeycomb
         "leaf"
       else
         "mid"
+      end
+    end
+
+    def generate_span_id
+      loop do
+        id = SecureRandom.hex(8)
+        return id unless id == INVALID_SPAN_ID
       end
     end
   end

@@ -21,7 +21,7 @@ module Honeycomb
       trace_id, parent_span_id, trace_fields, dataset =
         parse serialized_trace
       dataset && builder.dataset = dataset
-      @id = trace_id || SecureRandom.uuid
+      @id = trace_id || generate_trace_id
       @fields = trace_fields || {}
       @root_span = Span.new(trace: self,
                             parent_id: parent_span_id,
@@ -33,6 +33,17 @@ module Honeycomb
 
     def add_field(key, value)
       @fields[key] = value
+    end
+
+    private
+
+    INVALID_TRACE_ID = ("00" * 16)
+
+    def generate_trace_id
+      loop do
+        id = SecureRandom.hex(16)
+        return id unless id == INVALID_TRACE_ID
+      end
     end
   end
 end
