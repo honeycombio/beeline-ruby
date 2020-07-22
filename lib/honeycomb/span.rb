@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "securerandom"
+require "opentelemetry-api"
 require "forwardable"
 require "honeycomb/propagation"
 require "honeycomb/deterministic_sampler"
@@ -24,7 +24,7 @@ module Honeycomb
                    builder:,
                    context:,
                    **options)
-      @id = SecureRandom.uuid
+      @id = OpenTelemetry::Trace.generate_span_id
       @context = context
       @context.current_span = self
       @builder = builder

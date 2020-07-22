@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "forwardable"
-require "securerandom"
+require "opentelemetry-api"
 require "honeycomb/span"
 require "honeycomb/propagation"
 require "honeycomb/rollup_fields"
@@ -21,7 +21,8 @@ module Honeycomb
       trace_id, parent_span_id, trace_fields, dataset =
         parse serialized_trace
       dataset && builder.dataset = dataset
-      @id = trace_id || SecureRandom.uuid
+      @id = trace_id || OpenTelemetry::Trace.generate_trace_id
+      puts @id
       @fields = trace_fields || {}
       @root_span = Span.new(trace: self,
                             parent_id: parent_span_id,
