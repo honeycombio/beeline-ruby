@@ -56,6 +56,7 @@ module Honeycomb
 
       value.downcase!
       Array(value).pack('H*')
+    end
 
     def parse_trace_id(string)
       INVALID_TRACE_ID = ("0" * 32).b
@@ -63,6 +64,7 @@ module Honeycomb
 
       value.downcase!
       Array(value).pack('H*')
+    end
   end
 
   # Serialize trace headers
