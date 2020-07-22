@@ -21,7 +21,7 @@ module Honeycomb
 
     INVALID_SPAN_ID = ("\0" * 8).b
 
-    def generate_span_id()
+    def generate_span_id
       loop do
         id = Random::DEFAULT.bytes(8)
         return id unless id == INVALID_SPAN_ID
@@ -32,7 +32,7 @@ module Honeycomb
                    builder:,
                    context:,
                    **options)
-      @id = generate_span_id()
+      @id = generate_span_id
       @context = context
       @context.current_span = self
       @builder = builder
