@@ -12,8 +12,6 @@ module Honeycomb
     include RollupFields
     extend Forwardable
 
-    INVALID_TRACE_ID = ("\0" * 16).b
-
     def_delegators :@root_span, :send
 
     attr_reader :id, :fields, :root_span
@@ -22,7 +20,7 @@ module Honeycomb
 
     def generate_trace_id
       loop do
-        id = Random::DEFAULT.bytes(16)
+        id = SecureRandom.hex(16)
         return id unless id == INVALID_TRACE_ID
       end
     end

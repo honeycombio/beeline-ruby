@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "forwardable"
+require "securerandom"
 require "honeycomb/propagation"
 require "honeycomb/deterministic_sampler"
 require "honeycomb/rollup_fields"
@@ -23,7 +24,7 @@ module Honeycomb
 
     def generate_span_id
       loop do
-        id = Random::DEFAULT.bytes(8)
+        id = SecureRandom.hex(8)
         return id unless id == INVALID_SPAN_ID
       end
     end
