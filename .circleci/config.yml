@@ -77,7 +77,7 @@ workflows:
             - lint
           matrix:
             parameters:
-              ruby-version: ["2.3", "2.4", "2.5", "2.6", "2.7"]
+              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6", "2.7"]
               gemfile:
                 - gemfiles/aws_2.gemfile
                 - gemfiles/aws_3.gemfile
@@ -96,6 +96,12 @@ workflows:
                 - gemfiles/redis_3.gemfile
                 - gemfiles/redis_4.gemfile
             exclude:
+              - ruby-version: "2.2"
+                gemfile: gemfiles/faraday_1.gemfile
+              - ruby-version: "2.2"
+                gemfile: gemfiles/rails_52.gemfile
+              - ruby-version: "2.2"
+                gemfile: gemfiles/rails_6.gemfile
               - ruby-version: "2.3"
                 gemfile: gemfiles/rails_6.gemfile
               - ruby-version: "2.4"
