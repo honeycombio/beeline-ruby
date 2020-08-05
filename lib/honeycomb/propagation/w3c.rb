@@ -17,7 +17,8 @@ module Honeycomb
             trace_id, parent_span_id, trace_fields = parse_v1(payload)
 
             if !trace_id.nil? && !parent_span_id.nil?
-              return [trace_id, parent_span_id, trace_fields]
+              # return nil for dataset
+              return [trace_id, parent_span_id, trace_fields, nil]
             end
           end
         end

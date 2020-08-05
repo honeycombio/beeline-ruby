@@ -41,7 +41,8 @@ module Honeycomb
           else
             trace_fields[key] = value
           end
-          return [trace_id, parent_span_id, trace_fields]
+          # return nil for dataset
+          return [trace_id, parent_span_id, trace_fields, nil]
         end
       end
     end
