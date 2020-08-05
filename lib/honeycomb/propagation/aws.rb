@@ -28,7 +28,7 @@ module Honeycomb
       end
 
       def get_fields(fields)
-        trace_id, parent_span_id, parent_key = nil
+        trace_id, parent_span_id = nil
         trace_fields = {}
         fields.each do |entry|
           key, value = entry.split("=", 2)
@@ -38,13 +38,11 @@ module Honeycomb
           when "self"
             parent_span_id = value
           when "parent"
-            parent_key = value
+            parent_span_id = value if parent_span_id.nil?
           else
             trace_fields[key] = value unless key.empty?
           end
         end
-
-        parent_span_id = parent_key if parent_span_id.nil?
 
         [trace_id, parent_span_id, trace_fields]
       end

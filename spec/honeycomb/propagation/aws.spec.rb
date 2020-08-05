@@ -130,7 +130,9 @@ RSpec.describe "Propagation" do
       .extend(Honeycomb::AWSPropagation::MarshalTraceContext)
   end
 
-  let(:propagation) { Class.new.extend(AWSPropagation::UnmarshalTraceContext) }
+  let(:propagation) do
+    Class.new.extend(Honeycomb::AWSPropagation::UnmarshalTraceContext)
+  end
 
   let(:output) do
     propagation.parse(span.to_trace_header)
