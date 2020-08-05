@@ -5,6 +5,9 @@ module Honeycomb
   module W3CPropagation
     # Parse trace headers
     module UnmarshalTraceContext
+      INVALID_TRACE_ID = "00000000000000000000000000000000".freeze
+      INVALID_SPAN_ID = "0000000000000000".freeze
+
       def parse(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split("-", 2)
@@ -21,9 +24,6 @@ module Honeycomb
       end
 
       def parse_v1(payload)
-        invalid_trace_id = "00000000000000000000000000000000"
-        invalid_span_id = "0000000000000000"
-
         trace_id, parent_span_id, trace_flags = payload.split("-", 3)
 
         if trace_flags.nil?
@@ -31,7 +31,7 @@ module Honeycomb
           return [nil, nil]
         end
 
-        if trace_id == invalid_trace_id || parent_span_id == invalid_span_id
+        if trace_id == INVALID_TRACE_ID || parent_span_id == INVALID_SPAN_ID
           return [nil, nil]
         end
 
