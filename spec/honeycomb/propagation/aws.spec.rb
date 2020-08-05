@@ -130,12 +130,12 @@ RSpec.describe "Propagation" do
       .extend(Honeycomb::AWSPropagation::MarshalTraceContext)
   end
 
-  let(:propagation) do
+  let(:aws_propagation) do
     Class.new.extend(Honeycomb::AWSPropagation::UnmarshalTraceContext)
   end
 
   let(:output) do
-    propagation.parse(span.to_trace_header)
+    aws_propagation.parse(span.to_trace_header)
   end
 
   it "returns nil dataset" do
