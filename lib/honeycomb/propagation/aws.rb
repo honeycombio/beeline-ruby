@@ -20,6 +20,7 @@ module Honeycomb
           trace_fields = nil if trace_fields.empty?
 
           if !trace_id.nil? && !parent_span_id.nil?
+            # return nil for dataset
             return [trace_id, parent_span_id, trace_fields, nil]
           end
         end
