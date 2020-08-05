@@ -29,7 +29,7 @@ module Honeycomb
         trace_id, parent_span_id, trace_fields, dataset = nil
         payload.split(",").each do |entry|
           key, value = entry.split("=", 2)
-          case key
+          case key.downcase
           when "dataset"
             dataset = URI.decode_www_form_component(value)
           when "trace_id"
