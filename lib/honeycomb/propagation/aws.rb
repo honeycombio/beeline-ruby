@@ -17,10 +17,10 @@ module Honeycomb
 
           parent_span_id = trace_id if parent_span_id.nil?
 
-          trace_fields = {} if trace_fields.nil?
+          trace_fields = nil if trace_fields.empty?
 
           if !trace_id.nil? && !parent_span_id.nil?
-            return [trace_id, parent_span_id, trace_fields]
+            return [trace_id, parent_span_id, trace_fields, nil]
           end
         end
 
@@ -28,40 +28,43 @@ module Honeycomb
       end
 
       def get_fields(fields)
+        trace_id, parent_span_id, parent_key = nil
         trace_fields = {}
         fields.each do |entry|
           key, value = entry.split("=", 2)
           case key.downcase
           when "root"
             trace_id = value
-          when "parent"
-            parent_span_id = value
           when "self"
             parent_span_id = value
+          when "parent"
+            parent_key = value
           else
-            trace_fields[key] = value
+            trace_fields[key] = value unless key.empty?
           end
-          # return nil for dataset
-          return [trace_id, parent_span_id, trace_fields, nil]
         end
+
+        parent_span_id = parent_key if parent_span_id.nil?
+
+        [trace_id, parent_span_id, trace_fields]
       end
     end
 
     # Serialize trace headers
     module MarshalTraceContext
       def to_trace_header
-        context = ""
+        context = [""]
         unless trace.fields.keys.nil?
           trace.fields.keys.each do |key|
-            context.concat(";#{[key]}=#{trace.fields[key]}")
+            context.push("#{key}=#{trace.fields[key]}")
           end
         end
 
-        data_to_propogate = [
+        data_to_propagate = [
           "Root=#{trace.id}",
           "Parent=#{id}",
         ]
-        "#{data_to_propogate.join(';')}#{context}"
+        "#{data_to_propagate.join(';')}#{context.join(';')}"
       end
     end
   end

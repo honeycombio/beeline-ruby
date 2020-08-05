@@ -82,9 +82,9 @@ RSpec.describe Honeycomb::PropagationSerializer do
 end
 
 RSpec.describe "Propagation" do
-  let(:parent_id) { SecureRandom.uuid }
+  let(:parent_id) { SecureRandom.hex(8) }
   let(:dataset) { "rails,tesing/with-%characters%" }
-  let(:trace_id) { SecureRandom.uuid }
+  let(:trace_id) { SecureRandom.hex(16) }
   let(:fields) do
     {
       "test" => "honeycomb",
