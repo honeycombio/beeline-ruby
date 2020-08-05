@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require "base64"
-require "json"
-require "uri"
-
 module Honeycomb
   # Parsing and propagation for W3C trace headers
   module W3CPropagation
@@ -25,8 +21,8 @@ module Honeycomb
       end
 
       def parse_v1(payload)
-        @invalid_trace_id = "00000000000000000000000000000000"
-        @invalid_span_id = "0000000000000000"
+        invalid_trace_id = "00000000000000000000000000000000"
+        invalid_span_id = "0000000000000000"
 
         trace_id, parent_span_id, trace_flags = payload.split("-", 3)
 
@@ -35,7 +31,7 @@ module Honeycomb
           return [nil, nil]
         end
 
-        if trace_id == @invalid_trace_id || parent_span_id == @invalid_span_id
+        if trace_id == invalid_trace_id || parent_span_id == invalid_span_id
           return [nil, nil]
         end
 
