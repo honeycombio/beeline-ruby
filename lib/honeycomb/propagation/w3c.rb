@@ -11,7 +11,8 @@ module Honeycomb
       def parse(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split("-", 2)
-          if version == "00"
+          # version should be 2 hex characters
+          if version =~ /^[A-Fa-f0-9]{2}$/
             trace_id, parent_span_id = parse_v1(payload)
 
             if !trace_id.nil? && !parent_span_id.nil?
@@ -42,7 +43,12 @@ module Honeycomb
     # Serialize trace headers
     module MarshalTraceContext
       def to_trace_header
-        "00-#{trace.id}-#{id}-01" unless trace.id.nil?
+        # do not propagate malformed ids
+        if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
+          return "00-#{trace.id}-#{id}-01"
+        end
+
+        nil
       end
     end
   end
