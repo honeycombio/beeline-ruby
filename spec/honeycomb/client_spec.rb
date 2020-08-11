@@ -155,4 +155,18 @@ RSpec.describe Honeycomb::Client do
 
     it_behaves_like "event data", package_fields: false
   end
+
+  describe "sending from within a span block" do
+    it "does not also send the parent span" do
+      root_span = client.start_span(name: "root")
+      client.start_span(name: "child", &:send)
+      expect(root_span.__send__(:sent?)).to be false
+    end
+
+    it "does not raise an error when the span is the root" do
+      expect do
+        client.start_span(name: "child", &:send)
+      end.to_not raise_error
+    end
+  end
 end
