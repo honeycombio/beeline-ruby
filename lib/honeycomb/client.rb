@@ -62,18 +62,16 @@ module Honeycomb
 
       current_span.add_field("name", name)
 
-      if block_given?
-        begin
-          yield current_span
-        rescue StandardError => e
-          current_span.add_field("error", e.class.name)
-          current_span.add_field("error_detail", e.message)
-          raise e
-        ensure
-          current_span.send
-        end
-      else
-        current_span
+      return current_span unless block_given?
+
+      begin
+        yield current_span
+      rescue StandardError => e
+        current_span.add_field("error", e.class.name)
+        current_span.add_field("error_detail", e.message)
+        raise e
+      ensure
+        current_span.send
       end
     end
 
