@@ -158,14 +158,24 @@ RSpec.describe Honeycomb::Client do
 
   describe "sending from within a span block" do
     it "does not also send the parent span" do
-      root_span = client.start_span(name: "root")
-      client.start_span(name: "child", &:send)
-      expect(root_span.__send__(:sent?)).to be false
+      client.start_span(name: "root")
+
+      # rubocop:disable Style/SymbolProc
+      client.start_span(name: "child") do |child_span|
+        child_span.send
+      end
+      # rubocop:enable Style/SymbolProc
+
+      expect(libhoney_client.events.size).to eq 1
     end
 
     it "does not raise an error when the span is the root" do
       expect do
-        client.start_span(name: "child", &:send)
+        # rubocop:disable Style/SymbolProc
+        client.start_span(name: "child") do |child_span|
+          child_span.send
+        end
+        # rubocop:enable Style/SymbolProc
       end.to_not raise_error
     end
   end
