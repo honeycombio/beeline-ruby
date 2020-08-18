@@ -54,24 +54,24 @@ module Honeycomb
         context.current_span.create_child
       end
 
+      current_span = context.current_span
+
       fields.each do |key, value|
-        context.current_span.add_field(key, value)
+        current_span.add_field(key, value)
       end
 
-      context.current_span.add_field("name", name)
+      current_span.add_field("name", name)
 
-      if block_given?
-        begin
-          yield context.current_span
-        rescue StandardError => e
-          context.current_span.add_field("error", e.class.name)
-          context.current_span.add_field("error_detail", e.message)
-          raise e
-        ensure
-          context.current_span.send
-        end
-      else
-        context.current_span
+      return current_span unless block_given?
+
+      begin
+        yield current_span
+      rescue StandardError => e
+        current_span.add_field("error", e.class.name)
+        current_span.add_field("error_detail", e.message)
+        raise e
+      ensure
+        current_span.send
       end
     end
 
