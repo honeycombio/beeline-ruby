@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
+require "codecov"
 require "simplecov"
-require "simplecov-console"
 require "webmock/rspec"
 require "pry"
 
 WebMock.disable_net_connect!
 
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
-SimpleCov.formatter = SimpleCov::Formatter::Console
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
 
 # Make coverage work with Appraisals
 SimpleCov.command_name(ENV["BUNDLE_GEMFILE"].split.last || "")
