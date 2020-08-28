@@ -51,5 +51,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "< 0.69"
   spec.add_development_dependency "rubocop-performance", "< 1.3.0"
   spec.add_development_dependency "simplecov"
+  spec.add_development_dependency "simplecov-console"
   spec.add_development_dependency "webmock"
 end
