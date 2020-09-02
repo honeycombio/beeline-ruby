@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    honeycomb-beeline (2.2.2)
+    honeycomb-beeline (2.2.0)
       libhoney (~> 1.14, >= 1.14.2)
 
 GEM
