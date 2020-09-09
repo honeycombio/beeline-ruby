@@ -32,6 +32,8 @@ module Honeycomb
       @libhoney.add_field "service_name", configuration.service_name
       @context = Context.new
 
+      @http_trace_parser_hook = configuration.http_trace_parser_hook
+
       @additional_trace_options = {
         presend_hook: configuration.presend_hook,
         sample_hook: configuration.sample_hook,
@@ -44,11 +46,20 @@ module Honeycomb
       end
     end
 
-    def start_span(name:, serialized_trace: nil, **fields)
+    def parse_header(env)
+      PropagationParser.get_propagation_context(
+        env: env, hook: @http_trace_parser_hook,
+      )
+    end
+
+    def start_span(
+      name:, serialized_trace: nil, propagation_context: nil, **fields
+    )
       if context.current_trace.nil?
         Trace.new(serialized_trace: serialized_trace,
                   builder: libhoney.builder,
                   context: context,
+                  propagation_context: propagation_context,
                   **@additional_trace_options)
       else
         context.current_span.create_child

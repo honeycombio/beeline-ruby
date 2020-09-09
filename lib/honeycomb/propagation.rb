@@ -10,6 +10,15 @@ module Honeycomb
   # Parse trace headers
   module PropagationParser
     include HoneycombPropagation::UnmarshalTraceContext
+
+    def self.get_propagation_context(env:, hook:)
+      if hook.nil?
+        hny = env["HTTP_X_HONEYCOMB_TRACE"]
+        parse(hny)
+      else
+        hook.call(env)
+      end
+    end
   end
 
   # Serialize trace headers
