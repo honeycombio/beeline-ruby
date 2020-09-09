@@ -17,9 +17,23 @@ module Honeycomb
 
     attr_reader :id, :fields, :root_span
 
-    def initialize(builder:, context:, serialized_trace: nil, **options)
-      trace_id, parent_span_id, trace_fields, dataset =
-        parse serialized_trace
+    def initialize(
+      builder:, context:,
+      serialized_trace: nil,
+      propagation_context: nil,
+      **options
+    )
+
+      # if a propagation context hash was successfully created, use that
+      # otherwise fall back to previous behavior of parsing a string
+      if propagation_context
+        trace_id, parent_span_id, trace_fields, dataset =
+          propagation_context
+      else
+        trace_id, parent_span_id, trace_fields, dataset =
+          parse serialized_trace
+      end
+
       dataset && builder.dataset = dataset
       @id = trace_id || generate_trace_id
       @fields = trace_fields || {}
@@ -29,6 +43,10 @@ module Honeycomb
                             builder: builder,
                             context: context,
                             **options)
+    end
+
+    def parse_header(hook)
+      puts hook
     end
 
     def add_field(key, value)
