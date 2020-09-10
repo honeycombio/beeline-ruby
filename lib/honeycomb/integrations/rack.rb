@@ -6,6 +6,8 @@ require "honeycomb/integrations/warden"
 module Honeycomb
   # Rack specific methods for building middleware
   module Rack
+    #include HoneycombPropagation::UnmarshalTraceContext
+
     RACK_FIELDS = [
       ["REQUEST_METHOD", "request.method"],
       ["PATH_INFO", "request.path"],
@@ -34,8 +36,10 @@ module Honeycomb
       req = ::Rack::Request.new(env)
       hny = env["HTTP_X_HONEYCOMB_TRACE"]
 
-      propagation_context = client.parse_header(env)
-
+      custom_parser_hook = client.propagation_hooks[:custom_parser_hook]
+      propagation_context = PropagationParser.parse(
+        env, parser_hook: custom_parser_hook
+      )
       client.start_span(
         name: "http_request",
         serialized_trace: hny,

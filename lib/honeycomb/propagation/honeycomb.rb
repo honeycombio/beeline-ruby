@@ -9,6 +9,11 @@ module Honeycomb
   module HoneycombPropagation
     # Parse trace headers
     module UnmarshalTraceContext
+      def http_trace_parser_hook(env:)
+        hny = env["HTTP_X_HONEYCOMB_TRACE"]
+        parse(hny)
+      end
+
       def parse(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split(";", 2)

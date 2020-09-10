@@ -45,10 +45,6 @@ module Honeycomb
                             **options)
     end
 
-    def parse_header(hook)
-      puts hook
-    end
-
     def add_field(key, value)
       @fields[key] = value
     end

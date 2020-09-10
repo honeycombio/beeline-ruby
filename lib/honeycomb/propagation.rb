@@ -5,18 +5,19 @@ require "json"
 require "uri"
 
 require "honeycomb/propagation/honeycomb"
+require "honeycomb/propagation/w3c"
+require "honeycomb/propagation/aws"
 
 module Honeycomb
   # Parse trace headers
   module PropagationParser
     include HoneycombPropagation::UnmarshalTraceContext
 
-    def self.get_propagation_context(env:, hook:)
-      if hook.nil?
-        hny = env["HTTP_X_HONEYCOMB_TRACE"]
-        parse(hny)
+    def self.parse(env, parser_hook:)
+      if parser_hook.nil?
+        http_trace_parser_hook(env)
       else
-        hook.call(env)
+        parser_hook.call(env)
       end
     end
   end

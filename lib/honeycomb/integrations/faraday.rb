@@ -24,6 +24,7 @@ module Honeycomb
 
         env.request_headers["X-Honeycomb-Trace"] = span.to_trace_header
 
+
         @app.call(env).tap do |response|
           span.add_field "response.status_code", response.status
         end
