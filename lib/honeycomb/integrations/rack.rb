@@ -37,7 +37,7 @@ module Honeycomb
 
       custom_parser_hook = client.propagation_hooks[:custom_parser_hook]
       propagation_context = parse(env, parser_hook: custom_parser_hook)
-
+      puts "not broken"
       client.start_span(
         name: "http_request",
         serialized_trace: hny,
