@@ -11,8 +11,7 @@ module Honeycomb
     module UnmarshalTraceContext
       def http_trace_parser_hook(env)
         hny = env["HTTP_X_HONEYCOMB_TRACE"]
-        parse(hny) unless hny.nil?
-        [nil, nil, nil, nil]
+        parse(hny)
       end
 
       def parse(serialized_trace)
