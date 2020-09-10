@@ -12,9 +12,11 @@ module Honeycomb
       def http_trace_parser_hook(env)
         hny = env["HTTP_X_HONEYCOMB_TRACE"]
         parse(hny) unless hny.nil?
+        [nil, nil, nil, nil]
       end
 
       def parse(serialized_trace)
+        puts serialized_trace
         unless serialized_trace.nil?
           version, payload = serialized_trace.split(";", 2)
 

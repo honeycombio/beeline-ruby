@@ -12,8 +12,10 @@ module Honeycomb
   # Parse trace headers
   module PropagationParser
     include HoneycombPropagation::UnmarshalTraceContext
-
-    def parse(env, parser_hook: nil)
+    
+    # parse_request both pulls the trace headers out
+    # and parses them, returning a propagation context
+    def parse_request(env, parser_hook: nil)
       if parser_hook.nil?
         http_trace_parser_hook(env)
       else
