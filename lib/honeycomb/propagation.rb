@@ -13,7 +13,7 @@ module Honeycomb
   module PropagationParser
     include HoneycombPropagation::UnmarshalTraceContext
 
-    def self.parse(env, parser_hook:)
+    def parse(env, parser_hook:)
       if parser_hook.nil?
         http_trace_parser_hook(env)
       else
