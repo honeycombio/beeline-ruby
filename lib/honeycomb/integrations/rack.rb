@@ -6,8 +6,6 @@ require "honeycomb/integrations/warden"
 module Honeycomb
   # Rack specific methods for building middleware
   module Rack
-    #include HoneycombPropagation::UnmarshalTraceContext
-
     RACK_FIELDS = [
       ["REQUEST_METHOD", "request.method"],
       ["PATH_INFO", "request.path"],
