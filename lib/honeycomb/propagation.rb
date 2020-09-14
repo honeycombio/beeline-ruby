@@ -12,7 +12,7 @@ module Honeycomb
   # Parse trace headers
   module PropagationParser
     include HoneycombPropagation::UnmarshalTraceContext
-    
+
     # parse_request both pulls the trace headers out
     # and parses them, returning a propagation context
     def parse_request(env, parser_hook: nil)
@@ -27,5 +27,21 @@ module Honeycomb
   # Serialize trace headers
   module PropagationSerializer
     include HoneycombPropagation::MarshalTraceContext
+
+    def create_headers(hook:)
+      puts hook
+      begin
+        if hook.nil?
+          puts "nil hook"
+          create_hash
+        else
+          puts "has custom hook"
+          hook.call
+        end
+      rescue => error
+        puts "error"
+        puts error
+      end
+    end
   end
 end

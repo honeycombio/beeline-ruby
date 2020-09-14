@@ -34,6 +34,7 @@ module Honeycomb
           parse serialized_trace
       end
 
+      puts options
       dataset && builder.dataset = dataset
       @id = trace_id || generate_trace_id
       @fields = trace_fields || {}

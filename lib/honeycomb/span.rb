@@ -18,12 +18,13 @@ module Honeycomb
     def_delegators :@event, :add_field, :add
     def_delegator :@trace, :add_field, :add_trace_field
 
-    attr_reader :id, :trace
+    attr_reader :id, :trace, :custom_propagation_hook
 
     def initialize(trace:,
                    builder:,
                    context:,
                    **options)
+      puts options[:additional_trace_options]
       @id = generate_span_id
       @context = context
       @context.current_span = self
@@ -41,7 +42,7 @@ module Honeycomb
                       is_root: parent_id.nil?,
                       sample_hook: nil,
                       presend_hook: nil,
-                      http_trace_propagation_hook: nil,
+                      custom_propagation_hook: nil,
                       **_options)
       @parent = parent
       # parent_id should be removed in the next major version bump. It has been
@@ -51,7 +52,7 @@ module Honeycomb
       @is_root = is_root
       @presend_hook = presend_hook
       @sample_hook = sample_hook
-      @http_trace_propagation_hook = http_trace_propagation_hook
+      @custom_propagation_hook = custom_propagation_hook
     end
 
     def create_child
@@ -61,7 +62,7 @@ module Honeycomb
                      parent: self,
                      parent_id: id,
                      sample_hook: sample_hook,
-                     http_trace_propagation_hook: http_trace_propagation_hook,
+                     custom_propagation_hook: custom_propagation_hook,
                      presend_hook: presend_hook).tap do |c|
         children << c
       end
@@ -97,8 +98,7 @@ module Honeycomb
                 :builder,
                 :context,
                 :presend_hook,
-                :sample_hook,
-                :http_trace_propagation_hook
+                :sample_hook
 
     def sent?
       @sent

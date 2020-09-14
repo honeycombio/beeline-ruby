@@ -14,6 +14,20 @@ module Honeycomb
       return @app.call(env) if @client.nil?
 
       @client.start_span(name: "http_client") do |span|
+        request_headers = env.request_headers
+        puts request_headers
+        puts "faraday start_span"
+        #puts span.create_headers(hook: span.custom_propagation_hook)
+        puts span.custom_propagation_hook
+        puts "after puts custom hook"
+
+        serialized_headers = span.create_headers(hook: span.custom_propagation_hook)
+        #serialized_headers = span.create_headers
+        puts "after assigning serialized_headers"
+
+        puts serialized_headers
+        puts "after serialized_headers"
+
         span.add_field "request.method", env.method.upcase
         span.add_field "request.scheme", env.url.scheme
         span.add_field "request.host", env.url.host
@@ -21,13 +35,15 @@ module Honeycomb
         span.add_field "meta.type", "http_client"
         span.add_field "meta.package", "faraday"
         span.add_field "meta.package_version", ::Faraday::VERSION
+        puts "about to merge objects"
 
-        env.request_headers["X-Honeycomb-Trace"] = span.to_trace_header
-
-
-        @app.call(env).tap do |response|
-          span.add_field "response.status_code", response.status
-        end
+        #env.request_headers = request_headers.merge(serialized_headers)
+        #puts env.request_headers
+        puts response
+        #@app.call(env).tap do |response|
+         # span.add_field "response.status_code", response.status
+        #end
+        puts "end of block"
       end
     end
   end

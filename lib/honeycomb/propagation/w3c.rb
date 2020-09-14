@@ -50,6 +50,10 @@ module Honeycomb
 
         nil
       end
+
+      def create_hash
+        { "traceparent" => to_trace_header }
+      end
     end
   end
 end
