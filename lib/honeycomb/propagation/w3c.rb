@@ -47,13 +47,14 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
+      TRACE_ID_REGEX = /^[A-Fa-f0-9]{32}$/.freeze
+      SPAN_ID_REGEX = /^[A-Fa-f0-9]{16}$/.freeze
+
       def to_trace_header(context: nil)
-        if context["trace_id"] && context["span_id"]
-          return "00-#{context['trace_id']}-#{context['span_id']}-01"
-        end
-        # do not propagate malformed ids
-        if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
-          return "00-#{trace.id}-#{id}-01"
+        trace_id, span_id = get_ids(context)
+        puts trace_id
+        unless trace_id.nil? || span_id.nil?
+          return "00-#{trace_id}-#{span_id}-01"
         end
 
         nil
@@ -61,6 +62,20 @@ module Honeycomb
 
       def create_hash(context: nil)
         { "traceparent" => to_trace_header(context: context) }
+      end
+
+      private
+
+      def get_ids(context)
+        trace_id = context.nil? ? trace.id : context["trace_id"]
+        span_id = context.nil? ? id : context["span_id"]
+
+        # do not propagate malformed ids
+        if trace_id =~ TRACE_ID_REGEX && span_id =~ SPAN_ID_REGEX
+          return [trace_id, span_id]
+        end
+
+        [nil, nil]
       end
     end
   end
