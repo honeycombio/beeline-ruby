@@ -24,7 +24,6 @@ module Honeycomb
                    builder:,
                    context:,
                    **options)
-      puts options[:additional_trace_options]
       @id = generate_span_id
       @context = context
       @context.current_span = self
@@ -73,6 +72,16 @@ module Honeycomb
 
       send_internal
     end
+
+    def propagation_context
+      {
+        "span_id" => id,
+        "trace_id" => trace.id,
+        "trace_context" => trace.fields,
+        "dataset" => builder.dataset,
+      }
+    end
+
 
     protected
 

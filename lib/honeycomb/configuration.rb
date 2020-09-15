@@ -70,7 +70,6 @@ module Honeycomb
     end
 
     def http_trace_propagation_hook(&hook)
-      puts "configuration"
       if block_given?
         @http_trace_propagation_hook = hook
       else

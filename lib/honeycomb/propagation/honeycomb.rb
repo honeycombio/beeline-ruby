@@ -15,7 +15,6 @@ module Honeycomb
       end
 
       def parse(serialized_trace)
-        puts serialized_trace
         unless serialized_trace.nil?
           version, payload = serialized_trace.split(";", 2)
 

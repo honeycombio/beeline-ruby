@@ -8,6 +8,11 @@ module Honeycomb
       INVALID_TRACE_ID = "00000000000000000000000000000000".freeze
       INVALID_SPAN_ID = "0000000000000000".freeze
 
+      def http_trace_parser_hook(env)
+        header = env["HTTP_TRACEPARENT"]
+        parse(header)
+      end
+
       def parse(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split("-", 2)
@@ -42,7 +47,10 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
-      def to_trace_header
+      def to_trace_header(context: nil)
+        if context["trace_id"] && context["span_id"]
+          return "00-#{context['trace_id']}-#{context['span_id']}-01"
+        end
         # do not propagate malformed ids
         if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
           return "00-#{trace.id}-#{id}-01"
@@ -51,8 +59,8 @@ module Honeycomb
         nil
       end
 
-      def create_hash
-        { "traceparent" => to_trace_header }
+      def create_hash(context: nil)
+        { "traceparent" => to_trace_header(context: context) }
       end
     end
   end

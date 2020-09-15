@@ -34,7 +34,6 @@ module Honeycomb
 
       @propagation_hooks = {
         custom_parser_hook: configuration.http_trace_parser_hook,
-        #custom_propagation_hook: configuration.http_trace_propagation_hook,
       }
 
       @additional_trace_options = {

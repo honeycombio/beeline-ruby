@@ -27,21 +27,14 @@ module Honeycomb
   # Serialize trace headers
   module PropagationSerializer
     include HoneycombPropagation::MarshalTraceContext
-
-    def create_headers(hook:)
-      puts hook
-      begin
-        if hook.nil?
-          puts "nil hook"
-          create_hash
-        else
-          puts "has custom hook"
-          hook.call
-        end
-      rescue => error
-        puts "error"
-        puts error
+    def create_headers
+      if custom_propagation_hook.nil?
+        create_hash
+      else
+        custom_propagation_hook.call(propagation_context)
       end
+    rescue StandardError => e
+      raise e
     end
   end
 end
