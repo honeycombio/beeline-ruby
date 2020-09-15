@@ -36,7 +36,7 @@ module Honeycomb
       parse_options(**options)
     end
 
-    def parse_options(parent: nil,
+    def parse_options(parent: nil, # rubocop:disable Metrics/ParameterLists
                       parent_id: nil,
                       is_root: parent_id.nil?,
                       sample_hook: nil,
@@ -81,7 +81,6 @@ module Honeycomb
         "dataset" => builder.dataset,
       }
     end
-
 
     protected
 
