@@ -73,11 +73,12 @@ module Honeycomb
       send_internal
     end
 
+    # for passing a propagation context object for a current Span
     def propagation_context
       {
-        "span_id" => id,
+        "parent_span_id" => id,
         "trace_id" => trace.id,
-        "trace_context" => trace.fields,
+        "trace_fields" => trace.fields,
         "dataset" => builder.dataset,
       }
     end

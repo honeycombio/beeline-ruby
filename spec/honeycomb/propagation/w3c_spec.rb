@@ -70,10 +70,54 @@ RSpec.describe Honeycomb::W3CPropagation::MarshalTraceContext do
     instance_double("Span", id: parent_id, trace: trace, builder: builder)
       .extend(subject)
   end
+  let(:propagation_context) do
+    return {
+      "parent_span_id" => parent_id,
+      "trace_id" => trace_id,
+      "trace_fields" => {},
+      "dataset" => builder.dataset,
+    }
+  end
+
+  let(:w3c_propagation) do
+    Class.new.extend(Honeycomb::W3CPropagation::MarshalTraceContext)
+  end
 
   it "can serialize a basic span" do
     expect(span.to_trace_header)
       .to eq("00-#{trace_id}-#{parent_id}-01")
+  end
+
+  it "serializes a trace header from a context" do
+    serialized = w3c_propagation.to_trace_header(context: propagation_context)
+    expect(serialized).to eq "00-#{trace_id}-#{parent_id}-01"
+  end
+
+  it "handles nil trace" do
+    propagation_context = {
+      "parent_span_id" => parent_id,
+      "trace_id" => nil,
+      "trace_fields" => {},
+      "dataset" => builder.dataset,
+    }
+    serialized = w3c_propagation.to_trace_header(context: propagation_context)
+    expect(serialized).to eq nil
+  end
+
+  it "handles malformed ids" do
+    propagation_context = {
+      "parent_span_id" => 0o10,
+      "trace_id" => "wrong",
+      "trace_fields" => nil,
+      "dataset" => builder.dataset,
+    }
+    serialized = w3c_propagation.to_trace_header(context: propagation_context)
+    expect(serialized).to eq nil
+  end
+
+  it "creates a hash from a context" do
+    headers = w3c_propagation.create_hash(context: propagation_context)
+    expect(headers["traceparent"]).to eq "00-#{trace_id}-#{parent_id}-01"
   end
 end
 
@@ -88,23 +132,23 @@ RSpec.describe "Propagation" do
       .extend(Honeycomb::W3CPropagation::MarshalTraceContext)
   end
 
-  let(:w3c_propagation) do
+  let(:w3c_parsing) do
     Class.new.extend(Honeycomb::W3CPropagation::UnmarshalTraceContext)
   end
 
-  let(:output) do
-    w3c_propagation.parse(span.to_trace_header)
+  let(:header) do
+    w3c_parsing.parse(span.to_trace_header)
   end
 
   it "returns nil dataset" do
-    expect(output[3]).to eq nil
+    expect(header[3]).to eq nil
   end
 
   it "produces the correct trace_id" do
-    expect(output[0]).to eq trace_id
+    expect(header[0]).to eq trace_id
   end
 
   it "produces the correct parent_span_id" do
-    expect(output[1]).to eq parent_id
+    expect(header[1]).to eq parent_id
   end
 end
