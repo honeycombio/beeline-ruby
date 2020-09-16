@@ -60,5 +60,21 @@ module Honeycomb
         @sample_hook
       end
     end
+
+    def http_trace_parser_hook(&hook)
+      if block_given?
+        @http_trace_parser_hook = hook
+      else
+        @http_trace_parser_hook
+      end
+    end
+
+    def http_trace_propagation_hook(&hook)
+      if block_given?
+        @http_trace_propagation_hook = hook
+      else
+        @http_trace_propagation_hook
+      end
+    end
   end
 end
