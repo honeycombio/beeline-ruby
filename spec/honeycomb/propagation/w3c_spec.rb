@@ -71,12 +71,7 @@ RSpec.describe Honeycomb::W3CPropagation::MarshalTraceContext do
       .extend(subject)
   end
   let(:propagation_context) do
-    return {
-      "parent_span_id" => parent_id,
-      "trace_id" => trace_id,
-      "trace_fields" => {},
-      "dataset" => builder.dataset,
-    }
+    return [trace_id, parent_id, {}, builder.dataset]
   end
 
   let(:w3c_propagation) do
@@ -84,7 +79,7 @@ RSpec.describe Honeycomb::W3CPropagation::MarshalTraceContext do
   end
 
   it "can serialize a basic span" do
-    expect(span.to_trace_header)
+    expect(span.to_trace_header(context: propagation_context))
       .to eq("00-#{trace_id}-#{parent_id}-01")
   end
 
@@ -131,13 +126,16 @@ RSpec.describe "Propagation" do
     instance_double("Span", id: parent_id, trace: trace, builder: builder)
       .extend(Honeycomb::W3CPropagation::MarshalTraceContext)
   end
+  let(:propagation_context) do
+    return [trace_id, parent_id, {}, builder.dataset]
+  end
 
   let(:w3c_parsing) do
     Class.new.extend(Honeycomb::W3CPropagation::UnmarshalTraceContext)
   end
 
   let(:header) do
-    w3c_parsing.parse(span.to_trace_header)
+    w3c_parsing.parse(span.to_trace_header(context: propagation_context))
   end
 
   it "returns nil dataset" do

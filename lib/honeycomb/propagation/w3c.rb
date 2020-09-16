@@ -51,7 +51,7 @@ module Honeycomb
       SPAN_ID_REGEX = /^[A-Fa-f0-9]{16}$/.freeze
 
       def to_trace_header(context: nil)
-        trace_id, span_id = get_ids(context)
+        trace_id, span_id = context
         unless trace_id.nil? || span_id.nil?
           return "00-#{trace_id}-#{span_id}-01"
         end
@@ -61,20 +61,6 @@ module Honeycomb
 
       def create_hash(context: nil)
         { "traceparent" => to_trace_header(context: context) }
-      end
-
-      private
-
-      def get_ids(context)
-        trace_id = context.nil? ? trace.id : context["trace_id"]
-        span_id = context.nil? ? id : context["parent_span_id"]
-
-        # do not propagate malformed ids
-        if trace_id =~ TRACE_ID_REGEX && span_id =~ SPAN_ID_REGEX
-          return [trace_id, span_id]
-        end
-
-        [nil, nil]
       end
     end
   end

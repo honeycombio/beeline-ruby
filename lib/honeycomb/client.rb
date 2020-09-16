@@ -10,7 +10,7 @@ module Honeycomb
   class Client
     extend Forwardable
 
-    attr_reader :libhoney, :propagation_hooks
+    attr_reader :libhoney, :parser_hook
 
     def_delegators :@context, :current_span, :current_trace
 
@@ -32,15 +32,14 @@ module Honeycomb
       @libhoney.add_field "service_name", configuration.service_name
       @context = Context.new
 
-      @propagation_hooks = {
-        custom_parser_hook: configuration.http_trace_parser_hook,
-      }
-
       @additional_trace_options = {
         presend_hook: configuration.presend_hook,
         sample_hook: configuration.sample_hook,
-        custom_propagation_hook: configuration.http_trace_propagation_hook,
+        propagation_hook: configuration.http_trace_propagation_hook,
+        parser_hook: configuration.http_trace_parser_hook,
       }
+
+      @parser_hook = @additional_trace_options[:parser_hook]
 
       configuration.after_initialize(self)
 

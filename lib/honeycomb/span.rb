@@ -18,7 +18,7 @@ module Honeycomb
     def_delegators :@event, :add_field, :add
     def_delegator :@trace, :add_field, :add_trace_field
 
-    attr_reader :id, :trace, :custom_propagation_hook
+    attr_reader :id, :trace, :propagation_hook
 
     def initialize(trace:,
                    builder:,
@@ -41,7 +41,7 @@ module Honeycomb
                       is_root: parent_id.nil?,
                       sample_hook: nil,
                       presend_hook: nil,
-                      custom_propagation_hook: nil,
+                      propagation_hook: nil,
                       **_options)
       @parent = parent
       # parent_id should be removed in the next major version bump. It has been
@@ -51,7 +51,7 @@ module Honeycomb
       @is_root = is_root
       @presend_hook = presend_hook
       @sample_hook = sample_hook
-      @custom_propagation_hook = custom_propagation_hook
+      @propagation_hook = propagation_hook
     end
 
     def create_child
@@ -61,7 +61,7 @@ module Honeycomb
                      parent: self,
                      parent_id: id,
                      sample_hook: sample_hook,
-                     custom_propagation_hook: custom_propagation_hook,
+                     propagation_hook: propagation_hook,
                      presend_hook: presend_hook).tap do |c|
         children << c
       end
@@ -74,13 +74,13 @@ module Honeycomb
     end
 
     # for passing a propagation context object for a current Span
-    def propagation_context
-      {
-        "parent_span_id" => id,
-        "trace_id" => trace.id,
-        "trace_fields" => trace.fields,
-        "dataset" => builder.dataset,
-      }
+    def propagation_context_from_span
+      trace_id = trace.id
+      parent_span_id = id
+      trace_fields = trace.fields
+      dataset = builder.dataset
+
+      [trace_id, parent_span_id, trace_fields, dataset]
     end
 
     protected

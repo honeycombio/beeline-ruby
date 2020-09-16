@@ -23,7 +23,6 @@ module Honeycomb
       propagation_context: nil,
       **options
     )
-
       # if a propagation context hash was successfully created, use that
       # otherwise fall back to previous behavior of parsing a string
       if propagation_context
