@@ -6,7 +6,7 @@ module Honeycomb
     # Parse trace headers
     module UnmarshalTraceContext
       def http_trace_parser_hook(env)
-        header = env["HTTP_X-AMZN-TRACE-ID"]
+        header = env["HTTP_X_AMZN_TRACE_ID"]
         parse(header)
       end
 
