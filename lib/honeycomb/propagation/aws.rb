@@ -5,6 +5,11 @@ module Honeycomb
   module AWSPropagation
     # Parse trace headers
     module UnmarshalTraceContext
+      def http_trace_parser_hook(env)
+        header = env["HTTP_X-AMZN-TRACE-ID"]
+        parse(header)
+      end
+
       def parse(serialized_trace)
         unless serialized_trace.nil?
           split = serialized_trace.split(";")
@@ -60,6 +65,10 @@ module Honeycomb
           "Parent=#{id}",
         ]
         "#{data_to_propagate.join(';')}#{context.join(';')}"
+      end
+
+      def http_trace_propagation_hook
+        { "X-Amzn-Trace-Id" => to_trace_header }
       end
     end
   end

@@ -29,7 +29,7 @@ module Honeycomb
     include HoneycombPropagation::MarshalTraceContext
     def create_headers
       if propagation_hook.nil?
-        create_hash
+        http_trace_propagation_hook
       else
         propagation_hook.call(propagation_context_from_span)
       end

@@ -70,7 +70,7 @@ module Honeycomb
         "1;#{data_to_propogate.join(',')}"
       end
 
-      def create_hash
+      def http_trace_propagation_hook
         { "X-Honeycomb-Trace" => to_trace_header }
       end
     end

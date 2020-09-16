@@ -111,7 +111,9 @@ RSpec.describe Honeycomb::W3CPropagation::MarshalTraceContext do
   end
 
   it "creates a hash from a context" do
-    headers = w3c_propagation.create_hash(context: propagation_context)
+    headers = w3c_propagation.http_trace_propagation_hook(
+      context: propagation_context,
+    )
     expect(headers["traceparent"]).to eq "00-#{trace_id}-#{parent_id}-01"
   end
 end

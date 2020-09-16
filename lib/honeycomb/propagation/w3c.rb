@@ -59,7 +59,7 @@ module Honeycomb
         nil
       end
 
-      def create_hash(context: nil)
+      def http_trace_propagation_hook(context: nil)
         { "traceparent" => to_trace_header(context: context) }
       end
     end
