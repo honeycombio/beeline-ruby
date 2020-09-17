@@ -27,13 +27,6 @@ if defined?(Honeycomb::Faraday)
         expect(response.env[:url].to_s).to eq("https://www.honeycomb.io")
       end
 
-      it "contains the expected request headers" do
-        expect(
-          response.env.request_headers["X-Honeycomb-Trace"].to_s,
-        ).to match(
-          /^1;trace_id=[A-Fa-f0-9]{32},parent_id=[A-Fa-f0-9]{16},context=.{1,},dataset=$/)
-      end
-
       it "sends the right amount of events" do
         expect(libhoney_client.events.size).to eq 1
       end
