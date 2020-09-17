@@ -65,5 +65,14 @@ module Honeycomb
         "1;#{data_to_propogate.join(',')}"
       end
     end
+
+    # Class for easy importing
+    class Parser
+      include Honeycomb::HoneycombPropagation::UnmarshalTraceContext
+      def unmarshal_trace_context(env)
+        trace_header = env["HTTP_X_HONEYCOMB_TRACE"]
+        parse(trace_header)
+      end
+    end
   end
 end

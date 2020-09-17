@@ -4,6 +4,7 @@ require "forwardable"
 require "honeycomb/beeline/version"
 require "honeycomb/configuration"
 require "honeycomb/context"
+require "honeycomb/propagation/honeycomb"
 
 module Honeycomb
   # The Honeycomb Beeline client
@@ -35,12 +36,23 @@ module Honeycomb
       @additional_trace_options = {
         presend_hook: configuration.presend_hook,
         sample_hook: configuration.sample_hook,
+        parser_hook: configuration.http_trace_parser_hook,
+        propagation_hook: configuration.http_trace_propagation_hook,
       }
 
       configuration.after_initialize(self)
 
       at_exit do
         libhoney.close
+      end
+    end
+
+    def propagation_context_from_req(env)
+      if @additional_trace_options[:parser_hook].nil?
+        parser = Honeycomb::HoneycombPropagation::Parser.new
+        parser.unmarshal_trace_context(env)
+      else
+        @additional_trace_options[:parser_hook].call(env)
       end
     end
 
