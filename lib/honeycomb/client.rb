@@ -62,7 +62,7 @@ module Honeycomb
       parser_hook.call(env)
     end
 
-    def header_from_propagation_context(propagation_context)
+    def headers_from_propagation_context(propagation_context)
       # set default propagator to honeycomb
       propagator = Honeycomb::HoneycombPropagation::Propagator.new
       propagation_hook = lambda do |context|
