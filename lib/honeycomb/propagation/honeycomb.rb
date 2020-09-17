@@ -70,10 +70,10 @@ module Honeycomb
         encoded_dataset = URI.encode_www_form_component(dataset)
 
         data_to_propagate = [
-          "dataset=#{encoded_dataset}",
           "trace_id=#{trace_id}",
           "parent_id=#{span_id}",
           "context=#{encoded_trace_fields}",
+          "dataset=#{encoded_dataset}",
         ]
         "1;#{data_to_propagate.join(',')}"
       end
