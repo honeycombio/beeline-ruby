@@ -25,7 +25,7 @@ module Honeycomb
         propagation_context = span.propagation_context
 
         trace_headers =
-          @client.header_from_propagation_context(propagation_context)
+          @client.headers_from_propagation_context(propagation_context)
 
         env.request_headers = trace_headers.merge(env.request_headers)
 
