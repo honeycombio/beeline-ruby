@@ -48,7 +48,6 @@ module Honeycomb
     end
 
     def propagation_context_from_req(env:)
-      puts "propagation_context_from_req"
       custom_hook = @additional_trace_options[:parser_hook]
       if custom_hook.nil?
         parser = Honeycomb::HoneycombPropagation::Parser.new
@@ -58,11 +57,15 @@ module Honeycomb
       end
     end
 
-    def start_span(name:, serialized_trace: nil, **fields)
+    def start_span(
+      name:, serialized_trace: nil, propagation_context: nil,
+      **fields
+    )
       if context.current_trace.nil?
         Trace.new(serialized_trace: serialized_trace,
                   builder: libhoney.builder,
                   context: context,
+                  propagation_context: propagation_context,
                   **@additional_trace_options)
       else
         context.current_span.create_child
