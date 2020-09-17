@@ -25,6 +25,13 @@ Built in instrumentation for:
 - Sequel
 - Sinatra
 
+## Testing
+Find `rspec` test files in the `spec` directory.
+
+To run tests on gem-specific instrumentations or across various dependency versions, use [appraisal](https://github.com/thoughtbot/appraisal) (further instructions in the readme for that gem). Find gem sets in the `Appraisals` config.
+
+To run a specific file: `bundle exec appraisal <gem set> rspec <path/to/file>`
+
 ## Get in touch
 
 Please reach out to [support@honeycomb.io](mailto:support@honeycomb.io) or ping
