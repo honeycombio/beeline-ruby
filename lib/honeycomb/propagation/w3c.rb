@@ -46,7 +46,12 @@ module Honeycomb
       SPAN_ID_REGEX = /^[A-Fa-f0-9]{16}$/.freeze
 
       def to_trace_header(propagation_context: nil)
-        trace_id, span_id = propagation_context
+        if propagation_context.nil?
+          trace_id = trace.id
+          span_id = id
+        else
+          trace_id, span_id = propagation_context
+        end
         # do not propagate malformed ids
         if trace_id =~ TRACE_ID_REGEX && span_id =~ SPAN_ID_REGEX
           return "00-#{trace_id}-#{span_id}-01"
