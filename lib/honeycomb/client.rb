@@ -47,7 +47,7 @@ module Honeycomb
       end
     end
 
-    def propagation_context_from_req(env)
+    def propagation_context_from_req(env:)
       if @additional_trace_options[:parser_hook].nil?
         parser = Honeycomb::HoneycombPropagation::Parser.new
         parser.unmarshal_trace_context(env)
