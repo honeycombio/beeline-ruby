@@ -21,6 +21,9 @@ module Honeycomb
       builder:, context:, serialized_trace: nil, propagation_context: nil,
       **options
     )
+      puts "builder"
+      puts builder.dataset
+
       if propagation_context.nil?
         trace_id, parent_span_id, trace_fields, dataset =
           parse serialized_trace
@@ -29,6 +32,8 @@ module Honeycomb
       end
 
       dataset && builder.dataset = dataset
+      puts builder.dataset
+
       @id = trace_id || generate_trace_id
       @fields = trace_fields || {}
       @root_span = Span.new(trace: self,
