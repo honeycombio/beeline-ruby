@@ -48,11 +48,13 @@ module Honeycomb
     end
 
     def propagation_context_from_req(env:)
-      if @additional_trace_options[:parser_hook].nil?
+      puts "propagation_context_from_req"
+      custom_hook = @additional_trace_options[:parser_hook]
+      if custom_hook.nil?
         parser = Honeycomb::HoneycombPropagation::Parser.new
         parser.unmarshal_trace_context(env)
       else
-        @additional_trace_options[:parser_hook].call(env)
+        custom_hook.call(env)
       end
     end
 

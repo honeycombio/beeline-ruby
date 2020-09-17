@@ -51,5 +51,14 @@ module Honeycomb
         nil
       end
     end
+
+    # Class for easy importing
+    class Parser
+      include Honeycomb::W3CPropagation::UnmarshalTraceContext
+      def unmarshal_trace_context(env)
+        trace_header = env["HTTP_TRACEPARENT"]
+        parse(trace_header)
+      end
+    end
   end
 end

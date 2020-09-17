@@ -5,6 +5,8 @@ require "json"
 require "uri"
 
 require "honeycomb/propagation/honeycomb"
+require "honeycomb/propagation/w3c"
+require "honeycomb/propagation/aws"
 
 module Honeycomb
   # Parse trace headers
