@@ -77,7 +77,7 @@ RSpec.describe Honeycomb::PropagationSerializer do
 
   it "can serialize a basic span" do
     expect(span.to_trace_header)
-      .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+      .to eq("1;trace_id=2,parent_id=1,context=e30=,dataset=rails")
   end
 end
 
