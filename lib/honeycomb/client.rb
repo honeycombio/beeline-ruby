@@ -48,23 +48,33 @@ module Honeycomb
     end
 
     def propagation_context_from_req(env:)
-      custom_hook = @additional_trace_options[:parser_hook]
-      if custom_hook.nil?
-        parser = Honeycomb::HoneycombPropagation::Parser.new
-        parser.unmarshal_trace_context(env)
-      else
-        custom_hook.call(env)
+      # set default parser to honeycomb
+      parser = Honeycomb::HoneycombPropagation::Parser.new
+      parser_hook = lambda do |req|
+        parser.http_trace_parser_hook(req)
       end
+
+      # if there's a custom hook, overwrite parser_hook with it
+      unless @additional_trace_options[:parser_hook].nil?
+        parser_hook = lambda @additional_trace_options[:parser_hook]
+      end
+
+      parser_hook.call(env)
     end
 
     def header_from_propagation_context(propagation_context)
-      custom_hook = @additional_trace_options[:propagation_hook]
-      if custom_hook.nil?
-        propagator = Honeycomb::HoneycombPropagation::Propagator.new
-        propagator.marshal_trace_context(propagation_context)
-      else
-        custom_hook.call(propagation_context)
+      # set default propagator to honeycomb
+      parser = Honeycomb::HoneycombPropagation::Propagator.new
+      propagation_hook = lambda do |context|
+        parser.http_trace_propagation_hook(context)
       end
+
+      # if there's a custom hook, overwrite propagation_hook with it
+      unless @additional_trace_options[:parser_hook].nil?
+        propagation_hook = lambda @additional_trace_options[:propagation_hook]
+      end
+
+      propagation_hook.call(propagation_context)
     end
 
     def start_span(

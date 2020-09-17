@@ -64,7 +64,7 @@ module Honeycomb
     # Class for easy importing
     class Parser
       include Honeycomb::W3CPropagation::UnmarshalTraceContext
-      def unmarshal_trace_context(env)
+      def http_trace_parser_hook(env)
         trace_header = env["HTTP_TRACEPARENT"]
         parse(trace_header)
       end
@@ -73,7 +73,7 @@ module Honeycomb
     # class for easy importing and custom usage
     class Propagator
       include Honeycomb::W3CPropagation::MarshalTraceContext
-      def marshal_trace_context(propagation_context)
+      def http_trace_propagation_hook(propagation_context)
         serialized = to_trace_header(propagation_context: propagation_context)
         { "traceparent" => serialized }
       end
