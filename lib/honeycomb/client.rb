@@ -64,13 +64,13 @@ module Honeycomb
 
     def header_from_propagation_context(propagation_context)
       # set default propagator to honeycomb
-      parser = Honeycomb::HoneycombPropagation::Propagator.new
+      propagator = Honeycomb::HoneycombPropagation::Propagator.new
       propagation_hook = lambda do |context|
-        parser.http_trace_propagation_hook(context)
+        propagator.http_trace_propagation_hook(context)
       end
 
       # if there's a custom hook, overwrite propagation_hook with it
-      unless @additional_trace_options[:parser_hook].nil?
+      unless @additional_trace_options[:propagation_hook].nil?
         propagation_hook = lambda @additional_trace_options[:propagation_hook]
       end
 
