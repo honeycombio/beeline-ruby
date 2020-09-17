@@ -47,19 +47,45 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
-      def to_trace_header
+      def to_trace_header(propagation_context: nil)
+        if propagation_context.nil?
+          trace_id = trace.id
+          span_id = id
+          trace_fields = trace.fields
+        else
+          trace_id, span_id, trace_fields = propagation_context
+        end
+
         context = [""]
-        unless trace.fields.keys.nil?
-          trace.fields.keys.each do |key|
-            context.push("#{key}=#{trace.fields[key]}")
+        unless trace_fields.keys.nil?
+          trace_fields.keys.each do |key|
+            context.push("#{key}=#{trace_fields[key]}")
           end
         end
 
         data_to_propagate = [
-          "Root=#{trace.id}",
-          "Parent=#{id}",
+          "Root=#{trace_id}",
+          "Parent=#{span_id}",
         ]
         "#{data_to_propagate.join(';')}#{context.join(';')}"
+      end
+    end
+
+    # Class for easy importing
+    class Parser
+      include Honeycomb::AWSPropagation::UnmarshalTraceContext
+      def unmarshal_trace_context(env)
+        trace_header = env["HTTP_X_AMZN_TRACE_ID"]
+        parse(trace_header)
+      end
+    end
+
+    # class for easy importing and custom usage
+    class Propagator
+      include Honeycomb::AWSPropagation::MarshalTraceContext
+      def marshal_trace_context(propagation_context)
+        serialized = to_trace_header(propagation_context: propagation_context)
+        { "X-Amzn-Trace-Id" => serialized }
       end
     end
   end
