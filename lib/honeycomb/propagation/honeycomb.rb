@@ -53,16 +53,29 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
-      def to_trace_header
-        context = Base64.urlsafe_encode64(JSON.generate(trace.fields)).strip
-        encoded_dataset = URI.encode_www_form_component(builder.dataset)
-        data_to_propogate = [
+      def to_trace_header(propagation_context: nil)
+        if propagation_context.nil?
+          trace_id = trace.id
+          span_id = id
+          trace_fields = trace.fields
+          dataset = builder.dataset
+        else
+          trace_id, span_id, trace_fields, dataset = propagation_context
+        end
+
+        encoded_trace_fields = Base64.urlsafe_encode64(
+          JSON.generate(trace_fields),
+        ).strip
+
+        encoded_dataset = URI.encode_www_form_component(dataset)
+
+        data_to_propagate = [
           "dataset=#{encoded_dataset}",
-          "trace_id=#{trace.id}",
-          "parent_id=#{id}",
-          "context=#{context}",
+          "trace_id=#{trace_id}",
+          "parent_id=#{span_id}",
+          "context=#{encoded_trace_fields}",
         ]
-        "1;#{data_to_propogate.join(',')}"
+        "1;#{data_to_propagate.join(',')}"
       end
     end
 
@@ -72,6 +85,14 @@ module Honeycomb
       def unmarshal_trace_context(env)
         trace_header = env["HTTP_X_HONEYCOMB_TRACE"]
         parse(trace_header)
+      end
+    end
+
+    # blah blah propagator
+    class Propagator
+      include Honeycomb::HoneycombPropagation::MarshalTraceContext
+      def marshal_trace_context(propagation_context)
+        to_trace_header(propagation_context: propagation_context)
       end
     end
   end

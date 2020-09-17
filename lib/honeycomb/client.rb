@@ -57,6 +57,16 @@ module Honeycomb
       end
     end
 
+    def header_from_propagation_context(propagation_context)
+      custom_hook = @additional_trace_options[:propagation_hook]
+      if custom_hook.nil?
+        propagator = Honeycomb::HoneycombPropagation::Propagator.new
+        propagator.marshal_trace_context(propagation_context)
+      else
+        custom_hook.call(propagation_context)
+      end
+    end
+
     def start_span(
       name:, serialized_trace: nil, propagation_context: nil,
       **fields
