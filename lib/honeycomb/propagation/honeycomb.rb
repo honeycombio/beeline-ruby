@@ -92,7 +92,8 @@ module Honeycomb
     class Propagator
       include Honeycomb::HoneycombPropagation::MarshalTraceContext
       def marshal_trace_context(propagation_context)
-        to_trace_header(propagation_context: propagation_context)
+        serialized = to_trace_header(propagation_context: propagation_context)
+        { "X-Honeycomb-Trace" => serialized }
       end
     end
   end

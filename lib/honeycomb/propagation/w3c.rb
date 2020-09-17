@@ -42,10 +42,14 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
+      TRACE_ID_REGEX = /^[A-Fa-f0-9]{32}$/.freeze
+      SPAN_ID_REGEX = /^[A-Fa-f0-9]{16}$/.freeze
+
       def to_trace_header(propagation_context: nil)
+        trace_id, span_id = propagation_context
         # do not propagate malformed ids
-        if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
-          return "00-#{trace.id}-#{id}-01"
+        if trace_id =~ TRACE_ID_REGEX && span_id =~ SPAN_ID_REGEX
+          return "00-#{trace_id}-#{span_id}-01"
         end
 
         nil
@@ -65,7 +69,8 @@ module Honeycomb
     class Propagator
       include Honeycomb::W3CPropagation::MarshalTraceContext
       def marshal_trace_context(propagation_context)
-        to_trace_header(propagation_context: propagation_context)
+        serialized = to_trace_header(propagation_context: propagation_context)
+        { "traceparent" => serialized }
       end
     end
   end

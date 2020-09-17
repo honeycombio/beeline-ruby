@@ -24,8 +24,11 @@ module Honeycomb
 
         propagation_context = span.propagation_context
 
-        env.request_headers["X-Honeycomb-Trace"] =
+        trace_headers =
           @client.header_from_propagation_context(propagation_context)
+
+        env.request_headers = trace_headers.merge(env.request_headers)
+        puts env.request_headers
 
         @app.call(env).tap do |response|
           span.add_field "response.status_code", response.status
