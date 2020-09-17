@@ -5,6 +5,7 @@ require "securerandom"
 require "honeycomb/propagation"
 require "honeycomb/deterministic_sampler"
 require "honeycomb/rollup_fields"
+require "honeycomb/propagation/honeycomb"
 
 module Honeycomb
   # Represents a Honeycomb span, which wraps a Honeycomb event and adds specific
@@ -63,6 +64,10 @@ module Honeycomb
                      presend_hook: presend_hook).tap do |c|
         children << c
       end
+    end
+
+    def propagation_context
+      context.current_span_context
     end
 
     def send

@@ -42,7 +42,7 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
-      def to_trace_header
+      def to_trace_header(propagation_context: nil)
         # do not propagate malformed ids
         if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
           return "00-#{trace.id}-#{id}-01"
@@ -58,6 +58,14 @@ module Honeycomb
       def unmarshal_trace_context(env)
         trace_header = env["HTTP_TRACEPARENT"]
         parse(trace_header)
+      end
+    end
+
+    # class for easy importing and custom usage
+    class Propagator
+      include Honeycomb::W3CPropagation::MarshalTraceContext
+      def marshal_trace_context(propagation_context)
+        to_trace_header(propagation_context: propagation_context)
       end
     end
   end
