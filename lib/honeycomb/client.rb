@@ -56,7 +56,9 @@ module Honeycomb
 
       # if there's a custom hook, overwrite parser_hook with it
       unless @additional_trace_options[:parser_hook].nil?
-        parser_hook = lambda @additional_trace_options[:parser_hook]
+        parser_hook = lambda do |req|
+          @additional_trace_options[:parser_hook].call(req)
+        end
       end
 
       parser_hook.call(env)
@@ -71,7 +73,9 @@ module Honeycomb
 
       # if there's a custom hook, overwrite propagation_hook with it
       unless @additional_trace_options[:propagation_hook].nil?
-        propagation_hook = lambda @additional_trace_options[:propagation_hook]
+        propagation_hook = lambda do |context|
+          @additional_trace_options[:propagation_hook].call(context)
+        end
       end
 
       propagation_hook.call(propagation_context)
