@@ -13,6 +13,15 @@ module Honeycomb
       spans.last
     end
 
+    def current_span_context(span: current_span)
+      trace_id = span.trace.id
+      span_id = span.id
+      trace_fields = span.trace.fields
+      dataset = span.dataset
+
+      [trace_id, span_id, trace_fields, dataset]
+    end
+
     def current_span=(span)
       spans << span
     end

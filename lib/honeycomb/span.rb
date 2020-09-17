@@ -18,7 +18,7 @@ module Honeycomb
     def_delegators :@event, :add_field, :add
     def_delegator :@trace, :add_field, :add_trace_field
 
-    attr_reader :id, :trace
+    attr_reader :id, :trace, :dataset
 
     def initialize(trace:,
                    builder:,
@@ -33,6 +33,7 @@ module Honeycomb
       @children = []
       @sent = false
       @started = clock_time
+      @dataset = builder.dataset
       parse_options(**options)
     end
 
