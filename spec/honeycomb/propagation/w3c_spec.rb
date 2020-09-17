@@ -70,9 +70,12 @@ RSpec.describe Honeycomb::W3CPropagation::MarshalTraceContext do
     instance_double("Span", id: parent_id, trace: trace, builder: builder)
       .extend(subject)
   end
+  let(:propagation_context) do
+    span.propagation_context
+  end
 
   it "can serialize a basic span" do
-    expect(span.to_trace_header)
+    expect(span.to_trace_header(propagation_context))
       .to eq("00-#{trace_id}-#{parent_id}-01")
   end
 end
