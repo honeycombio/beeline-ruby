@@ -75,7 +75,8 @@ RSpec.describe Honeycomb::W3CPropagation::MarshalTraceContext do
   end
 
   it "can serialize a basic span" do
-    expect(span.to_trace_header(propagation_context))
+    puts span.propagation_context
+    expect(span.to_trace_header)
       .to eq("00-#{trace_id}-#{parent_id}-01")
   end
 end
