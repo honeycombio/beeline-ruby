@@ -71,6 +71,7 @@ RSpec.describe Honeycomb::Span do
 
   describe "sample_hook and presend_hook behaviour" do
     let(:presend_hook) { nil }
+    let(:sample_excludes_child_spans) { nil }
     let(:sample_rate) { 1 }
     let(:sample_hook) do
       lambda do |_fields|
@@ -83,7 +84,8 @@ RSpec.describe Honeycomb::Span do
                           builder: builder,
                           context: context,
                           sample_hook: sample_hook,
-                          presend_hook: presend_hook)
+                          presend_hook: presend_hook,
+                          sample_excludes_child_spans: sample_excludes_child_spans)
     end
 
     describe "when the sampling hook returns false" do
@@ -92,6 +94,16 @@ RSpec.describe Honeycomb::Span do
       it "does not send the event" do
         expect { span.send }.not_to(change { libhoney_client.events })
       end
+
+      describe "with sample_excludes_child_spans set" do
+        let(:sample_excludes_child_spans) { true }
+        it "does not send child events either" do
+          child = span.create_child
+          expect(child).not_to receive(:send_internal)
+          span.send
+        end
+      end
+
     end
 
     describe "when a span creates a child span" do
@@ -148,6 +160,17 @@ RSpec.describe Honeycomb::Span do
         span.send
         expect(libhoney_client.events)
           .to all(have_attributes(sample_rate: sample_rate))
+      end
+
+      describe "with sample_excludes_child_spans set" do
+        let(:sample_excludes_child_spans) { true }
+        it "sends child events" do
+          child = span.create_child
+          expect(child).to receive(:send_internal).and_call_original
+          allow(presend_hook).to receive(:call)
+
+          span.send
+        end
       end
     end
   end

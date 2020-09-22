@@ -9,6 +9,7 @@ module Honeycomb
     attr_accessor :write_key,
                   :dataset,
                   :api_host,
+                  :sample_excludes_child_spans,
                   :debug
 
     attr_writer :service_name, :client, :host_name
