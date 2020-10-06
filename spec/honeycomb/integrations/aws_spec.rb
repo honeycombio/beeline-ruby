@@ -751,11 +751,11 @@ if defined?(Honeycomb::Aws)
         api, sdk = event_data
         expect(sdk).to include(
           "aws.error" => "Aws::DynamoDB::Errors::Http500Error",
-          "aws.error_detail" => "",
+          "aws.error_detail" => an_instance_of(String),
         )
         expect(api).to include(
           "response.error" => "Http500Error",
-          "response.error_detail" => "",
+          "response.error_detail" => an_instance_of(String),
         )
       end
     end
