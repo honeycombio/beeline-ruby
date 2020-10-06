@@ -34,4 +34,7 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # allow :focus to be applied to specific tests for debugging
+  config.filter_run_when_matching :focus
 end
