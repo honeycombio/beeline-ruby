@@ -6,9 +6,10 @@ module Honeycomb
   # Used to configure the Honeycomb client
   class Configuration
     attr_accessor :write_key,
-                  :dataset,
                   :api_host,
                   :debug
+
+    attr_reader :dataset
 
     attr_writer :service_name, :client, :host_name
 
@@ -18,6 +19,10 @@ module Honeycomb
       @service_name = ENV["HONEYCOMB_SERVICE"]
       @debug = ENV.key?("HONEYCOMB_DEBUG")
       @client = nil
+    end
+
+    def dataset=(dataset)
+      @dataset = dataset.empty? ? nil : dataset
     end
 
     def service_name

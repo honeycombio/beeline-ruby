@@ -67,4 +67,14 @@ RSpec.describe Honeycomb::Configuration do
       expect(configuration.service_name).to eq service_name
     end
   end
+
+  describe "empty dataset" do
+    before do
+      configuration.dataset = ""
+    end
+
+    it "sets dataset to nil" do
+      expect(configuration.dataset).to eq nil
+    end
+  end
 end
