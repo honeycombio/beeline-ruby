@@ -6,11 +6,15 @@ RSpec.describe Honeycomb::Client do
   let(:libhoney_client) { Libhoney::TestClient.new }
   let(:presend_hook) { proc {} }
   let(:sample_hook) { proc {} }
+  let(:parser_hook) { proc {} }
+  let(:propagation_hook) { proc {} }
   let(:configuration) do
     Honeycomb::Configuration.new.tap do |config|
       config.client = libhoney_client
       config.presend_hook(&presend_hook)
       config.sample_hook(&sample_hook)
+      config.http_trace_parser_hook(&parser_hook)
+      config.http_trace_propagation_hook(&propagation_hook)
     end
   end
   subject(:client) { Honeycomb::Client.new(configuration: configuration) }
@@ -21,6 +25,8 @@ RSpec.describe Honeycomb::Client do
       .with(hash_including(
               presend_hook: presend_hook,
               sample_hook: sample_hook,
+              parser_hook: parser_hook,
+              propagation_hook: propagation_hook,
             ))
       .and_call_original
 
