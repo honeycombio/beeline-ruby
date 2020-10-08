@@ -16,6 +16,10 @@ RSpec.describe Honeycomb::Configuration do
     end
     configuration.sample_hook do
     end
+    configuration.http_trace_parser_hook do
+    end
+    configuration.http_trace_propagation_hook do
+    end
   end
 
   it "has a presend_hook" do
@@ -24,6 +28,14 @@ RSpec.describe Honeycomb::Configuration do
 
   it "has a sample_hook" do
     expect(configuration.sample_hook).to respond_to(:call)
+  end
+
+  it "has a http_trace_parser_hook" do
+    expect(configuration.http_trace_parser_hook).to respond_to(:call)
+  end
+
+  it "has a http_trace_propagation_hook" do
+    expect(configuration.http_trace_propagation_hook).to respond_to(:call)
   end
 
   it "has a default service_name" do
