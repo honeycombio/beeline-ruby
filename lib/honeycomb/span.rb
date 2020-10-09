@@ -34,13 +34,14 @@ module Honeycomb
       @sent = false
       @started = clock_time
       parse_options(**options)
+      parse_hooks(**options)
     end
 
     def parse_options(parent: nil,
                       parent_id: nil,
                       is_root: parent_id.nil?,
-                      sample_hook: nil,
-                      presend_hook: nil,
+                      _sample_hook: nil,
+                      _presend_hook: nil,
                       **_options)
       @parent = parent
       # parent_id should be removed in the next major version bump. It has been
@@ -48,8 +49,15 @@ module Honeycomb
       # compatability
       @parent_id = parent_id
       @is_root = is_root
+    end
+
+    def parse_hooks(sample_hook: nil,
+                    presend_hook: nil,
+                    propagation_hook: nil,
+                    **_options)
       @presend_hook = presend_hook
       @sample_hook = sample_hook
+      @propagation_hook = propagation_hook
     end
 
     def create_child
@@ -68,6 +76,14 @@ module Honeycomb
       return if sent?
 
       send_internal
+    end
+
+    def trace_headers
+      if propagation_hook
+        propagation_hook.call([trace.id, id, trace.fields, builder.dataset])
+      else
+        {}
+      end
     end
 
     protected
@@ -94,7 +110,8 @@ module Honeycomb
                 :builder,
                 :context,
                 :presend_hook,
-                :sample_hook
+                :sample_hook,
+                :propagation_hook
 
     def sent?
       @sent

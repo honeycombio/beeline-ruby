@@ -28,6 +28,36 @@ RSpec.describe Honeycomb::Span do
   let(:builder) { libhoney_client.builder }
   let(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
 
+  describe "propagation_hook behaviour" do
+    describe "when propagation_hook is provided" do
+      let(:propagation_hook) { double("propagation_hook") }
+      subject(:span) do
+        Honeycomb::Span.new(trace: trace,
+                            builder: builder,
+                            context: context,
+                            propagation_hook: propagation_hook)
+      end
+
+      it "calls the propagation_hook with the expected parameters" do
+        expect(propagation_hook)
+          .to receive(:call).with([trace.id, span.id, {}, nil])
+        span.trace_headers
+      end
+    end
+
+    describe "when propagation_hook is not provided" do
+      subject(:span) do
+        Honeycomb::Span.new(trace: trace,
+                            builder: builder,
+                            context: context)
+      end
+
+      it "still returns a hash" do
+        expect(span.trace_headers).to be_a(Hash)
+      end
+    end
+  end
+
   describe "sample_hook and presend_hook behaviour" do
     let(:presend_hook) { nil }
     let(:sample_rate) { 1 }
