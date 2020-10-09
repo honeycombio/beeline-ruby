@@ -22,12 +22,9 @@ module Honeycomb
         span.add_field "meta.package", "faraday"
         span.add_field "meta.package_version", ::Faraday::VERSION
 
-        propagation_context = span.propagation_context
-
-        trace_headers =
-          @client.headers_from_propagation_context(propagation_context)
-
-        env.request_headers = trace_headers.merge(env.request_headers)
+        if (headers = span.trace_headers).is_a?(Hash)
+          env.request_headers.merge!(headers)
+        end
 
         @app.call(env).tap do |response|
           span.add_field "response.status_code", response.status

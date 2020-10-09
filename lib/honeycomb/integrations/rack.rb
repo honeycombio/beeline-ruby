@@ -32,14 +32,9 @@ module Honeycomb
 
     def call(env)
       req = ::Rack::Request.new(env)
-      hny = env["HTTP_X_HONEYCOMB_TRACE"]
-
-      propagation_context = client.propagation_context_from_req(env: env)
-
       client.start_span(
         name: "http_request",
-        serialized_trace: hny,
-        propagation_context: propagation_context,
+        serialized_trace: env,
       ) do |span|
         add_field = lambda do |key, value|
           unless value.nil? || (value.respond_to?(:empty?) && value.empty?)
