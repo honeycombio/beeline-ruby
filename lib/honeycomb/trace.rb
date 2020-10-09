@@ -17,20 +17,11 @@ module Honeycomb
 
     attr_reader :id, :fields, :root_span
 
-    def initialize(
-      builder:, context:, serialized_trace: nil, propagation_context: nil,
-      **options
-    )
-
-      if propagation_context.nil?
-        trace_id, parent_span_id, trace_fields, dataset =
-          parse serialized_trace
-      else
-        trace_id, parent_span_id, trace_fields, dataset = propagation_context
-      end
+    def initialize(builder:, context:, serialized_trace: nil, **options)
+      trace_id, parent_span_id, trace_fields, dataset =
+        internal_parse(serialized_trace: serialized_trace, **options)
 
       dataset && builder.dataset = dataset
-
       @id = trace_id || generate_trace_id
       @fields = trace_fields || {}
       @root_span = Span.new(trace: self,
@@ -53,6 +44,14 @@ module Honeycomb
       loop do
         id = SecureRandom.hex(16)
         return id unless id == INVALID_TRACE_ID
+      end
+    end
+
+    def internal_parse(serialized_trace: nil, parser_hook: nil, **_options)
+      if serialized_trace && parser_hook
+        parser_hook.call(serialized_trace)
+      else
+        parse serialized_trace
       end
     end
   end
