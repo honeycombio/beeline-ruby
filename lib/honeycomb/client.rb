@@ -47,49 +47,11 @@ module Honeycomb
       end
     end
 
-    def propagation_context_from_req(env:)
-      # set default parser to honeycomb
-      parser = Honeycomb::HoneycombPropagation::Parser.new
-      parser_hook = lambda do |req|
-        parser.http_trace_parser_hook(req)
-      end
-
-      # if there's a custom hook, overwrite parser_hook with it
-      unless @additional_trace_options[:parser_hook].nil?
-        parser_hook = lambda do |req|
-          @additional_trace_options[:parser_hook].call(req)
-        end
-      end
-
-      parser_hook.call(env)
-    end
-
-    def headers_from_propagation_context(propagation_context)
-      # set default propagator to honeycomb
-      propagator = Honeycomb::HoneycombPropagation::Propagator.new
-      propagation_hook = lambda do |context|
-        propagator.http_trace_propagation_hook(context)
-      end
-
-      # if there's a custom hook, overwrite propagation_hook with it
-      unless @additional_trace_options[:propagation_hook].nil?
-        propagation_hook = lambda do |context|
-          @additional_trace_options[:propagation_hook].call(context)
-        end
-      end
-
-      propagation_hook.call(propagation_context)
-    end
-
-    def start_span(
-      name:, serialized_trace: nil, propagation_context: nil,
-      **fields
-    )
+    def start_span(name:, serialized_trace: nil, **fields)
       if context.current_trace.nil?
         Trace.new(serialized_trace: serialized_trace,
                   builder: libhoney.builder,
                   context: context,
-                  propagation_context: propagation_context,
                   **@additional_trace_options)
       else
         context.current_span.create_child
