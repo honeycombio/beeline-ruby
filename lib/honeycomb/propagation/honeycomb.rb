@@ -9,11 +9,11 @@ module Honeycomb
   module HoneycombPropagation
     # Parse trace headers
     module UnmarshalTraceContext
-      def self.parse_rack_env(env)
+      def parse_rack_env(env)
         parse env["HTTP_X_HONEYCOMB_TRACE"]
       end
 
-      def self.parse(serialized_trace)
+      def parse(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split(";", 2)
 
@@ -29,11 +29,7 @@ module Honeycomb
         [nil, nil, nil, nil]
       end
 
-      def parse(serialized_trace)
-        UnmarshalTraceContext.parse serialized_trace
-      end
-
-      def self.parse_v1(payload)
+      def parse_v1(payload)
         trace_id, parent_span_id, trace_fields, dataset = nil
         payload.split(",").each do |entry|
           key, value = entry.split("=", 2)
@@ -58,9 +54,8 @@ module Honeycomb
         [trace_id, parent_span_id, trace_fields, dataset]
       end
 
-      def parse_v1(payload)
-        UnmarshalTraceContext.parse_v1 payload
-      end
+      module_function :parse_rack_env, :parse, :parse_v1
+      public :parse_rack_env, :parse, :parse_v1
     end
 
     # Serialize trace headers
