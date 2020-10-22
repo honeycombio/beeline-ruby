@@ -22,7 +22,7 @@ module Honeycomb
         span.add_field "meta.package", "faraday"
         span.add_field "meta.package_version", ::Faraday::VERSION
 
-        if (headers = span.trace_headers).is_a?(Hash)
+        if (headers = span.trace_headers(env)).is_a?(Hash)
           env.request_headers.merge!(headers)
         end
 

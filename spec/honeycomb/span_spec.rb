@@ -27,6 +27,7 @@ RSpec.describe Honeycomb::Span do
   let(:context) { Honeycomb::Context.new }
   let(:builder) { libhoney_client.builder }
   let(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
+  let(:env) { {} }
 
   describe "propagation_hook behaviour" do
     describe "when propagation_hook is provided" do
@@ -40,8 +41,9 @@ RSpec.describe Honeycomb::Span do
 
       it "calls the propagation_hook with the expected parameters" do
         expect(propagation_hook)
-          .to receive(:call).with([trace.id, span.id, {}, nil])
-        span.trace_headers
+          .to receive(:call)
+          .with(env, an_instance_of(Honeycomb::Propagation::Context))
+        span.trace_headers(env)
       end
     end
 
@@ -53,7 +55,7 @@ RSpec.describe Honeycomb::Span do
       end
 
       it "still returns a hash" do
-        expect(span.trace_headers).to be_a(Hash)
+        expect(span.trace_headers(env)).to be_a(Hash)
       end
     end
   end

@@ -3,6 +3,7 @@
 require "forwardable"
 require "securerandom"
 require "honeycomb/propagation"
+require "honeycomb/propagation/context"
 require "honeycomb/deterministic_sampler"
 require "honeycomb/rollup_fields"
 
@@ -78,9 +79,9 @@ module Honeycomb
       send_internal
     end
 
-    def trace_headers
+    def trace_headers(env)
       if propagation_hook
-        propagation_hook.call([trace.id, id, trace.fields, builder.dataset])
+        propagation_hook.call(env, propagation_context)
       else
         {}
       end
@@ -112,6 +113,15 @@ module Honeycomb
                 :presend_hook,
                 :sample_hook,
                 :propagation_hook
+
+    def propagation_context
+      Honeycomb::Propagation::Context.new(
+        trace.id,
+        id,
+        trace.fields,
+        builder.dataset,
+      )
+    end
 
     def sent?
       @sent
