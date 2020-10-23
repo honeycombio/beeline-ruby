@@ -38,6 +38,9 @@ module Honeycomb
 
         [trace_id, parent_span_id]
       end
+
+      module_function :parse, :parse_v1
+      public :parse
     end
 
     # Serialize trace headers

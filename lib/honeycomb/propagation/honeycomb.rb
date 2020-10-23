@@ -55,7 +55,7 @@ module Honeycomb
       end
 
       module_function :parse_rack_env, :parse, :parse_v1
-      public :parse_rack_env, :parse, :parse_v1
+      public :parse_rack_env, :parse
     end
 
     # Serialize trace headers
