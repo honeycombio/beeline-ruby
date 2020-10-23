@@ -76,8 +76,11 @@ module Honeycomb
     def http_trace_propagation_hook(&hook)
       if block_given?
         @http_trace_propagation_hook = hook
-      else
+      elsif @http_trace_propagation_hook
         @http_trace_propagation_hook
+      else
+        # by default we send outgoing honeycomb trace headers
+        HoneycombPropagation::MarshalTraceContext.method(:parse_faraday_env)
       end
     end
   end

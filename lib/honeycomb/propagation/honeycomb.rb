@@ -72,6 +72,10 @@ module Honeycomb
         "1;#{data_to_propogate.join(',')}"
       end
 
+      def self.parse_faraday_env(_env, propagation_context)
+        to_trace_header(propagation_context)
+      end
+
       def self.to_trace_header(propagation_context)
         fields = propagation_context.trace_fields
         context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
