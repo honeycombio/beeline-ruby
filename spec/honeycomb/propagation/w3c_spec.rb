@@ -3,9 +3,7 @@
 require "securerandom"
 require "honeycomb/propagation/w3c"
 
-RSpec.describe Honeycomb::W3CPropagation::UnmarshalTraceContext do
-  let(:w3c_propagation) { Class.new.extend(subject) }
-
+RSpec.shared_examples "w3c_propagation_parse" do
   it "handles a nil trace" do
     expect(w3c_propagation.parse(nil)).to eq [nil, nil, nil, nil]
   end
@@ -58,6 +56,18 @@ RSpec.describe Honeycomb::W3CPropagation::UnmarshalTraceContext do
       .parse("00-7f042f75651d9782dcff93a45fa99be0-01")).to eq [
         nil, nil, nil, nil
       ]
+  end
+end
+
+RSpec.describe Honeycomb::W3CPropagation::UnmarshalTraceContext do
+  describe "module usage" do
+    let(:w3c_propagation) { Class.new.extend(subject) }
+    include_examples "w3c_propagation_parse"
+  end
+
+  describe "class method usage" do
+    let(:w3c_propagation) { subject }
+    include_examples "w3c_propagation_parse"
   end
 end
 

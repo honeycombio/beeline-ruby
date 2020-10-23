@@ -3,9 +3,7 @@
 require "securerandom"
 require "honeycomb/propagation/aws"
 
-RSpec.describe Honeycomb::AWSPropagation::UnmarshalTraceContext do
-  let(:aws_propagation) { Class.new.extend(subject) }
-
+RSpec.shared_examples "aws_propagation_parse" do
   it "handles a nil trace" do
     expect(aws_propagation.parse(nil)).to eq [nil, nil, nil, nil]
   end
@@ -97,6 +95,18 @@ RSpec.describe Honeycomb::AWSPropagation::UnmarshalTraceContext do
       { "userID" => "1" },
       nil,
     ]
+  end
+end
+
+RSpec.describe Honeycomb::AWSPropagation::UnmarshalTraceContext do
+  describe "module usage" do
+    let(:aws_propagation) { Class.new.extend(subject) }
+    include_examples "aws_propagation_parse"
+  end
+
+  describe "class method usage" do
+    let(:aws_propagation) { subject }
+    include_examples "aws_propagation_parse"
   end
 end
 
