@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "securerandom"
+require "honeycomb/propagation/context"
 require "honeycomb/propagation/w3c"
 
 RSpec.shared_examples "w3c_propagation_parse" do
@@ -72,18 +73,33 @@ RSpec.describe Honeycomb::W3CPropagation::UnmarshalTraceContext do
 end
 
 RSpec.describe Honeycomb::W3CPropagation::MarshalTraceContext do
-  let(:parent_id) { SecureRandom.hex(8) }
-  let(:trace_id) { SecureRandom.hex(16) }
-  let(:builder) { instance_double("Builder", dataset: "rails") }
-  let(:trace) { instance_double("Trace", id: trace_id, fields: {}) }
-  let(:span) do
-    instance_double("Span", id: parent_id, trace: trace, builder: builder)
-      .extend(subject)
+  describe "module usage" do
+    let(:parent_id) { SecureRandom.hex(8) }
+    let(:trace_id) { SecureRandom.hex(16) }
+    let(:builder) { instance_double("Builder", dataset: "rails") }
+    let(:trace) { instance_double("Trace", id: trace_id, fields: {}) }
+    let(:span) do
+      instance_double("Span", id: parent_id, trace: trace, builder: builder)
+        .extend(subject)
+    end
+
+    it "can serialize a basic span" do
+      expect(span.to_trace_header)
+        .to eq("00-#{trace_id}-#{parent_id}-01")
+    end
   end
 
-  it "can serialize a basic span" do
-    expect(span.to_trace_header)
-      .to eq("00-#{trace_id}-#{parent_id}-01")
+  describe "class method usage" do
+    let(:parent_id) { SecureRandom.hex(8) }
+    let(:trace_id) { SecureRandom.hex(16) }
+    let(:context) do
+      Honeycomb::Propagation::Context.new(trace_id, parent_id, {}, "rails")
+    end
+
+    it "can serialize a basic span" do
+      expect(subject.to_trace_header(context))
+        .to eq("00-#{trace_id}-#{parent_id}-01")
+    end
   end
 end
 

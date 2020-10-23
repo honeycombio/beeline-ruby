@@ -71,6 +71,20 @@ module Honeycomb
         ]
         "1;#{data_to_propogate.join(',')}"
       end
+
+      def self.to_trace_header(propagation_context)
+        fields = propagation_context.trace_fields
+        context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
+        dataset = propagation_context.dataset
+        encoded_dataset = URI.encode_www_form_component(dataset)
+        data_to_propogate = [
+          "dataset=#{encoded_dataset}",
+          "trace_id=#{propagation_context.trace_id}",
+          "parent_id=#{propagation_context.parent_id}",
+          "context=#{context}",
+        ]
+        "1;#{data_to_propogate.join(',')}"
+      end
     end
   end
 end

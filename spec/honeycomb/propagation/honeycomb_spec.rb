@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require "securerandom"
-require "honeycomb/propagation"
+require "honeycomb/propagation/context"
+require "honeycomb/propagation/honeycomb"
 
 RSpec.shared_examples "honeycomb_propagation_parse" do
   it "handles a nil trace" do
@@ -80,16 +81,27 @@ RSpec.describe Honeycomb::HoneycombPropagation::UnmarshalTraceContext do
 end
 
 RSpec.describe Honeycomb::HoneycombPropagation::MarshalTraceContext do
-  let(:builder) { instance_double("Builder", dataset: "rails") }
-  let(:trace) { instance_double("Trace", id: 2, fields: {}) }
-  let(:span) do
-    instance_double("Span", id: 1, trace: trace, builder: builder)
-      .extend(subject)
+  describe "module usage" do
+    let(:builder) { instance_double("Builder", dataset: "rails") }
+    let(:trace) { instance_double("Trace", id: 2, fields: {}) }
+    let(:span) do
+      instance_double("Span", id: 1, trace: trace, builder: builder)
+        .extend(subject)
+    end
+
+    it "can serialize a basic span" do
+      expect(span.to_trace_header)
+        .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+    end
   end
 
-  it "can serialize a basic span" do
-    expect(span.to_trace_header)
-      .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+  describe "class method usage" do
+    let(:context) { Honeycomb::Propagation::Context.new(2, 1, {}, "rails") }
+
+    it "can serialize a basic span" do
+      expect(subject.to_trace_header(context))
+        .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+    end
   end
 end
 

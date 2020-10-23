@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "securerandom"
+require "honeycomb/propagation/context"
 require "honeycomb/propagation/aws"
 
 RSpec.shared_examples "aws_propagation_parse" do
@@ -111,16 +112,27 @@ RSpec.describe Honeycomb::AWSPropagation::UnmarshalTraceContext do
 end
 
 RSpec.describe Honeycomb::AWSPropagation::MarshalTraceContext do
-  let(:builder) { instance_double("Builder", dataset: "rails") }
-  let(:trace) { instance_double("Trace", id: 2, fields: {}) }
-  let(:span) do
-    instance_double("Span", id: 1, trace: trace, builder: builder)
-      .extend(subject)
+  describe "module usage" do
+    let(:builder) { instance_double("Builder", dataset: "rails") }
+    let(:trace) { instance_double("Trace", id: 2, fields: {}) }
+    let(:span) do
+      instance_double("Span", id: 1, trace: trace, builder: builder)
+        .extend(subject)
+    end
+
+    it "can serialize a basic span" do
+      expect(span.to_trace_header)
+        .to eq("Root=2;Parent=1")
+    end
   end
 
-  it "can serialize a basic span" do
-    expect(span.to_trace_header)
-      .to eq("Root=2;Parent=1")
+  describe "class method usage" do
+    let(:context) { Honeycomb::Propagation::Context.new(2, 1, {}, "dataset") }
+
+    it "can serialize a basic span" do
+      expect(subject.to_trace_header(context))
+        .to eq("Root=2;Parent=1")
+    end
   end
 end
 

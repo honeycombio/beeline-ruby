@@ -53,6 +53,17 @@ module Honeycomb
 
         nil
       end
+
+      def self.to_trace_header(propagation_context)
+        trace_id = propagation_context.trace_id
+        parent_id = propagation_context.parent_id
+        # do not propagate malformed ids
+        if trace_id =~ /^[A-Fa-f0-9]{32}$/ && parent_id =~ /^[A-Fa-f0-9]{16}$/
+          return "00-#{trace_id}-#{parent_id}-01"
+        end
+
+        nil
+      end
     end
   end
 end

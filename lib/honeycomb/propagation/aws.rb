@@ -64,6 +64,22 @@ module Honeycomb
         ]
         "#{data_to_propagate.join(';')}#{context.join(';')}"
       end
+
+      def self.to_trace_header(propagation_context)
+        context = [""]
+        fields = propagation_context.trace_fields
+        unless fields.keys.nil?
+          fields.keys.each do |key|
+            context.push("#{key}=#{fields[key]}")
+          end
+        end
+
+        data_to_propagate = [
+          "Root=#{propagation_context.trace_id}",
+          "Parent=#{propagation_context.parent_id}",
+        ]
+        "#{data_to_propagate.join(';')}#{context.join(';')}"
+      end
     end
   end
 end
