@@ -73,7 +73,9 @@ module Honeycomb
       end
 
       def self.parse_faraday_env(_env, propagation_context)
-        to_trace_header(propagation_context)
+        {
+          "X-Honeycomb-Trace" => to_trace_header(propagation_context),
+        }
       end
 
       def self.to_trace_header(propagation_context)
