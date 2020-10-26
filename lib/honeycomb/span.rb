@@ -68,7 +68,8 @@ module Honeycomb
                      parent: self,
                      parent_id: id,
                      sample_hook: sample_hook,
-                     presend_hook: presend_hook).tap do |c|
+                     presend_hook: presend_hook,
+                     propagation_hook: propagation_hook).tap do |c|
         children << c
       end
     end

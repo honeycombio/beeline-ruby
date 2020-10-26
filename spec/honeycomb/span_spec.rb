@@ -45,6 +45,15 @@ RSpec.describe Honeycomb::Span do
           .with(env, an_instance_of(Honeycomb::Propagation::Context))
         span.trace_headers(env)
       end
+
+      it "sets the propagation_hook on the child" do
+        expect(propagation_hook)
+          .to receive(:call)
+          .with(env, an_instance_of(Honeycomb::Propagation::Context))
+        span.create_child.tap do |child|
+          child.trace_headers(env)
+        end
+      end
     end
 
     describe "when propagation_hook is not provided" do
