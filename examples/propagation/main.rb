@@ -14,8 +14,7 @@ Honeycomb.configure do |config|
     when "/propagation/honeycomb"
       Honeycomb::HoneycombPropagation::UnmarshalTraceContext.parse_rack_env env
     when "/propagation/w3c"
-      header = env["HTTP_X_W3C_TRACE"]
-      Honeycomb::W3CPropagation::UnmarshalTraceContext.parse header
+      Honeycomb::W3CPropagation::UnmarshalTraceContext.parse_rack_env env
     else
       # don't start a trace for requests to other paths
     end
@@ -24,10 +23,7 @@ Honeycomb.configure do |config|
     # env is a faraday env and the context is a propagation context
     case env.url.path
     when "/propagation/w3c"
-      header = Honeycomb::W3CPropagation::MarshalTraceContext.to_trace_header context
-      {
-        "X-W3C-Trace" => header,
-      }
+      Honeycomb::W3CPropagation::MarshalTraceContext.parse_faraday_env env, context
     when "/propagation/honeycomb"
       Honeycomb::HoneycombPropagation::MarshalTraceContext.parse_faraday_env env, context
     else
