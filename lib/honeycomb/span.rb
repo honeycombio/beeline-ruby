@@ -73,7 +73,7 @@ module Honeycomb
                      sample_hook: sample_hook,
                      presend_hook: presend_hook,
                      propagation_hook: propagation_hook,
-                     sample_excludes_child_spans: nil
+                     sample_excludes_child_spans: @sample_excludes_child_spans
                      ).tap do |c|
         children << c
       end

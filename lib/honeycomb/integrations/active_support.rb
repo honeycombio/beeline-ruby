@@ -30,6 +30,7 @@ module Honeycomb
       end
 
       def handle_notification_event(name, span, payload)
+
         if on_notification_event
           on_notification_event.call(name, span, payload)
         else
