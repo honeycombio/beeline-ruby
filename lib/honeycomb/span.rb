@@ -19,7 +19,7 @@ module Honeycomb
     def_delegators :@event, :add_field, :add
     def_delegator :@trace, :add_field, :add_trace_field
 
-    attr_reader :id, :trace
+    attr_reader :id, :trace, :parent
 
     def initialize(trace:,
                    builder:,
@@ -93,6 +93,11 @@ module Honeycomb
       end
     end
 
+    def will_send_by_parent!
+      @will_send_by_parent = true
+      context.span_finished(self)
+    end
+
     protected
 
     def send_by_parent
@@ -102,13 +107,13 @@ module Honeycomb
       send_internal
     end
 
-    def skip_sending
-      children.each &:skip_sending
-      mark_sent!
-    end
-
     def remove_child(child)
       children.delete child
+    end
+
+    def span_ancestors
+      return [] unless parent
+      parent.span_ancestors + [parent]
     end
 
     def sampling_says_send?
@@ -131,7 +136,6 @@ module Honeycomb
     INVALID_SPAN_ID = ("00" * 8)
 
     attr_reader :event,
-                :parent,
                 :parent_id,
                 :children,
                 :builder,
@@ -159,7 +163,7 @@ module Honeycomb
 
     def mark_sent!
       @sent = true
-      context.span_sent(self)
+      context.span_finished(self) unless @will_send_by_parent
 
       parent && parent.remove_child(self)
     end
@@ -167,12 +171,9 @@ module Honeycomb
     def send_internal
       add_additional_fields
       sample = sampling_says_send?
+      # puts " * " + (" " * span_ancestors.length) + "- " + event.data['name'] + "(#{sample})"
 
-      unless @sample_excludes_child_spans && !sample
-        send_children
-      else
-        skip_children
-      end
+      send_children
 
       if sample
         presend_hook && presend_hook.call(event.data)
@@ -195,12 +196,6 @@ module Honeycomb
     def send_children
       children.each do |child|
         child.send_by_parent
-      end
-    end
-
-    def skip_children
-      children.each do |child|
-        child.skip_sending
       end
     end
 

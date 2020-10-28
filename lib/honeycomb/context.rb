@@ -17,7 +17,7 @@ module Honeycomb
       spans << span
     end
 
-    def span_sent(span)
+    def span_finished(span)
       spans.last != span && raise(ArgumentError, "Incorrect span sent")
 
       spans.pop
