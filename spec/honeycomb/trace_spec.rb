@@ -65,3 +65,26 @@ RSpec.describe Honeycomb::Trace do
     end
   end
 end
+
+RSpec.describe Honeycomb::Trace do
+  let(:libhoney_client) { Libhoney::TestClient.new }
+  let(:context) { Honeycomb::Context.new }
+  let(:builder) { libhoney_client.builder }
+  let(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
+  let(:serialized_trace) { trace.root_span.to_trace_header }
+  let(:parser_hook) do
+    double("parser_hook").tap do |hook|
+      allow(hook).to receive(:call)
+    end
+  end
+  subject(:distributed_trace) do
+    Honeycomb::Trace.new(builder: builder,
+                         context: context,
+                         parser_hook: parser_hook,
+                         serialized_trace: serialized_trace)
+  end
+
+  it "should have the attributes provided by the serialized_trace" do
+    expect(distributed_trace).to have_attributes(id: trace.id)
+  end
+end

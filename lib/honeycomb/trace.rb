@@ -48,7 +48,11 @@ module Honeycomb
     end
 
     def internal_parse(serialized_trace: nil, parser_hook: nil, **_options)
-      if serialized_trace && parser_hook
+      # previously we passed in the header directly as a string for us to parse
+      # now we get passed the rack env to use as an argument to the provided
+      # parser_hook. This preserves the current behaviour and allows us to
+      # move forward with the new behaviour without breaking changes
+      if serialized_trace.is_a?(Hash) && parser_hook
         parser_hook.call(serialized_trace)
       else
         parse serialized_trace
