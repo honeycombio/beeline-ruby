@@ -95,6 +95,7 @@ module Honeycomb
 
     def will_send_by_parent!
       @will_send_by_parent = true
+      add_additional_fields
       context.span_finished(self)
     end
 
@@ -169,9 +170,9 @@ module Honeycomb
     end
 
     def send_internal
-      add_additional_fields
+      add_additional_fields unless @will_send_by_parent
       sample = sampling_says_send?
-      # puts " * " + (" " * span_ancestors.length) + "- " + event.data['name'] + "(#{sample})"
+      # puts " * " + (" " * span_ancestors.length) + "- " + event.data['name'] + "(#{sample}, #{@event.data['duration_ms']})"
 
       send_children
 
