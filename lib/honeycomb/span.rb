@@ -81,6 +81,9 @@ module Honeycomb
 
     def send
       return if sent?
+      if parent && @sample_excludes_child_spans
+        will_send_by_parent!
+      end
 
       send_internal
     end
@@ -123,6 +126,7 @@ module Honeycomb
       end
 
       if @sampling_says_send == nil
+        add_additional_fields # Safe to call multiple times.
         if sample_hook.nil?
           @sampling_says_send = should_sample(event.sample_rate, trace.id)
         else

@@ -68,11 +68,7 @@ module Honeycomb
 
         handler_for(name).call(name, span, payload)
 
-        if span.parent
-          span.will_send_by_parent!
-        else
-          span.send
-        end
+        span.send
       end
 
       private
