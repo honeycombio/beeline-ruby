@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require "securerandom"
+require "honeycomb/propagation/context"
 require "honeycomb/propagation/aws"
 
-RSpec.describe Honeycomb::AWSPropagation::UnmarshalTraceContext do
-  let(:aws_propagation) { Class.new.extend(subject) }
-
+RSpec.shared_examples "aws_propagation_parse" do
   it "handles a nil trace" do
     expect(aws_propagation.parse(nil)).to eq [nil, nil, nil, nil]
   end
@@ -100,17 +99,40 @@ RSpec.describe Honeycomb::AWSPropagation::UnmarshalTraceContext do
   end
 end
 
-RSpec.describe Honeycomb::AWSPropagation::MarshalTraceContext do
-  let(:builder) { instance_double("Builder", dataset: "rails") }
-  let(:trace) { instance_double("Trace", id: 2, fields: {}) }
-  let(:span) do
-    instance_double("Span", id: 1, trace: trace, builder: builder)
-      .extend(subject)
+RSpec.describe Honeycomb::AWSPropagation::UnmarshalTraceContext do
+  describe "module usage" do
+    let(:aws_propagation) { Class.new.extend(subject) }
+    include_examples "aws_propagation_parse"
   end
 
-  it "can serialize a basic span" do
-    expect(span.to_trace_header)
-      .to eq("Root=2;Parent=1")
+  describe "class method usage" do
+    let(:aws_propagation) { subject }
+    include_examples "aws_propagation_parse"
+  end
+end
+
+RSpec.describe Honeycomb::AWSPropagation::MarshalTraceContext do
+  describe "module usage" do
+    let(:builder) { instance_double("Builder", dataset: "rails") }
+    let(:trace) { instance_double("Trace", id: 2, fields: {}) }
+    let(:span) do
+      instance_double("Span", id: 1, trace: trace, builder: builder)
+        .extend(subject)
+    end
+
+    it "can serialize a basic span" do
+      expect(span.to_trace_header)
+        .to eq("Root=2;Parent=1")
+    end
+  end
+
+  describe "class method usage" do
+    let(:context) { Honeycomb::Propagation::Context.new(2, 1, {}, "dataset") }
+
+    it "can serialize a basic span" do
+      expect(subject.to_trace_header(context))
+        .to eq("Root=2;Parent=1")
+    end
   end
 end
 

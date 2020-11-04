@@ -22,7 +22,9 @@ module Honeycomb
         span.add_field "meta.package", "faraday"
         span.add_field "meta.package_version", ::Faraday::VERSION
 
-        env.request_headers["X-Honeycomb-Trace"] = span.to_trace_header
+        if (headers = span.trace_headers(env)).is_a?(Hash)
+          env.request_headers.merge!(headers)
+        end
 
         @app.call(env).tap do |response|
           span.add_field "response.status_code", response.status

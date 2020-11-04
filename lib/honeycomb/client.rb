@@ -35,6 +35,8 @@ module Honeycomb
       @additional_trace_options = {
         presend_hook: configuration.presend_hook,
         sample_hook: configuration.sample_hook,
+        parser_hook: configuration.http_trace_parser_hook,
+        propagation_hook: configuration.http_trace_propagation_hook,
       }
 
       configuration.after_initialize(self)

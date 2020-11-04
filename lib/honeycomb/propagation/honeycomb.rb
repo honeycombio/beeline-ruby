@@ -9,6 +9,10 @@ module Honeycomb
   module HoneycombPropagation
     # Parse trace headers
     module UnmarshalTraceContext
+      def parse_rack_env(env)
+        parse env["HTTP_X_HONEYCOMB_TRACE"]
+      end
+
       def parse(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split(";", 2)
@@ -49,6 +53,9 @@ module Honeycomb
 
         [trace_id, parent_span_id, trace_fields, dataset]
       end
+
+      module_function :parse_rack_env, :parse, :parse_v1
+      public :parse_rack_env, :parse
     end
 
     # Serialize trace headers
@@ -60,6 +67,26 @@ module Honeycomb
           "dataset=#{encoded_dataset}",
           "trace_id=#{trace.id}",
           "parent_id=#{id}",
+          "context=#{context}",
+        ]
+        "1;#{data_to_propogate.join(',')}"
+      end
+
+      def self.parse_faraday_env(_env, propagation_context)
+        {
+          "X-Honeycomb-Trace" => to_trace_header(propagation_context),
+        }
+      end
+
+      def self.to_trace_header(propagation_context)
+        fields = propagation_context.trace_fields
+        context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
+        dataset = propagation_context.dataset
+        encoded_dataset = URI.encode_www_form_component(dataset)
+        data_to_propogate = [
+          "dataset=#{encoded_dataset}",
+          "trace_id=#{propagation_context.trace_id}",
+          "parent_id=#{propagation_context.parent_id}",
           "context=#{context}",
         ]
         "1;#{data_to_propogate.join(',')}"

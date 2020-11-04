@@ -8,6 +8,10 @@ module Honeycomb
       INVALID_TRACE_ID = "00000000000000000000000000000000".freeze
       INVALID_SPAN_ID = "0000000000000000".freeze
 
+      def parse_rack_env(env)
+        parse env["HTTP_TRACEPARENT"]
+      end
+
       def parse(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split("-", 2)
@@ -38,6 +42,9 @@ module Honeycomb
 
         [trace_id, parent_span_id]
       end
+
+      module_function :parse_rack_env, :parse, :parse_v1
+      public :parse
     end
 
     # Serialize trace headers
@@ -46,6 +53,23 @@ module Honeycomb
         # do not propagate malformed ids
         if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
           return "00-#{trace.id}-#{id}-01"
+        end
+
+        nil
+      end
+
+      def self.parse_faraday_env(_env, propagation_context)
+        {
+          "traceparent" => to_trace_header(propagation_context),
+        }
+      end
+
+      def self.to_trace_header(propagation_context)
+        trace_id = propagation_context.trace_id
+        parent_id = propagation_context.parent_id
+        # do not propagate malformed ids
+        if trace_id =~ /^[A-Fa-f0-9]{32}$/ && parent_id =~ /^[A-Fa-f0-9]{16}$/
+          return "00-#{trace_id}-#{parent_id}-01"
         end
 
         nil

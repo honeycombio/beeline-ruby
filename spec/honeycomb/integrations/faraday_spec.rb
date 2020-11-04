@@ -4,9 +4,13 @@ if defined?(Honeycomb::Faraday)
   RSpec.describe Honeycomb::Faraday do
     describe "sends basic events" do
       let(:libhoney_client) { Libhoney::TestClient.new }
+      let(:propagation_header) { { x_test_header: "Hello" } }
       let(:configuration) do
         Honeycomb::Configuration.new.tap do |config|
           config.client = libhoney_client
+          config.http_trace_propagation_hook do
+            propagation_header
+          end
         end
       end
       let(:client) { Honeycomb::Client.new(configuration: configuration) }
@@ -29,6 +33,10 @@ if defined?(Honeycomb::Faraday)
 
       it "sends the right amount of events" do
         expect(libhoney_client.events.size).to eq 1
+      end
+
+      it "attaches the propagation header" do
+        expect(response.env.request_headers).to include(**propagation_header)
       end
 
       let(:event_data) { libhoney_client.events.map(&:data) }

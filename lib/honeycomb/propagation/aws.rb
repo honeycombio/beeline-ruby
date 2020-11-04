@@ -43,6 +43,9 @@ module Honeycomb
 
         [trace_id, parent_span_id, trace_fields]
       end
+
+      module_function :parse, :get_fields
+      public :parse
     end
 
     # Serialize trace headers
@@ -58,6 +61,22 @@ module Honeycomb
         data_to_propagate = [
           "Root=#{trace.id}",
           "Parent=#{id}",
+        ]
+        "#{data_to_propagate.join(';')}#{context.join(';')}"
+      end
+
+      def self.to_trace_header(propagation_context)
+        context = [""]
+        fields = propagation_context.trace_fields
+        unless fields.keys.nil?
+          fields.keys.each do |key|
+            context.push("#{key}=#{fields[key]}")
+          end
+        end
+
+        data_to_propagate = [
+          "Root=#{propagation_context.trace_id}",
+          "Parent=#{propagation_context.parent_id}",
         ]
         "#{data_to_propagate.join(';')}#{context.join(';')}"
       end
