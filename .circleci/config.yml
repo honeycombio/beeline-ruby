@@ -28,7 +28,7 @@ commands:
 jobs:
   build_artifacts:
     docker:
-      - image: cimg/ruby:2.6
+      - image: circleci/ruby:2.6
     steps:
       - checkout
       - run: mkdir -p ~/artifacts
@@ -43,7 +43,7 @@ jobs:
 
   publish_rubygems:
     docker:
-      - image: cimg/ruby:2.6
+      - image: circleci/ruby:2.6
     steps:
       - attach_workspace:
           at: ~/
@@ -73,7 +73,7 @@ jobs:
         type: string
         default: "2.6"
     docker:
-        - image: cimg/ruby:<< parameters.ruby-version >>
+        - image: circleci/ruby:<< parameters.ruby-version >>
     steps:
       - ruby:
           ruby-version: << parameters.ruby-version >>
@@ -85,7 +85,7 @@ jobs:
       ruby-version:
         type: string
     docker:
-        - image: cimg/ruby:<< parameters.ruby-version >>
+        - image: circleci/ruby:<< parameters.ruby-version >>
     steps:
       - ruby:
           ruby-version: << parameters.ruby-version >>
