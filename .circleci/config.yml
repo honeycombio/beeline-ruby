@@ -169,4 +169,6 @@ workflows:
           filters: *tag_filters
           requires:
             - build_artifacts
-      - publish_github: *publish
+      - publish_github:
+          <<: *publish
+          context: Honeycomb Secrets
