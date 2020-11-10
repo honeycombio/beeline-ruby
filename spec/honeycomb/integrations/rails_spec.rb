@@ -46,6 +46,7 @@ if defined?(Honeycomb::Rails)
 
         app.routes.draw do
           get "/hello/:name" => "test#hello"
+          get "/hello_error" => "test#hello_error"
         end
       end
     end
@@ -53,6 +54,11 @@ if defined?(Honeycomb::Rails)
     class TestController < ActionController::Base
       def hello
         render plain: "Hello #{params[:name]}!"
+      end
+
+      def hello_error
+        raise "This is an error"
+        # head :no_content
       end
     end
 
@@ -93,6 +99,22 @@ if defined?(Honeycomb::Rails)
         let(:controller) { "test" }
         let(:action) { "hello" }
         let(:route) { "GET /hello/:name(.:format)" }
+      end
+    end
+
+    describe "a standard request with an error" do
+      before do
+        get "/hello_error?honey=bee"
+      end
+
+      it "returns internal server" do
+        expect(last_response).to be_server_error
+      end
+
+      include_examples "the rails integration" do
+        let(:controller) { "test" }
+        let(:action) { "hello_error" }
+        let(:route) { "GET /hello_error(.:format)" }
       end
     end
 
