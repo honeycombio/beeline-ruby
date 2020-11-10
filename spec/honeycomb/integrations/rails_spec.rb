@@ -41,11 +41,7 @@ if defined?(Honeycomb::Rails)
         app.config.eager_load = false
         app.config.secret_key_base = "3b7cd727ee24e8444053437c36cc66c4"
         app.config.respond_to?(:hosts) && app.config.hosts << "example.org"
-        app.config.middleware.insert_before(
-          ::Rails::Rack::Logger,
-          Honeycomb::Rails::Middleware,
-          client: client,
-        )
+        ::Honeycomb::Railtie.insert_middleware(app, client)
         app.initialize!
 
         app.routes.draw do
