@@ -26,16 +26,47 @@ commands:
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
 jobs:
-  publish:
+  build_artifacts:
     docker:
-        - image: circleci/ruby:2.6
+      - image: circleci/ruby:2.6
     steps:
       - checkout
+      - run: mkdir -p ~/artifacts
+      - run: gem build libhoney.gemspec
+      - run: cp libhoney-*.gem ~/artifacts/
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - artifacts
+      - store_artifacts:
+          path: ~/artifacts
+
+  publish_rubygems:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - attach_workspace:
+          at: ~/
       - run:
           name: Setup Rubygems
           command: bash .circleci/setup-rubygems.sh
-      - run: gem build honeycomb-beeline.gemspec
-      - run: gem push honeycomb-beeline-*.gem
+      - run: gem push ~/artifacts/honeycomb-beeline-*.gem
+
+  publish_github:
+    docker:
+      - image: cibuilds/github:0.13.0
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: "Artifacts being published"
+          command: |
+            echo "about to publish to tag ${CIRCLE_TAG}"
+            ls -l ~/artifacts/*
+      - run:
+          name: "GHR Draft"
+          command: ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
+
   lint:
     parameters:
       ruby-version:
@@ -119,16 +150,14 @@ workflows:
   beeline:
     jobs:
       - lint:
-          filters:
+          filters: &regular_filters
               tags:
                 only: /.*/
       - test:
           <<: *test
-          filters:
-              tags:
-                only: /.*/
-      - publish:
-          filters:
+          filters: *regular_filters
+      - build_artifacts:
+          filters: &tag_filters
               tags:
                 only: /^v.*/
               branches:
@@ -136,3 +165,10 @@ workflows:
           requires:
             - lint
             - test
+      - publish_rubygems: &publish
+          filters: *tag_filters
+          requires:
+            - build_artifacts
+      - publish_github:
+          <<: *publish
+          context: Honeycomb Secrets
