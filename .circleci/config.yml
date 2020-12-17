@@ -171,4 +171,4 @@ workflows:
             - build_artifacts
       - publish_github:
           <<: *publish
-          context: Honeycomb Secrets
+          context: Honeycomb Secrets for Public Repos
