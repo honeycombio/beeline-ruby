@@ -21,6 +21,7 @@ if defined?(Honeycomb::Rails)
       header "User-Agent", "RackSpec"
       header "Content-Type", "application/json"
       header "Accept", "application/json"
+      header "Accept-Encoding", "gzip"
       header "Accept-Language", "*"
       header "X-Forwarded-For", "1.2.3.4"
       header "X-Forwarded-Proto", "https"
