@@ -83,6 +83,7 @@ module Honeycomb
       return if sent?
       if parent && @sample_excludes_child_spans
         will_send_by_parent!
+        return
       end
 
       send_internal
