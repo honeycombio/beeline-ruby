@@ -1,5 +1,15 @@
 # Upgrade Guide
 
+## 1.0.0 - 2.0.0
+
+1. See release notes: https://github.com/honeycombio/beeline-ruby/releases/tag/v2.0.0
+1. This update requires no code changes, but you must be aware of certain instrumentation changes. New fields will be added to your dataset and other fields will be removed.
+1. ActionController::Parameters will now result in extra fields, or nested json, depending on your unfurl settings.
+1. aws.params are now exploded into separate fields.
+1. request.error becomes error.
+1. request.error_detail becomes error_detail
+1. request.protocol becomes request.scheme
+
 ## 0.8.0 - 1.0.0
 
 1. If you have a web application, remove beeline configuration from the `config.ru` file
