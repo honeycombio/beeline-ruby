@@ -74,8 +74,12 @@ RSpec.describe Honeycomb::Span do
     let(:sample_excludes_child_spans) { nil }
     let(:sample_rate) { 1 }
     let(:sample_hook) do
-      lambda do |_fields|
-        [sampling_decision, sample_rate]
+      lambda do |fields|
+        if fields["meta.span_type"] == "root"
+          [root_sampling_decision, sample_rate]
+        else
+          [child_sampling_decision, sample_rate]
+        end
       end
     end
 
@@ -89,7 +93,7 @@ RSpec.describe Honeycomb::Span do
     end
 
     describe "when the sampling hook returns false" do
-      let(:sampling_decision) { false }
+      let(:root_sampling_decision) { false }
 
       it "does not send the event" do
         expect { span.send }.not_to(change { libhoney_client.events })
@@ -97,13 +101,74 @@ RSpec.describe Honeycomb::Span do
 
       describe "with sample_excludes_child_spans set" do
         let(:sample_excludes_child_spans) { true }
-        it "does not send child events either" do
-          child = span.create_child
-          expect(child).not_to receive(:send_internal)
-          span.send
+
+        describe "if the child sampling hook returns true" do
+          let(:child_sampling_decision) { true }
+          it "does not send child events if the root event is unsent" do
+            child = span.create_child
+            expect(child).not_to receive(:send_internal)
+            child.send
+          end
+        end
+
+        describe "if the child sampling hook returns false" do
+          let(:child_sampling_decision) { false }
+          it "does not send child events if the root event is unsent" do
+            child = span.create_child
+            expect(child).not_to receive(:send_internal)
+            child.send
+          end
         end
       end
+    end
 
+    describe "when the sampling hook returns true" do
+      let(:presend_hook) { double("PresendHook") }
+      let(:root_sampling_decision) { true }
+      let(:child_sampling_decision) { true }
+      let(:sample_rate) { 10 }
+
+      it "sends the event" do
+        allow(presend_hook).to receive(:call)
+        expect { span.send }.to change { libhoney_client.events.count }.by(1)
+      end
+
+      it "calls the presend hook" do
+        expect(presend_hook).to receive(:call)
+          .with(hash_including("honeycomb" => "bees"))
+
+        span.add_field("honeycomb", "bees")
+        span.send
+      end
+
+      it "sets the correct sample rate on the event" do
+        allow(presend_hook).to receive(:call)
+        span.send
+        expect(libhoney_client.events)
+          .to all(have_attributes(sample_rate: sample_rate))
+      end
+
+      describe "with sample_excludes_child_spans set" do
+        let(:sample_excludes_child_spans) { true }
+
+        describe "if the child sampling hook returns true" do
+          let(:child_sampling_decision) { true }
+          it "does not send child events" do
+            child = span.create_child
+            expect(child).not_to receive(:send_internal)
+            child.send
+          end
+        end
+
+        describe "if the child sampling hook returns false" do
+          let(:child_sampling_decision) { false }
+          it "does not send child events" do
+            child = span.create_child
+            expect(child).not_to receive(:send_internal)
+            child.send
+          end
+        end
+      end
     end
 
     describe "when a span creates a child span" do
@@ -134,43 +199,6 @@ RSpec.describe Honeycomb::Span do
         child = span.create_child
         child.add_field("honeycomb", "bees")
         child.send
-      end
-    end
-
-    describe "when the sampling hook returns true" do
-      let(:presend_hook) { double("PresendHook") }
-      let(:sampling_decision) { true }
-      let(:sample_rate) { 10 }
-
-      it "sends the event" do
-        allow(presend_hook).to receive(:call)
-        expect { span.send }.to change { libhoney_client.events.count }.by(1)
-      end
-
-      it "calls the presend hook" do
-        expect(presend_hook).to receive(:call)
-          .with(hash_including("honeycomb" => "bees"))
-
-        span.add_field("honeycomb", "bees")
-        span.send
-      end
-
-      it "sets the correct sample rate on the event" do
-        allow(presend_hook).to receive(:call)
-        span.send
-        expect(libhoney_client.events)
-          .to all(have_attributes(sample_rate: sample_rate))
-      end
-
-      describe "with sample_excludes_child_spans set" do
-        let(:sample_excludes_child_spans) { true }
-        it "sends child events" do
-          child = span.create_child
-          expect(child).to receive(:send_internal).and_call_original
-          allow(presend_hook).to receive(:call)
-
-          span.send
-        end
       end
     end
   end
