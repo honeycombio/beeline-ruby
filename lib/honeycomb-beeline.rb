@@ -26,7 +26,8 @@ module Honeycomb
     attr_reader :client
 
     def_delegators :@client, :libhoney, :start_span, :add_field,
-                   :add_field_to_trace, :current_span, :current_trace
+                   :add_field_to_trace, :current_span, :current_trace,
+                   :with_field, :with_trace_field
 
     def configure
       Configuration.new.tap do |config|
