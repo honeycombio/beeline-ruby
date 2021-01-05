@@ -52,7 +52,7 @@ if defined?(Honeycomb::Aws)
       end
 
       it "is enabled by default" do
-        aws = aws_clients.sample.new
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io")
         expect(aws.handlers).to include(
           Honeycomb::Aws::SdkHandler,
           Honeycomb::Aws::ApiHandler,
@@ -60,7 +60,8 @@ if defined?(Honeycomb::Aws)
       end
 
       it "can be disabled" do
-        aws = aws_clients.sample.new(honeycomb: false)
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io",
+                                     honeycomb: false)
         expect(aws.handlers).not_to include(
           Honeycomb::Aws::SdkHandler,
           Honeycomb::Aws::ApiHandler,
@@ -68,12 +69,13 @@ if defined?(Honeycomb::Aws)
       end
 
       it "uses the global Honeycomb client by default" do
-        aws = aws_clients.sample.new
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io")
         expect(aws.config.honeycomb_client).to be Honeycomb.client
       end
 
       it "can be configured with a different Honeycomb client" do
-        aws = aws_clients.sample.new(honeycomb_client: client)
+        aws = aws_clients.sample.new(endpoint: "https://honeycomb.io",
+                                     honeycomb_client: client)
         expect(aws.config.honeycomb_client).to be client
       end
     end
@@ -101,13 +103,15 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "root",
           "meta.package" => gem_for(Aws::S3),
           "meta.package_version" => version_of(Aws::S3),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= api["duration_ms"],
           "aws.region" => "us-stubbed-1",
           "aws.service" => :s3,
           "aws.operation" => :list_objects,
-          "aws.params" => { bucket: "basic" },
+          "aws.params.bucket" => "basic",
           "aws.request_id" => "stubbed-request-id",
           "aws.retries" => 0,
           "aws.retry_limit" => 3,
@@ -123,6 +127,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "leaf",
           "meta.package" => gem_for(Aws::S3),
           "meta.package_version" => version_of(Aws::S3),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -130,7 +136,7 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :s3,
           "aws.operation" => :list_objects,
-          "aws.params" => { bucket: "basic" },
+          "aws.params.bucket" => "basic",
           "aws.attempt" => 1,
           "aws.access_key_id" => "stubbed-akid",
           "aws.session_token" => nil,
@@ -186,13 +192,15 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "root",
           "meta.package" => gem_for(Aws::DynamoDB),
           "meta.package_version" => version_of(Aws::DynamoDB),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= api["duration_ms"],
           "aws.region" => "us-stubbed-1",
           "aws.service" => :dynamodb,
           "aws.operation" => :describe_table,
-          "aws.params" => { table_name: "example" },
+          "aws.params.table_name" => "example",
           "aws.request_id" => nil,
           "aws.retries" => 0,
           "aws.retry_limit" => 10,
@@ -211,6 +219,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "leaf",
           "meta.package" => gem_for(Aws::DynamoDB),
           "meta.package_version" => version_of(Aws::DynamoDB),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -218,7 +228,7 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :dynamodb,
           "aws.operation" => :describe_table,
-          "aws.params" => { table_name: "example" },
+          "aws.params.table_name" => "example",
           "aws.attempt" => 1,
           "aws.access_key_id" => "stubbed-akid",
           "aws.session_token" => nil,
@@ -273,13 +283,14 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "root",
           "meta.package" => gem_for(Aws::SQS),
           "meta.package_version" => version_of(Aws::SQS),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= api["duration_ms"],
           "aws.region" => "us-stubbed-1",
           "aws.service" => :sqs,
           "aws.operation" => :list_queues,
-          "aws.params" => {},
           "aws.request_id" => nil,
           "aws.retries" => 0,
           "aws.retry_limit" => 0,
@@ -297,6 +308,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "leaf",
           "meta.package" => gem_for(Aws::SQS),
           "meta.package_version" => version_of(Aws::SQS),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -304,7 +317,6 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :sqs,
           "aws.operation" => :list_queues,
-          "aws.params" => {},
           "aws.attempt" => 1,
           "aws.access_key_id" => "stubbed-akid",
           "aws.session_token" => nil,
@@ -356,6 +368,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "root",
           "meta.package" => gem_for(Aws::Kinesis),
           "meta.package_version" => version_of(Aws::Kinesis),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= (
@@ -364,7 +378,9 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :kinesis,
           "aws.operation" => :put_record,
-          "aws.params" => { stream_name: "a", data: "b", partition_key: "c" },
+          "aws.params.stream_name" => "a",
+          "aws.params.data" => "b",
+          "aws.params.partition_key" => "c",
           "aws.request_id" => nil,
           "aws.retries" => 1,
           "aws.retry_limit" => 3,
@@ -380,6 +396,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "leaf",
           "meta.package" => gem_for(Aws::Kinesis),
           "meta.package_version" => version_of(Aws::Kinesis),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -387,7 +405,9 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :kinesis,
           "aws.operation" => :put_record,
-          "aws.params" => { stream_name: "a", data: "b", partition_key: "c" },
+          "aws.params.stream_name" => "a",
+          "aws.params.data" => "b",
+          "aws.params.partition_key" => "c",
           "aws.attempt" => 1,
           "aws.access_key_id" => "stubbed-akid",
           "aws.session_token" => nil,
@@ -412,6 +432,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "leaf",
           "meta.package" => gem_for(Aws::Kinesis),
           "meta.package_version" => version_of(Aws::Kinesis),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -419,7 +441,9 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :kinesis,
           "aws.operation" => :put_record,
-          "aws.params" => { stream_name: "a", data: "b", partition_key: "c" },
+          "aws.params.stream_name" => "a",
+          "aws.params.data" => "b",
+          "aws.params.partition_key" => "c",
           "aws.attempt" => 2,
           "aws.access_key_id" => "stubbed-akid",
           "aws.session_token" => nil,
@@ -483,6 +507,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "root",
           "meta.package" => gem_for(Aws::EC2),
           "meta.package_version" => version_of(Aws::EC2),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => an_instance_of(String),
           "trace.span_id" => an_instance_of(String),
           "duration_ms" => a_value >= apis.map do |api|
@@ -491,7 +517,6 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :ec2,
           "aws.operation" => :describe_instances,
-          "aws.params" => {},
           "aws.request_id" => nil,
           "aws.retries" => 3,
           "aws.retry_limit" => 3,
@@ -509,6 +534,8 @@ if defined?(Honeycomb::Aws)
           "meta.span_type" => "leaf",
           "meta.package" => gem_for(Aws::EC2),
           "meta.package_version" => version_of(Aws::EC2),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "trace.trace_id" => sdk["trace.trace_id"],
           "trace.parent_id" => sdk["trace.span_id"],
           "trace.span_id" => an_instance_of(String),
@@ -516,7 +543,6 @@ if defined?(Honeycomb::Aws)
           "aws.region" => "us-stubbed-1",
           "aws.service" => :ec2,
           "aws.operation" => :describe_instances,
-          "aws.params" => {},
           "aws.access_key_id" => "stubbed-akid",
           "aws.session_token" => nil,
           "request.method" => "POST",
@@ -725,11 +751,11 @@ if defined?(Honeycomb::Aws)
         api, sdk = event_data
         expect(sdk).to include(
           "aws.error" => "Aws::DynamoDB::Errors::Http500Error",
-          "aws.error_detail" => "",
+          "aws.error_detail" => an_instance_of(String),
         )
         expect(api).to include(
           "response.error" => "Http500Error",
-          "response.error_detail" => "",
+          "response.error_detail" => an_instance_of(String),
         )
       end
     end

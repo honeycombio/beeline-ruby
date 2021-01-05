@@ -37,7 +37,7 @@ RSpec.describe Honeycomb::DeterministicSampler do
 
   include_examples "sampling distribution", 1, 0.05
   include_examples "sampling distribution", 2, 0.05
-  include_examples "sampling distribution", 10, 0.05
+  include_examples "sampling distribution", 10, 0.06
 end
 
 RSpec.describe Honeycomb::DeterministicSampler do

@@ -14,6 +14,12 @@ RSpec.describe Honeycomb do
     end
   end
 
+  describe "accessing the libhoney instance" do
+    it "contains the expected field" do
+      expect(Honeycomb.libhoney).to eq libhoney_client
+    end
+  end
+
   describe "when using a block" do
     before do
       Honeycomb.start_span(name: "test") do

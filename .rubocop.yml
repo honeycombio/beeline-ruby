@@ -22,10 +22,21 @@ Metrics/ClassLength:
 
 Metrics/MethodLength:
   Max: 25
+  Exclude:
+    - lib/generators/honeycomb/honeycomb_generator.rb
 
 Metrics/LineLength:
   Exclude:
     - spec/support/event_data_shared_examples.rb
+
+Metrics/ParameterLists:
+  Max: 6
+
+Style/AccessModifierDeclarations:
+  Exclude:
+    - lib/honeycomb/propagation/aws.rb
+    - lib/honeycomb/propagation/w3c.rb
+    - lib/honeycomb/propagation/honeycomb.rb
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always

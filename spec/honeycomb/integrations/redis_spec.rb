@@ -61,7 +61,8 @@ if defined?(Honeycomb::Redis)
     end
 
     shared_examples "the redis span" do |redis_command|
-      it "can be disabled" do
+      it "can be disabled (even if Honeycomb is globally configured)" do
+        Honeycomb.configure { |config| config.client = libhoney_client }
         Redis.honeycomb_client = nil
         command
         expect(libhoney_client.events).to be_empty
@@ -82,6 +83,8 @@ if defined?(Honeycomb::Redis)
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.span_type" => "root",
           "meta.local_hostname" => an_instance_of(String),
+          "meta.instrumentations" => an_instance_of(String),
+          "meta.instrumentations_count" => 10,
           "name" => "redis",
           "redis.command" => redis_command,
           "redis.db" => 0,
@@ -144,7 +147,7 @@ if defined?(Honeycomb::Redis)
 
       it "sends the expected fields on success" do
         command
-        expect(event).to match(fields)
+        expect(event).to include(fields)
       end
 
       it "sends the expected fields on failure" do
@@ -152,7 +155,7 @@ if defined?(Honeycomb::Redis)
         expect(connection).to receive(:write).and_raise(exn.new("detail"))
         expect { command }.to raise_error(exn)
         error = { "redis.error" => exn.name, "redis.error_detail" => "detail" }
-        expect(event).to match(fields.merge(error))
+        expect(event).to include(fields.merge(error))
       end
     end
 
@@ -167,7 +170,7 @@ if defined?(Honeycomb::Redis)
               redis.client.command_map[:blah] = "auth"
             end
             redis.blah("password")
-            expect(event).to match(fields)
+            expect(event).to include(fields)
           end
         end
       end

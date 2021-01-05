@@ -25,12 +25,9 @@ module Honeycomb
     extend Forwardable
     attr_reader :client
 
-    def_delegators :@client,
-                   :start_span,
-                   :add_field,
-                   :add_field_to_trace,
-                   :with_field,
-                   :with_trace_field
+    def_delegators :@client, :libhoney, :start_span, :add_field,
+                   :add_field_to_trace, :current_span, :current_trace,
+                   :with_field, :with_trace_field
 
     def configure
       Configuration.new.tap do |config|

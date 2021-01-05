@@ -51,7 +51,7 @@ if defined?(Honeycomb::Rack)
       end
 
       def created_at
-        Time.now
+        Time.new 2002, 3, 4, 5, 6, 7
       end
     end
 
@@ -80,6 +80,13 @@ if defined?(Honeycomb::Rack)
       Warden::Strategies.add(:test, TestStrategy)
       header("Http-Version", "HTTP/1.0")
       header("User-Agent", "RackSpec")
+      header("Content-Type", "text/html; charset=UTF-8")
+      header("Accept", "*/*")
+      header("Accept-Encoding", "gzip")
+      header("Accept-Language", "*")
+      header("X-Forwarded-For", "1.2.3.4")
+      header("X-Forwarded-Proto", "https")
+      header("X-Forwarded-Port", "8000")
     end
 
     describe "standard request" do
@@ -95,12 +102,25 @@ if defined?(Honeycomb::Rack)
         expect(libhoney_client.events.size).to eq 1
       end
 
-      it_behaves_like "event data", http_fields: true
+      USER_FIELDS = [
+        "user.id",
+        "user.email",
+        "user.name",
+        "user.first_name",
+        "user.last_name",
+        "user.created_at",
+      ].freeze
+      it_behaves_like "event data",
+                      http_fields: true, additional_fields: USER_FIELDS
     end
 
     describe "trace header request" do
+      let(:trace_id) { "trace_id" }
+      let(:parent_id) { "parent_id" }
+      let(:dataset) { "test_datatset" }
+
       let(:serialized_trace) do
-        "1;trace_id=wow,parent_id=eep,dataset=test_dataset"
+        "1;trace_id=#{trace_id},parent_id=#{parent_id},dataset=#{dataset}"
       end
 
       before do
@@ -114,6 +134,19 @@ if defined?(Honeycomb::Rack)
 
       it "sends a single event" do
         expect(libhoney_client.events.size).to eq 1
+      end
+
+      it "has the expected dataset" do
+        expect(libhoney_client.events.first.dataset).to eq(dataset)
+      end
+
+      it "has the expected fields from the header" do
+        libhoney_client.events.first.tap do |event|
+          expect(event.data).to include(
+            "trace.trace_id" => trace_id,
+            "trace.parent_id" => parent_id,
+          )
+        end
       end
 
       it_behaves_like "event data", http_fields: true

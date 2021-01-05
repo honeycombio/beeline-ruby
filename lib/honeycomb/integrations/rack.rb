@@ -13,8 +13,15 @@ module Honeycomb
       ["HTTP_VERSION", "request.http_version"],
       ["HTTP_HOST", "request.host"],
       ["REMOTE_ADDR", "request.remote_addr"],
+      ["HTTP_X_FORWARDED_FOR", "request.header.x_forwarded_for"],
+      ["HTTP_X_FORWARDED_PROTO", "request.header.x_forwarded_proto"],
+      ["HTTP_X_FORWARDED_PORT", "request.header.x_forwarded_port"],
+      ["HTTP_ACCEPT", "request.header.accept"],
+      ["HTTP_ACCEPT_ENCODING", "request.header.accept_encoding"],
+      ["HTTP_ACCEPT_LANGUAGE", "request.header.accept_language"],
+      ["CONTENT_TYPE", "request.header.content_type"],
       ["HTTP_USER_AGENT", "request.header.user_agent"],
-      ["rack.url_scheme", "request.protocol"],
+      ["rack.url_scheme", "request.scheme"],
     ].freeze
 
     attr_reader :app, :client
@@ -25,15 +32,21 @@ module Honeycomb
     end
 
     def call(env)
-      hny = env["HTTP_X_HONEYCOMB_TRACE"]
-      client.start_span(name: "http_request", serialized_trace: hny) do |span|
+      req = ::Rack::Request.new(env)
+      client.start_span(
+        name: "http_request",
+        serialized_trace: env,
+      ) do |span|
         add_field = lambda do |key, value|
-          next unless value && !value.empty?
-
-          span.add_field(key, value)
+          unless value.nil? || (value.respond_to?(:empty?) && value.empty?)
+            span.add_field(key, value)
+          end
         end
 
         extract_fields(env, RACK_FIELDS, &add_field)
+
+        span.add_field("request.secure", req.ssl?)
+        span.add_field("request.xhr", req.xhr?)
 
         status, headers, body = app.call(env)
 
@@ -42,6 +55,7 @@ module Honeycomb
         extract_user_information(env, &add_field)
 
         span.add_field("response.status_code", status)
+        span.add_field("response.content_type", headers["Content-Type"])
 
         [status, headers, body]
       end

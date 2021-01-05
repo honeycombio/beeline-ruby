@@ -6,11 +6,15 @@ RSpec.describe Honeycomb::Client do
   let(:libhoney_client) { Libhoney::TestClient.new }
   let(:presend_hook) { proc {} }
   let(:sample_hook) { proc {} }
+  let(:parser_hook) { proc {} }
+  let(:propagation_hook) { proc {} }
   let(:configuration) do
     Honeycomb::Configuration.new.tap do |config|
       config.client = libhoney_client
       config.presend_hook(&presend_hook)
       config.sample_hook(&sample_hook)
+      config.http_trace_parser_hook(&parser_hook)
+      config.http_trace_propagation_hook(&propagation_hook)
     end
   end
   subject(:client) { Honeycomb::Client.new(configuration: configuration) }
@@ -21,6 +25,8 @@ RSpec.describe Honeycomb::Client do
       .with(hash_including(
               presend_hook: presend_hook,
               sample_hook: sample_hook,
+              parser_hook: parser_hook,
+              propagation_hook: propagation_hook,
             ))
       .and_call_original
 
@@ -118,7 +124,7 @@ RSpec.describe Honeycomb::Client do
 
     it_behaves_like "event data",
                     package_fields: false,
-                    additional_fields: ["request.error", "request.error_detail"]
+                    additional_fields: %w[error error_detail]
   end
 
   describe "can add field to trace" do
@@ -154,5 +160,29 @@ RSpec.describe Honeycomb::Client do
     let(:event_data) { libhoney_client.events.map(&:data) }
 
     it_behaves_like "event data", package_fields: false
+  end
+
+  describe "sending from within a span block" do
+    it "does not also send the parent span" do
+      client.start_span(name: "root")
+
+      # rubocop:disable Style/SymbolProc
+      client.start_span(name: "child") do |child_span|
+        child_span.send
+      end
+      # rubocop:enable Style/SymbolProc
+
+      expect(libhoney_client.events.size).to eq 1
+    end
+
+    it "does not raise an error when the span is the root" do
+      expect do
+        # rubocop:disable Style/SymbolProc
+        client.start_span(name: "child") do |child_span|
+          child_span.send
+        end
+        # rubocop:enable Style/SymbolProc
+      end.to_not raise_error
+    end
   end
 end

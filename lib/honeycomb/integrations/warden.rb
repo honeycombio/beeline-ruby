@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Honeycomb
-  # Methods for extracing common warden/devise fields from a rack env hash
+  # Methods for extracting common warden/devise fields from a rack env hash
   module Warden
     COMMON_USER_FIELDS = %i[
       email
@@ -24,7 +24,7 @@ module Honeycomb
         key.match(SCOPE_PATTERN)
       end
       warden_scopes = keys.map do |key|
-        key.gsub(SCOPE_PATTERN, "\1")
+        key.gsub(SCOPE_PATTERN, "\\1")
       end
       best_scope = warden_scopes.include?("user") ? "user" : warden_scopes.first
 

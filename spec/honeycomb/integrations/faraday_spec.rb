@@ -4,9 +4,13 @@ if defined?(Honeycomb::Faraday)
   RSpec.describe Honeycomb::Faraday do
     describe "sends basic events" do
       let(:libhoney_client) { Libhoney::TestClient.new }
+      let(:propagation_header) { { x_test_header: "Hello" } }
       let(:configuration) do
         Honeycomb::Configuration.new.tap do |config|
           config.client = libhoney_client
+          config.http_trace_propagation_hook do
+            propagation_header
+          end
         end
       end
       let(:client) { Honeycomb::Client.new(configuration: configuration) }
@@ -31,19 +35,31 @@ if defined?(Honeycomb::Faraday)
         expect(libhoney_client.events.size).to eq 1
       end
 
+      it "attaches the propagation header" do
+        expect(response.env.request_headers).to include(**propagation_header)
+      end
+
       let(:event_data) { libhoney_client.events.map(&:data) }
 
       it_behaves_like "event data"
     end
 
     describe "supports various initialization methods" do
+      let(:current_faraday_version) { Gem::Version.new(Faraday::VERSION) }
+      let(:include_http_adapter) do
+        Gem::Dependency.new("", "~> 0").match?("", current_faraday_version)
+      end
+
       it "supports standard usage with no block" do
         f = Faraday.new("http://honeycomb.io")
-        expect(f.builder.handlers).to eq([
-                                           Faraday::Request::UrlEncoded,
-                                           Honeycomb::Faraday,
-                                           Faraday::Adapter::NetHttp,
-                                         ])
+        expected = [
+          Faraday::Request::UrlEncoded,
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f.builder.handlers).to eq(expected)
       end
 
       it "supports providing a builder with a string key" do
@@ -53,11 +69,14 @@ if defined?(Honeycomb::Faraday)
         end
         f = Faraday.new("builder" => stack)
 
-        expect(f.builder.handlers).to eq([
-                                           Faraday::Request::Retry,
-                                           Honeycomb::Faraday,
-                                           Faraday::Adapter::NetHttp,
-                                         ])
+        expected = [
+          Faraday::Request::Retry,
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f.builder.handlers).to eq(expected)
       end
 
       it "supports providing a builder with a symbol key" do
@@ -67,11 +86,14 @@ if defined?(Honeycomb::Faraday)
         end
         f = Faraday.new(builder: stack)
 
-        expect(f.builder.handlers).to eq([
-                                           Faraday::Request::Retry,
-                                           Honeycomb::Faraday,
-                                           Faraday::Adapter::NetHttp,
-                                         ])
+        expected = [
+          Faraday::Request::Retry,
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f.builder.handlers).to eq(expected)
       end
 
       it "supports providing a builder that only has an adapter" do
@@ -80,10 +102,13 @@ if defined?(Honeycomb::Faraday)
         end
         f = Faraday.new(builder: stack)
 
-        expect(f.builder.handlers).to eq([
-                                           Honeycomb::Faraday,
-                                           Faraday::Adapter::NetHttp,
-                                         ])
+        expected = [
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f.builder.handlers).to eq(expected)
       end
 
       it "supports providing a builder and a url" do
@@ -93,11 +118,14 @@ if defined?(Honeycomb::Faraday)
         end
         f = Faraday.new("https://example.com", builder: stack)
 
-        expect(f.builder.handlers).to eq([
-                                           Faraday::Request::Retry,
-                                           Honeycomb::Faraday,
-                                           Faraday::Adapter::NetHttp,
-                                         ])
+        expected = [
+          Faraday::Request::Retry,
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f.builder.handlers).to eq(expected)
       end
 
       it "does not add honeycomb middleware if it is not needed" do
@@ -108,19 +136,25 @@ if defined?(Honeycomb::Faraday)
         # force the builder to lock the middleware stack
         f.builder.app
 
-        expect(f.builder.handlers).to eq([
-                                           Honeycomb::Faraday,
-                                           Faraday::Adapter::NetHttp,
-                                         ])
+        expected = [
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f.builder.handlers).to eq(expected)
 
         f2 = Faraday.new(builder: stack)
         # force the builder to lock the middleware stack
         f2.builder.app
 
-        expect(f2.builder.handlers).to eq([
-                                            Honeycomb::Faraday,
-                                            Faraday::Adapter::NetHttp,
-                                          ])
+        expected = [
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f2.builder.handlers).to eq(expected)
       end
 
       it "supports providing a builder and a block" do
@@ -132,12 +166,15 @@ if defined?(Honeycomb::Faraday)
           faraday.adapter Faraday.default_adapter
         end
 
-        expect(f.builder.handlers).to eq([
-                                           Faraday::Response::Logger,
-                                           Faraday::Request::UrlEncoded,
-                                           Honeycomb::Faraday,
-                                           Faraday::Adapter::NetHttp,
-                                         ])
+        expected = [
+          Faraday::Response::Logger,
+          Faraday::Request::UrlEncoded,
+          Honeycomb::Faraday,
+        ]
+
+        include_http_adapter && expected << Faraday::Adapter::NetHttp
+
+        expect(f.builder.handlers).to eq(expected)
       end
     end
 

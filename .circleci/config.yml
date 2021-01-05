@@ -1,28 +1,9 @@
 version: 2.1
-
-# required as all of the jobs need to have a tag filter for some reason
-tag_filters: &tag_filters
-  filters:
-      tags:
-        only: /.*/
-
-executors:
-  ruby-two-three:
-    docker:
-      - image: circleci/ruby:2.3
-  ruby-two-four:
-    docker:
-      - image: circleci/ruby:2.4
-  ruby-two-five:
-    docker:
-      - image: circleci/ruby:2.5
-  ruby-two-six:
-    docker:
-      - image: circleci/ruby:2.6
-
 commands:
   ruby:
     parameters:
+      ruby-version:
+        type: string
       gemfile:
         type: string
         default: Gemfile
@@ -33,560 +14,161 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - gems-v1-{{ checksum "Gemfile.lock" }}
-            - gems-v1-
+            - gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
+            - gems-v1-<< parameters.ruby-version >>
       - run: gem update bundler
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> ./.circleci/bundler_version.sh
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> bundle install --jobs=4 --retry=3 --path vendor/bundle
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: gems-v1-{{ checksum "Gemfile.lock" }}
+          key: gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
       - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
 
-gemfiles:
-  aws-two: &aws-two
-    steps:
-      - ruby:
-          gemfile: gemfiles/aws_2.gemfile
-  aws-three: &aws-three
-    steps:
-      - ruby:
-          gemfile: gemfiles/aws_3.gemfile
-  faraday: &faraday
-    steps:
-      - ruby:
-          gemfile: gemfiles/faraday.gemfile
-  sequel-four: &sequel-four
-    steps:
-      - ruby:
-          gemfile: gemfiles/sequel4.gemfile
-  sequel-five: &sequel-five
-    steps:
-      - ruby:
-          gemfile: gemfiles/sequel5.gemfile
-  sinatra: &sinatra
-    steps:
-      - ruby:
-          gemfile: gemfiles/sinatra.gemfile
-  rack: &rack
-    steps:
-      - ruby:
-          gemfile: gemfiles/rack.gemfile
-  rails-four-one: &rails-four-one
-    steps:
-      - ruby:
-          gemfile: gemfiles/rails_41.gemfile
-  rails-four-two: &rails-four-two
-    steps:
-      - ruby:
-          gemfile: gemfiles/rails_42.gemfile
-  rails-five: &rails-five
-    steps:
-      - ruby:
-          gemfile: gemfiles/rails_5.gemfile
-  rails-five-one: &rails-five-one
-    steps:
-      - ruby:
-          gemfile: gemfiles/rails_51.gemfile
-  rails-five-two: &rails-five-two
-    steps:
-      - ruby:
-          gemfile: gemfiles/rails_52.gemfile
-  rails-six: &rails-six
-    steps:
-      - ruby:
-          gemfile: gemfiles/rails_6.gemfile
-  redis-three: &redis-three
-    steps:
-      - ruby:
-          gemfile: gemfiles/redis_3.gemfile
-  redis-four: &redis-four
-    steps:
-      - ruby:
-          gemfile: gemfiles/redis_4.gemfile
-
 jobs:
-  publish:
-    executor: ruby-two-six
+  build_artifacts:
+    docker:
+      - image: circleci/ruby:2.6
     steps:
       - checkout
+      - run: mkdir -p ~/artifacts
+      - run: gem build libhoney.gemspec
+      - run: cp libhoney-*.gem ~/artifacts/
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - artifacts
+      - store_artifacts:
+          path: ~/artifacts
+
+  publish_rubygems:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - attach_workspace:
+          at: ~/
       - run:
           name: Setup Rubygems
           command: bash .circleci/setup-rubygems.sh
-      - run: gem build honeycomb-beeline.gemspec
-      - run: gem push honeycomb-beeline-*.gem
+      - run: gem push ~/artifacts/honeycomb-beeline-*.gem
+
+  publish_github:
+    docker:
+      - image: cibuilds/github:0.13.0
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: "Artifacts being published"
+          command: |
+            echo "about to publish to tag ${CIRCLE_TAG}"
+            ls -l ~/artifacts/*
+      - run:
+          name: "GHR Draft"
+          command: ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
+
   lint:
-    executor: ruby-two-six
+    parameters:
+      ruby-version:
+        type: string
+        default: "2.6"
+    docker:
+        - image: circleci/ruby:<< parameters.ruby-version >>
     steps:
       - ruby:
+          ruby-version: << parameters.ruby-version >>
           command: bundle exec rake rubocop
-  aws-two-ruby-two-three:
-    <<: *aws-two
-    executor: ruby-two-three
-  aws-two-ruby-two-four:
-    <<: *aws-two
-    executor: ruby-two-four
-  aws-two-ruby-two-five:
-    <<: *aws-two
-    executor: ruby-two-five
-  aws-two-ruby-two-six:
-    <<: *aws-two
-    executor: ruby-two-six
-  aws-three-ruby-two-three:
-    <<: *aws-three
-    executor: ruby-two-three
-  aws-three-ruby-two-four:
-    <<: *aws-three
-    executor: ruby-two-four
-  aws-three-ruby-two-five:
-    <<: *aws-three
-    executor: ruby-two-five
-  aws-three-ruby-two-six:
-    <<: *aws-three
-    executor: ruby-two-six
-  faraday-ruby-two-three:
-    <<: *faraday
-    executor: ruby-two-three
-  faraday-ruby-two-four:
-    <<: *faraday
-    executor: ruby-two-four
-  faraday-ruby-two-five:
-    <<: *faraday
-    executor: ruby-two-five
-  faraday-ruby-two-six:
-    <<: *faraday
-    executor: ruby-two-six
-  sequel-four-ruby-two-three:
-    <<: *sequel-four
-    executor: ruby-two-three
-  sequel-four-ruby-two-four:
-    <<: *sequel-four
-    executor: ruby-two-four
-  sequel-four-ruby-two-five:
-    <<: *sequel-four
-    executor: ruby-two-five
-  sequel-four-ruby-two-six:
-    <<: *sequel-four
-    executor: ruby-two-six
-  sequel-five-ruby-two-three:
-    <<: *sequel-five
-    executor: ruby-two-three
-  sequel-five-ruby-two-four:
-    <<: *sequel-five
-    executor: ruby-two-four
-  sequel-five-ruby-two-five:
-    <<: *sequel-five
-    executor: ruby-two-five
-  sequel-five-ruby-two-six:
-    <<: *sequel-five
-    executor: ruby-two-six
-  sinatra-ruby-two-three:
-    <<: *sinatra
-    executor: ruby-two-three
-  sinatra-ruby-two-four:
-    <<: *sinatra
-    executor: ruby-two-four
-  sinatra-ruby-two-five:
-    <<: *sinatra
-    executor: ruby-two-five
-  sinatra-ruby-two-six:
-    <<: *sinatra
-    executor: ruby-two-six
-  rack-ruby-two-three:
-    <<: *rack
-    executor: ruby-two-three
-  rack-ruby-two-four:
-    <<: *rack
-    executor: ruby-two-four
-  rack-ruby-two-five:
-    <<: *rack
-    executor: ruby-two-five
-  rack-ruby-two-six:
-    <<: *rack
-    executor: ruby-two-six
-  rails-four-one-ruby-two-three:
-    <<: *rails-four-one
-    executor: ruby-two-three
-  rails-four-one-ruby-two-four:
-    <<: *rails-four-one
-    executor: ruby-two-four
-  rails-four-one-ruby-two-five:
-    <<: *rails-four-one
-    executor: ruby-two-five
-  rails-four-one-ruby-two-six:
-    <<: *rails-four-one
-    executor: ruby-two-six
-  rails-four-two-ruby-two-three:
-    <<: *rails-four-two
-    executor: ruby-two-three
-  rails-four-two-ruby-two-four:
-    <<: *rails-four-two
-    executor: ruby-two-four
-  rails-four-two-ruby-two-five:
-    <<: *rails-four-two
-    executor: ruby-two-five
-  rails-four-two-ruby-two-six:
-    <<: *rails-four-two
-    executor: ruby-two-six
-  rails-five-ruby-two-three:
-    <<: *rails-five
-    executor: ruby-two-three
-  rails-five-ruby-two-four:
-    <<: *rails-five
-    executor: ruby-two-four
-  rails-five-ruby-two-five:
-    <<: *rails-five
-    executor: ruby-two-five
-  rails-five-ruby-two-six:
-    <<: *rails-five
-    executor: ruby-two-six
-  rails-five-one-ruby-two-three:
-    <<: *rails-five-one
-    executor: ruby-two-three
-  rails-five-one-ruby-two-four:
-    <<: *rails-five-one
-    executor: ruby-two-four
-  rails-five-one-ruby-two-five:
-    <<: *rails-five-one
-    executor: ruby-two-five
-  rails-five-one-ruby-two-six:
-    <<: *rails-five-one
-    executor: ruby-two-six
-  rails-five-two-ruby-two-three:
-    <<: *rails-five-two
-    executor: ruby-two-three
-  rails-five-two-ruby-two-four:
-    <<: *rails-five-two
-    executor: ruby-two-four
-  rails-five-two-ruby-two-five:
-    <<: *rails-five-two
-    executor: ruby-two-five
-  rails-five-two-ruby-two-six:
-    <<: *rails-five-two
-    executor: ruby-two-six
-  rails-six-ruby-two-three:
-    <<: *rails-six
-    executor: ruby-two-three
-  rails-six-ruby-two-four:
-    <<: *rails-six
-    executor: ruby-two-four
-  rails-six-ruby-two-five:
-    <<: *rails-six
-    executor: ruby-two-five
-  rails-six-ruby-two-six:
-    <<: *rails-six
-    executor: ruby-two-six
-  redis-three-ruby-two-three:
-    <<: *redis-three
-    executor: ruby-two-three
-  redis-three-ruby-two-four:
-    <<: *redis-three
-    executor: ruby-two-four
-  redis-three-ruby-two-five:
-    <<: *redis-three
-    executor: ruby-two-five
-  redis-three-ruby-two-six:
-    <<: *redis-three
-    executor: ruby-two-six
-  redis-four-ruby-two-three:
-    <<: *redis-four
-    executor: ruby-two-three
-  redis-four-ruby-two-four:
-    <<: *redis-four
-    executor: ruby-two-four
-  redis-four-ruby-two-five:
-    <<: *redis-four
-    executor: ruby-two-five
-  redis-four-ruby-two-six:
-    <<: *redis-four
-    executor: ruby-two-six
+  test:
+    parameters:
+      gemfile:
+        type: string
+      ruby-version:
+        type: string
+    docker:
+        - image: circleci/ruby:<< parameters.ruby-version >>
+    steps:
+      - ruby:
+          ruby-version: << parameters.ruby-version >>
+          gemfile: << parameters.gemfile >>
+          command: bundle exec rake test
 
 workflows:
-  version: 2
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - lint
+      - test: &test
+          requires:
+            - lint
+          matrix:
+            parameters:
+              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6", "2.7"]
+              gemfile:
+                - gemfiles/aws_2.gemfile
+                - gemfiles/aws_3.gemfile
+                - gemfiles/faraday_0.gemfile
+                - gemfiles/faraday_1.gemfile
+                - gemfiles/sequel4.gemfile
+                - gemfiles/sequel5.gemfile
+                - gemfiles/sinatra.gemfile
+                - gemfiles/rack.gemfile
+                - gemfiles/rails_41.gemfile
+                - gemfiles/rails_42.gemfile
+                - gemfiles/rails_5.gemfile
+                - gemfiles/rails_51.gemfile
+                - gemfiles/rails_52.gemfile
+                - gemfiles/rails_6.gemfile
+                - gemfiles/redis_3.gemfile
+                - gemfiles/redis_4.gemfile
+            exclude:
+              - ruby-version: "2.2"
+                gemfile: gemfiles/faraday_1.gemfile
+              - ruby-version: "2.2"
+                gemfile: gemfiles/rails_52.gemfile
+              - ruby-version: "2.2"
+                gemfile: gemfiles/rails_6.gemfile
+              - ruby-version: "2.3"
+                gemfile: gemfiles/rails_6.gemfile
+              - ruby-version: "2.4"
+                gemfile: gemfiles/rails_6.gemfile
+              - ruby-version: "2.4"
+                gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.5"
+                gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.6"
+                gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.7"
+                gemfile: gemfiles/rails_41.gemfile
+              - ruby-version: "2.7"
+                gemfile: gemfiles/rails_42.gemfile
   beeline:
     jobs:
-      - lint: *tag_filters
-      - aws-two-ruby-two-three:
-          <<: *tag_filters
+      - lint:
+          filters: &regular_filters
+              tags:
+                only: /.*/
+      - test:
+          <<: *test
+          filters: *regular_filters
+      - build_artifacts:
+          filters: &tag_filters
+              tags:
+                only: /^v.*/
+              branches:
+                ignore: /.*/
           requires:
             - lint
-      - aws-two-ruby-two-four:
-          <<: *tag_filters
+            - test
+      - publish_rubygems: &publish
+          filters: *tag_filters
           requires:
-            - lint
-      - aws-two-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-two-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - aws-three-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - faraday-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-four-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sequel-five-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - sinatra-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rack-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-one-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-four-two-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-one-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-five-two-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-six-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - rails-six-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-three-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-three:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-four:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-five:
-          <<: *tag_filters
-          requires:
-            - lint
-      - redis-four-ruby-two-six:
-          <<: *tag_filters
-          requires:
-            - lint
-      - publish:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          requires:
-            - lint
-            - aws-two-ruby-two-three
-            - aws-two-ruby-two-four
-            - aws-two-ruby-two-five
-            - aws-two-ruby-two-six
-            - aws-three-ruby-two-three
-            - aws-three-ruby-two-four
-            - aws-three-ruby-two-five
-            - aws-three-ruby-two-six
-            - faraday-ruby-two-three
-            - faraday-ruby-two-four
-            - faraday-ruby-two-five
-            - faraday-ruby-two-six
-            - sequel-four-ruby-two-three
-            - sequel-four-ruby-two-four
-            - sequel-four-ruby-two-five
-            - sequel-four-ruby-two-six
-            - sequel-five-ruby-two-three
-            - sequel-five-ruby-two-four
-            - sequel-five-ruby-two-five
-            - sequel-five-ruby-two-six
-            - sinatra-ruby-two-three
-            - sinatra-ruby-two-four
-            - sinatra-ruby-two-five
-            - sinatra-ruby-two-six
-            - rack-ruby-two-three
-            - rack-ruby-two-four
-            - rack-ruby-two-five
-            - rack-ruby-two-six
-            - rails-four-one-ruby-two-three
-            - rails-four-two-ruby-two-three
-            - rails-four-two-ruby-two-four
-            - rails-four-two-ruby-two-five
-            - rails-four-two-ruby-two-six
-            - rails-five-ruby-two-three
-            - rails-five-ruby-two-four
-            - rails-five-ruby-two-five
-            - rails-five-ruby-two-six
-            - rails-five-one-ruby-two-three
-            - rails-five-one-ruby-two-four
-            - rails-five-one-ruby-two-five
-            - rails-five-one-ruby-two-six
-            - rails-five-two-ruby-two-three
-            - rails-five-two-ruby-two-four
-            - rails-five-two-ruby-two-five
-            - rails-five-two-ruby-two-six
-            - rails-six-ruby-two-five
-            - rails-six-ruby-two-six
-            - redis-three-ruby-two-three
-            - redis-three-ruby-two-four
-            - redis-three-ruby-two-five
-            - redis-three-ruby-two-six
-            - redis-four-ruby-two-three
-            - redis-four-ruby-two-four
-            - redis-four-ruby-two-five
-            - redis-four-ruby-two-six
+            - build_artifacts
+      - publish_github:
+          <<: *publish
+          context: Honeycomb Secrets for Public Repos

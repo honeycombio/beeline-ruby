@@ -15,14 +15,16 @@ module Honeycomb
 
       @client.start_span(name: "http_client") do |span|
         span.add_field "request.method", env.method.upcase
-        span.add_field "request.protocol", env.url.scheme
+        span.add_field "request.scheme", env.url.scheme
         span.add_field "request.host", env.url.host
         span.add_field "request.path", env.url.path
         span.add_field "meta.type", "http_client"
         span.add_field "meta.package", "faraday"
         span.add_field "meta.package_version", ::Faraday::VERSION
 
-        env.request_headers["X-Honeycomb-Trace"] = span.to_trace_header
+        if (headers = span.trace_headers(env)).is_a?(Hash)
+          env.request_headers.merge!(headers)
+        end
 
         @app.call(env).tap do |response|
           span.add_field "response.status_code", response.status

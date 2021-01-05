@@ -34,7 +34,9 @@ module Honeycomb
           on_notification_event.call(name, span, payload)
         else
           payload.each do |key, value|
-            span.add_field("#{name}.#{key}", value.to_s)
+            # Make ActionController::Parameters parseable by libhoney.
+            value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)
+            span.add_field("#{name}.#{key}", value)
           end
         end
       end
@@ -63,7 +65,7 @@ module Honeycomb
       def finish(name, id, payload)
         return unless (span = spans[id].pop)
 
-        handlers[name].call(name, span, payload)
+        handler_for(name).call(name, span, payload)
 
         span.send
       end
@@ -74,6 +76,16 @@ module Honeycomb
 
       def spans
         Thread.current[key] ||= Hash.new { |h, id| h[id] = [] }
+      end
+
+      def handler_for(name)
+        handlers.fetch(name) do
+          handlers[
+            handlers.keys.detect do |key|
+              key.is_a?(Regexp) && key =~ name
+            end
+          ]
+        end
       end
     end
   end

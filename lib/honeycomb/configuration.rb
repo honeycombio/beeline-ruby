@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "socket"
+require "honeycomb/propagation/honeycomb"
 
 module Honeycomb
   # Used to configure the Honeycomb client
@@ -33,7 +34,7 @@ module Honeycomb
 
       @client ||
         (debug && Libhoney::LogClient.new) ||
-        Libhoney::Client.new(options)
+        Libhoney::Client.new(**options)
     end
 
     def after_initialize(client)
@@ -58,6 +59,28 @@ module Honeycomb
         @sample_hook = hook
       else
         @sample_hook
+      end
+    end
+
+    def http_trace_parser_hook(&hook)
+      if block_given?
+        @http_trace_parser_hook = hook
+      elsif @http_trace_parser_hook
+        @http_trace_parser_hook
+      else
+        # by default we try to parse incoming honeycomb traces
+        HoneycombPropagation::UnmarshalTraceContext.method(:parse_rack_env)
+      end
+    end
+
+    def http_trace_propagation_hook(&hook)
+      if block_given?
+        @http_trace_propagation_hook = hook
+      elsif @http_trace_propagation_hook
+        @http_trace_propagation_hook
+      else
+        # by default we send outgoing honeycomb trace headers
+        HoneycombPropagation::MarshalTraceContext.method(:parse_faraday_env)
       end
     end
   end

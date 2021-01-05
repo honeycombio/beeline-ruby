@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require "securerandom"
-require "honeycomb/propagation"
+require "honeycomb/propagation/context"
+require "honeycomb/propagation/honeycomb"
 
-RSpec.describe Honeycomb::PropagationParser do
-  let(:propagation) { Class.new.extend(subject) }
-
+RSpec.shared_examples "honeycomb_propagation_parse" do
   it "handles a nil trace" do
     expect(propagation.parse(nil)).to eq [nil, nil, nil, nil]
   end
@@ -67,17 +66,42 @@ RSpec.describe Honeycomb::PropagationParser do
   end
 end
 
-RSpec.describe Honeycomb::PropagationSerializer do
-  let(:builder) { instance_double("Builder", dataset: "rails") }
-  let(:trace) { instance_double("Trace", id: 2, fields: {}) }
-  let(:span) do
-    instance_double("Span", id: 1, trace: trace, builder: builder)
-      .extend(subject)
+RSpec.describe Honeycomb::HoneycombPropagation::UnmarshalTraceContext do
+  let(:propagation) { Class.new.extend(subject) }
+
+  describe "module usage" do
+    let(:propagation) { Class.new.extend(subject) }
+    include_examples "honeycomb_propagation_parse"
   end
 
-  it "can serialize a basic span" do
-    expect(span.to_trace_header)
-      .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+  describe "class method usage" do
+    let(:propagation) { subject }
+    include_examples "honeycomb_propagation_parse"
+  end
+end
+
+RSpec.describe Honeycomb::HoneycombPropagation::MarshalTraceContext do
+  describe "module usage" do
+    let(:builder) { instance_double("Builder", dataset: "rails") }
+    let(:trace) { instance_double("Trace", id: 2, fields: {}) }
+    let(:span) do
+      instance_double("Span", id: 1, trace: trace, builder: builder)
+        .extend(subject)
+    end
+
+    it "can serialize a basic span" do
+      expect(span.to_trace_header)
+        .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+    end
+  end
+
+  describe "class method usage" do
+    let(:context) { Honeycomb::Propagation::Context.new(2, 1, {}, "rails") }
+
+    it "can serialize a basic span" do
+      expect(subject.to_trace_header(context))
+        .to eq("1;dataset=rails,trace_id=2,parent_id=1,context=e30=")
+    end
   end
 end
 

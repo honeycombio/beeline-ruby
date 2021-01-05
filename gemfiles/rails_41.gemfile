@@ -4,6 +4,7 @@ source "https://rubygems.org"
 
 gem "rack-test"
 gem "rails", "~> 4.1.0"
+gem "sprockets", "~> 3"
 gem "warden"
 
 gemspec path: "../"

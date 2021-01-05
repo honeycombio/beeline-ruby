@@ -37,13 +37,15 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "libhoney", "~> 1.8"
+  spec.add_dependency "libhoney", ">= 1.14.2", "~> 1.14"
 
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bump"
   spec.add_development_dependency "bundler"
+  spec.add_development_dependency "codecov"
   spec.add_development_dependency "overcommit", "~> 0.46.0"
-  spec.add_development_dependency "pry-byebug"
+  spec.add_development_dependency "pry", "< 0.13.0"
+  spec.add_development_dependency "pry-byebug", "~> 3.6.0"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "< 0.69"

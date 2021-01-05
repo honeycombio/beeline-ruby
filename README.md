@@ -2,6 +2,7 @@
 
 [![Build Status](https://circleci.com/gh/honeycombio/beeline-ruby.svg?style=svg)](https://circleci.com/gh/honeycombio/beeline-ruby)
 [![Gem Version](https://badge.fury.io/rb/honeycomb-beeline.svg)](https://badge.fury.io/rb/honeycomb-beeline)
+[![codecov](https://codecov.io/gh/honeycombio/beeline-ruby/branch/main/graph/badge.svg)](https://codecov.io/gh/honeycombio/beeline-ruby)
 
 This package makes it easy to instrument your Ruby web app to send useful events to [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.
 - [Usage and Examples](https://docs.honeycomb.io/getting-data-in/beelines/ruby-beeline/)
@@ -23,6 +24,13 @@ Built in instrumentation for:
 - Redis (tested on versions 3.x and 4.x)
 - Sequel
 - Sinatra
+
+## Testing
+Find `rspec` test files in the `spec` directory.
+
+To run tests on gem-specific instrumentations or across various dependency versions, use [appraisal](https://github.com/thoughtbot/appraisal) (further instructions in the readme for that gem). Find gem sets in the `Appraisals` config.
+
+To run a specific file: `bundle exec appraisal <gem set> rspec <path/to/file>`
 
 ## Get in touch
 

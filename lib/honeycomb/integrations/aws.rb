@@ -106,8 +106,12 @@ module Honeycomb
           "aws.region" => context.config.region,
           "aws.service" => context.client.class.identifier,
           "aws.operation" => context.operation_name,
-          "aws.params" => context.params,
         }
+
+        context.params && context.params.each do |key, value|
+          context[:honeycomb_aws_sdk_data]["aws.params.#{key}"] = value
+        end
+
         span.add context[:honeycomb_aws_sdk_data]
       end
 

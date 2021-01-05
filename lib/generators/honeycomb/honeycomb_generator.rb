@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails/generators"
+require "active_support/core_ext/string/strip"
 
 ##
 # Generates an intializer for configuring the Honeycomb beeline
@@ -22,6 +23,19 @@ class HoneycombGenerator < Rails::Generators::Base
         Honeycomb.configure do |config|
           config.write_key = #{write_key.inspect}
           config.dataset = #{options['dataset'].inspect}
+          config.presend_hook do |fields|
+            if fields["name"] == "redis" && fields.has_key?("redis.command")
+              # remove potential PII from the redis command
+              if fields["redis.command"].respond_to? :split
+                fields["redis.command"] = fields["redis.command"].split.first
+              end
+            end
+            if fields["name"] == "sql.active_record"
+              # remove potential PII from the active record events
+              fields.delete("sql.active_record.binds")
+              fields.delete("sql.active_record.type_casted_binds")
+            end
+          end
           config.notification_events = %w[
             sql.active_record
             render_template.action_view
