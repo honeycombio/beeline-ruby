@@ -48,6 +48,12 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
+          name: "Artifacts being published"
+          command: |
+            echo "about to publish to tag ${CIRCLE_TAG}"
+            ls -l ~/artifacts/*
+      - checkout
+      - run:
           name: Setup Rubygems
           command: bash .circleci/setup-rubygems.sh
       - run: gem push ~/artifacts/honeycomb-beeline-*.gem
