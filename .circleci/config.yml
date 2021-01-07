@@ -32,8 +32,8 @@ jobs:
     steps:
       - checkout
       - run: mkdir -p ~/artifacts
-      - run: gem build libhoney.gemspec
-      - run: cp libhoney-*.gem ~/artifacts/
+      - run: gem build honeycomb-beeline.gemspec
+      - run: cp honeycomb-beeline-*.gem ~/artifacts/
       - persist_to_workspace:
           root: ~/
           paths:
