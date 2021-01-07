@@ -1,13 +1,9 @@
 # beeline-ruby changelog
 
-## [Unreleased]
+## 2.4.0 2021-01-07
 ### Added
 - Add support for HTTP Accept-Encoding header (#125) [@irvingreid](https://github.com/irvingreid)
 - Add with_field, with_trace_field wrapper methods (#51) [@ajvondrak](https://github.com/ajvondrak)
-
-### Changed
-- Ensure a status_code is set, when there is an unhandled exception (#123) [@lirossarvet](https://github.com/lirossarvet)
-  - As a result, 4xx and 5xx response spans will no longer have error and error_detail set by default
 
 ## 2.3.0 2020-11-06
 ### Improvements
