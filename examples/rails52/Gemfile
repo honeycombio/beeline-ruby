@@ -65,4 +65,10 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem 'honeycomb-beeline', path: "../.."
+if File.exist?('/.dockerenv') || ENV['BEELINE_FROM_RUBYGEMS']
+  puts "Using the beeline from RubyGems, not from this repository."
+  gem 'honeycomb-beeline'
+else
+  puts "Using the beeline's current state in this repository clone."
+  gem 'honeycomb-beeline', path: "../.."
+end
