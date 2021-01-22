@@ -1,0 +1,4 @@
+schedule_pokes:
+  cron: "*/1 * * * *"
+  class: "SchedulePokesJob"
+  queue: default
