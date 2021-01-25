@@ -1,6 +1,6 @@
 Honeycomb.configure do |config|
   config.write_key = ENV["HONEYCOMB_WRITE_KEY"]
-  config.dataset = ENV["HONEYCOMB_DATASET"]
+  config.dataset = ENV.fetch("HONEYCOMB_DATASET", "rails52example")
   config.notification_events = %w[
     sql.active_record
     render_template.action_view
