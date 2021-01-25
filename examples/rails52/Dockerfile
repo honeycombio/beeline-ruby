@@ -4,8 +4,6 @@ RUN gem install bundler
 WORKDIR /myapp
 ENV BEELINE_FROM_RUBYGEMS=true
 COPY Gemfile /myapp/Gemfile
-COPY Gemfile.lock /myapp/Gemfile.lock
-COPY vendor/libhoney-rb /myapp/vendor/libhoney-rb
 RUN bundle install
 COPY . /myapp
 
