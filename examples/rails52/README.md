@@ -12,6 +12,11 @@
 * Visit the [sample application site](http://localhost:3000)
 * Create some bees!
 * Load your [Honeycomb dashboard](https://ui.honeycomb.io) and see the built-in instrumentation!
+  * An interesting query:
+    * VISUALIZE: COUNT, HEATMAP(duration_ms)
+    * GROUP BY: name, request.header.user_agent, request.host, request.header.x_forwarded_for
+    * ORDER BY: name asc
+
 
 ## What services are running in this example?
 

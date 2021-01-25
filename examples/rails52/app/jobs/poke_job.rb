@@ -4,7 +4,13 @@ class PokeJob < ApplicationJob
   queue_as :default
 
   def perform(*args)
-    sleep args.first
+    seconds_to_sleep = args.first
+
+    Honeycomb.start_span(name: "fakework") do |span|
+      span.add_field('app.fakework.sleepytime', seconds_to_sleep)
+      sleep seconds_to_sleep
+    end
+
     uri = "http://web:3000/"
     begin
       Faraday.get(uri) do |request|

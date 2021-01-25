@@ -27,8 +27,14 @@ gem 'jbuilder', '~> 2.5'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
+# background job processing
 gem 'sidekiq'
+# simple scheduled jobs
 gem "sidekiq-cron"
+# Community library for Sidekiq job instrumentation
+gem 'honeykiq'
+
+# the Beeline has autoinstrumentation for this HTTP client
 gem "faraday"
 
 # Use ActiveStorage variant

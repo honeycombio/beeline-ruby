@@ -2,3 +2,10 @@ schedule_pokes:
   cron: "*/1 * * * *"
   class: "SchedulePokesJob"
   queue: default
+
+# schedule sending Sidekiq stats even when other
+# jobs are idle
+sidekiq_report:
+  cron: "*/1 * * * *"
+  class: "SidekiqReportJob"
+  queue: default
