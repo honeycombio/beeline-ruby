@@ -1,0 +1,50 @@
+version: "2.4"
+
+x-app_base: &app
+    build: .
+    image: rails52example
+    environment:
+      HONEYCOMB_WRITE_KEY: # set these environment variables on the host
+      HONEYCOMB_DATASET:   # running docker-compose to pass secrets in
+      RAILS_ENV: development
+      SECRET_KEY_BASE: abunchofjibberishbecausethisisnotontheinternet
+      REDIS_URL: redis://redis:6379/0
+      # proxy users are in htpasswd file given to squid service below
+      http_proxy: http://pxuser:lemmeout@squid:3128
+      https_proxy: http://pxuser:lemmeout@squid:3128
+      no_proxy: web
+      LOG_LEVEL: debug
+    depends_on:
+      - redis
+      - squid
+
+services:
+  web:
+    <<: *app
+    tmpfs:
+      - /myapp/tmp/pids
+
+  worker:
+    <<: *app
+    command: "bundle exec sidekiq"
+
+  redis:
+    image: redis:latest
+
+  squid:
+    image: datadog/squid
+    ports:
+      # for reverse proxy back to web app
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./.proxyconfig/squid.conf:/etc/squid/squid.conf
+      - ./.proxyconfig/htpasswd:/etc/squid/htpasswd
+    networks:
+      - default
+      - internet
+
+networks:
+  default:
+    # turn off direct internet access for containers on the default network
+    internal: true
+  internet:
