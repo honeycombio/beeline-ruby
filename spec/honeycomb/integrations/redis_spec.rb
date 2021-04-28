@@ -2186,6 +2186,21 @@ if defined?(Honeycomb::Redis)
         expect(command).to eq 'ECHO "hi\\\\ho"'
       end
 
+      it "escapes backslashes followed by x" do
+        redis.echo("hi\\xho")
+        expect(command).to eq 'ECHO "hi\\\\xho"'
+      end
+
+      it "escapes backslashes followed by x and a single hex digit" do
+        redis.echo("hi\\x1ho")
+        expect(command).to eq 'ECHO "hi\\\\x1ho"'
+      end
+
+      it "will not escape backslashes that look like hex escape sequences" do
+        redis.echo("hi\\x1Aho")
+        expect(command).to eq 'ECHO "hi\\x1Aho"'
+      end
+
       it "escapes double quotes" do
         redis.echo('hi"ho')
         expect(command).to eq 'ECHO "hi\\"ho"'

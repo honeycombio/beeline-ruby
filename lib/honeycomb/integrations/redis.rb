@@ -187,16 +187,6 @@ module Honeycomb
         args.map! { "[sanitized]" }
       end
 
-      def prettify(arg)
-        quotes = false
-        pretty = "".dup
-        arg.to_s.each_char do |c|
-          quotes ||= needs_quotes?(c)
-          pretty << escape(c)
-        end
-        quotes ? "\"#{pretty}\"" : pretty
-      end
-
       # This aims to replicate the algorithms used by redis-cli.
       #
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L940-L1067
@@ -204,54 +194,15 @@ module Honeycomb
       #
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L878-L907
       #   The redis-cli printing algorithm
-      def escape(char)
-        return escape_with_backslash(char) if escape_with_backslash?(char)
-        return escape_with_hex_codes(char) if escape_with_hex_codes?(char)
-
-        char
+      def prettify(arg)
+        pretty = arg.to_s.dup
+        pretty.encode!("UTF-8", "binary", fallback: ->(c) { hex(c) })
+        pretty.gsub!(NEEDS_BACKSLASH, BACKSLASH)
+        pretty.gsub!(NEEDS_HEX) { |c| hex(c) }
+        pretty =~ NEEDS_QUOTES ? "\"#{pretty}\"" : pretty
       end
 
-      # A lookup table for backslash-escaped characters.
-      #
-      # This is used by {#escape_with_backslash?} and {#escape_with_backslash}
-      # to replicate the hard-coded `case` statements in redis-cli. As of this
-      # writing, Redis recognizes a handful of standard C escape sequences,
-      # like "\n" for newlines.
-      #
-      # Because {#prettify} will output double quoted strings if any escaping
-      # is needed, this table must additionally consider the double-quote to be
-      # a backslash-escaped character. For example, instead of generating
-      #
-      #   '"hello"'
-      #
-      # we'll generate
-      #
-      #   "\"hello\""
-      #
-      # even though redis-cli would technically recognize the single-quoted
-      # version.
-      #
-      # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L888-L896
-      #   The redis-cli algorithm for outputting standard escape sequences
-      BACKSLASHES = {
-        "\\" => "\\\\",
-        '"' => '\\"',
-        "\n" => "\\n",
-        "\r" => "\\r",
-        "\t" => "\\t",
-        "\a" => "\\a",
-        "\b" => "\\b",
-      }.freeze
-
-      def escape_with_backslash?(char)
-        BACKSLASHES.key?(char)
-      end
-
-      def escape_with_backslash(char)
-        BACKSLASHES.fetch(char, char)
-      end
-
-      # Do we need to hex-encode this character?
+      # A regular expression matching characters that need to be hex-encoded.
       #
       # This replicates the C isprint() function that redis-cli uses to decide
       # whether to escape a character in hexadecimal notation, "\xhh". Any
@@ -287,18 +238,95 @@ module Honeycomb
       # escape it.
       #
       # What's more, Ruby's Regexp#=~ method will blow up if the string does
-      # not have a valid encoding (e.g., in UTF-8). In this case, though,
-      # {#escape_with_hex_codes} can still convert the bytes that make up the
-      # invalid character into a hex code. So we preemptively check for
-      # invalidly-encoded characters before testing the above match.
+      # not have a valid encoding (e.g., in UTF-8). We handle this case
+      # separately, though, using String#encode! with a :fallback option to
+      # hex-encode invalid UTF-8 byte sequences with {#hex}.
       #
       # @see https://ruby-doc.org/core-2.6.5/Regexp.html
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L878-L880
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L898-L901
       # @see https://www.justinweiss.com/articles/3-steps-to-fix-encoding-problems-in-ruby/
-      def escape_with_hex_codes?(char)
-        !char.valid_encoding? || char =~ /[^[:print:]&&[:ascii:]]/
-      end
+      NEEDS_HEX = /[^[:print:]&&[:ascii:]]/.freeze
+
+      # A regular expression for characters that need to be backslash-escaped.
+      #
+      # Any match of this regexp will be substituted according to the
+      # {BACKSLASH} table. This includes standard C escape sequences (newlines,
+      # tabs, etc) as well as a couple special considerations:
+      #
+      # 1. Because {#prettify} will output double quoted strings if any
+      #    escaping is needed, we must match double quotes (") so they'll be
+      #    replaced by escaped quotes (\").
+      #
+      # 2. Backslashes themselves get backslash-escaped, so \ becomes \\.
+      #    However, strings with invalid UTF-8 encoding will blow up when we
+      #    try to use String#gsub!, so {#prettify} must first use
+      #    String#encode! to scrub out invalid characters. It does this by
+      #    replacing invalid bytes with hex-encoded escape sequences using
+      #    {#hex}. This will insert sequences like \xhh, which contains a
+      #    backslash that we *don't* want to escape.
+      #
+      #    Unfortunately, this regexp can't really distinguish between
+      #    backslashes in the original input vs backslashes resulting from the
+      #    UTF-8 fallback. We make an effort by using a negative lookahead.
+      #    That way, only backslashes that *aren't* followed by x + hex digit +
+      #    hex digit will be escaped.
+      NEEDS_BACKSLASH = /["\n\r\t\a\b]|\\(?!x\h\h)/.freeze
+
+      # A lookup table for backslash-escaped characters.
+      #
+      # This is used by {#prettify} to replicate the hard-coded `case`
+      # statements in redis-cli. As of this writing, Redis recognizes a handful
+      # of standard C escape sequences, like "\n" for newlines.
+      #
+      # Because {#prettify} will output double quoted strings if any escaping
+      # is needed, this table must additionally consider the double-quote to be
+      # a backslash-escaped character. For example, instead of generating
+      #
+      #   '"hello"'
+      #
+      # we'll generate
+      #
+      #   "\"hello\""
+      #
+      # even though redis-cli would technically recognize the single-quoted
+      # version.
+      #
+      # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L888-L896
+      #   The redis-cli algorithm for outputting standard escape sequences
+      BACKSLASH = {
+        "\\" => "\\\\",
+        '"' => '\\"',
+        "\n" => "\\n",
+        "\r" => "\\r",
+        "\t" => "\\t",
+        "\a" => "\\a",
+        "\b" => "\\b",
+      }.freeze
+
+      # If the final escaped string needs quotes, it will match this regexp.
+      #
+      # The overall string returned by {#prettify} should only be quoted if at
+      # least one of the following holds:
+      #
+      # 1. The string contains an escape sequence, broadly demarcated by a
+      #    backslash. This includes standard escape sequences like "\n" and
+      #    "\t" as well as hex-encoded bytes using the "\x" escape sequence.
+      #    Since {#prettify} uses double quotes on its output string, we must
+      #    also force quotes if the string itself contains a literal
+      #    double quote. This double quote behavior is handled tacitly by the
+      #    {NEEDS_BACKSLASH} + {BACKSLASH} replacement.
+      #
+      # 2. The string contains a single quote. Since redis-cli recognizes
+      #    single-quoted strings, we want to wrap the {#prettify} output in
+      #    double quotes so that the literal single quote character isn't
+      #    mistaken as the delimiter of a new string.
+      #
+      # 3. The string contains any whitespace characters. If the {#prettify}
+      #    output weren't wrapped in quotes, whitespace would act as a
+      #    separator between arguments to the Redis command. To group things
+      #    together, we need to quote the string.
+      NEEDS_QUOTES = /[\\'\s]/.freeze
 
       # Hex-encodes a (presumably non-printable or non-ASCII) character.
       #
@@ -326,37 +354,8 @@ module Honeycomb
       # @see https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap07.html
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L878-L880
       # @see https://github.com/antirez/redis/blob/0f026af185e918a9773148f6ceaa1b084662be88/src/sds.c#L898-L901
-      def escape_with_hex_codes(char)
+      def hex(char)
         char.bytes.map { |b| Kernel.format("\\x%02x", b) }.join
-      end
-
-      def escape?(char)
-        escape_with_backslash?(char) || escape_with_hex_codes?(char)
-      end
-
-      # Should this character cause {#prettify} to wrap its output in quotes?
-      #
-      # The overall string returned by {#prettify} should only be quoted if at
-      # least one of the following holds:
-      #
-      # 1. The string contains a character that needs to be escaped. This
-      #    includes standard backslash escape sequences (like "\n" and "\t") as
-      #    well as hex-encoded bytes using the "\x" escape sequence. Since
-      #    {#prettify} uses double quotes on its output string, we must also
-      #    force quotes if the string itself contains a literal double quote.
-      #    This double quote behavior is handled tacitly by {BACKSLASHES}.
-      #
-      # 2. The string contains a single quote. Since redis-cli recognizes
-      #    single-quoted strings, we want to wrap the {#prettify} output in
-      #    double quotes so that the literal single quote character isn't
-      #    mistaken as the delimiter of a new string.
-      #
-      # 3. The string contains any whitespace characters. If the {#prettify}
-      #    output weren't wrapped in quotes, whitespace would act as a
-      #    separator between arguments to the Redis command. To group things
-      #    together, we need to quote the string.
-      def needs_quotes?(char)
-        escape?(char) || char == "'" || char =~ /\s/
       end
     end
   end
