@@ -102,6 +102,15 @@ if defined?(Honeycomb::Redis)
         }
       end
 
+      let(:ignored_fields) do
+        [
+          "redis._parsed",
+          "redis.logger",
+          "redis.password",
+          "redis.url",
+        ]
+      end
+
       if VERSION >= Gem::Version.new("3.0.2")
         before do
           fields.merge!(
@@ -150,12 +159,24 @@ if defined?(Honeycomb::Redis)
         expect(event).to include(fields)
       end
 
+      it "excludes the ignored fields on success" do
+        command
+        expect(event).not_to include(*ignored_fields)
+      end
+
       it "sends the expected fields on failure" do
         exn = Class.new(StandardError)
         expect(connection).to receive(:write).and_raise(exn.new("detail"))
         expect { command }.to raise_error(exn)
         error = { "redis.error" => exn.name, "redis.error_detail" => "detail" }
         expect(event).to include(fields.merge(error))
+      end
+
+      it "excludes the ignored fields on failure" do
+        exn = Class.new(StandardError)
+        expect(connection).to receive(:write).and_raise(exn.new("detail"))
+        expect { command }.to raise_error(exn)
+        expect(event).not_to include(*ignored_fields)
       end
     end
 
@@ -1729,6 +1750,40 @@ if defined?(Honeycomb::Redis)
             expect(event_data[1]).to include("redis.command" => "SSCAN key 5")
           end
         end
+      end
+    end
+
+    describe "connecting", configured: true do
+      let(:redis) { Redis.new(redis_options) }
+
+      let(:command) { redis.auth("password") }
+
+      before do
+        redis.connect
+        libhoney_client.events.clear
+        expect(connection).to receive(:connected?).and_return(true)
+      end
+
+      describe "using Redis options containing symbol keys" do
+        let(:redis_options) do
+          {
+            driver: driver,
+            url: "redis://h:password@127.0.0.1:6379/0",
+          }
+        end
+
+        it_behaves_like "the redis span", "AUTH [sanitized]"
+      end
+
+      describe "using Redis options containing string keys" do
+        let(:redis_options) do
+          {
+            "driver" => driver,
+            "url" => "redis://h:password@127.0.0.1:6379/0",
+          }
+        end
+
+        it_behaves_like "the redis span", "AUTH [sanitized]"
       end
     end
 
