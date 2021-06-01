@@ -159,7 +159,17 @@ module Honeycomb
       # * :logger - just some Ruby object, not useful
       # * :_parsed - implementation detail
       def ignore?(option)
-        %i[url password logger _parsed].include?(option)
+        # Redis options may be symbol or string keys.
+        #
+        # This normalizes `option` using `to_sym` as benchmarking on Ruby MRI
+        # v2.6.6 and v2.7.3 has shown that was faster compared to `to_s`.
+        # However, `nil` does not support `to_sym`. This uses a guard clause to
+        # handle the `nil` case because this is still faster than safe
+        # navigation. Also this lib still supports Ruby 2.2.0; which does not
+        # include safe navigation.
+        return true unless option
+
+        %i[url password logger _parsed].include?(option.to_sym)
       end
 
       def format(cmd)
