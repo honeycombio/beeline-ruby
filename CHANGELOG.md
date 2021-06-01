@@ -1,5 +1,18 @@
 # beeline-ruby changelog
 
+## 2.4.1 2021-06-01
+
+### Fixes
+
+- Updates Redis event-field filter to handle string keys in options in
+  addition to symbol keys. (#147) [@cupakromer](https://github.com/cupakromer)
+
+### Maintenance
+
+- Expanded on the Rails 5.2 example. (#141) [@robbkidd](https://github.com/robbkidd)
+- Added a test case for current behavior of event emitted for an
+  exception raised in Rails. (@132) [@vreynolds](https://github.com/vreynolds)
+
 ## 2.4.0 2021-01-07
 ### Added
 - Add support for HTTP Accept-Encoding header (#125) [@irvingreid](https://github.com/irvingreid)
