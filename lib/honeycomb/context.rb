@@ -30,7 +30,7 @@ module Honeycomb
     end
 
     def storage
-      Thread.current[thread_key] ||= {}
+      RequestStore.store[thread_key] ||= {}
     end
 
     def thread_key

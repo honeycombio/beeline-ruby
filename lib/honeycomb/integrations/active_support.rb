@@ -75,7 +75,7 @@ module Honeycomb
       attr_reader :key, :client, :handlers
 
       def spans
-        Thread.current[key] ||= Hash.new { |h, id| h[id] = [] }
+        RequestStore.store[key] ||= Hash.new { |h, id| h[id] = [] }
       end
 
       def handler_for(name)
