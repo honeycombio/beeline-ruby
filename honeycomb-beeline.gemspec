@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "libhoney", ">= 1.14.2", "~> 1.14"
+  spec.add_dependency "request_store"
 
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bump"
