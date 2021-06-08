@@ -30,6 +30,11 @@ module Honeycomb
 
       # maybe make `service_name` a required parameter
       @libhoney.add_field "service_name", configuration.service_name
+
+      configuration.custom_fields.each do |key, value|
+        @libhoney.add_field key, value
+      end
+
       @context = Context.new
 
       @additional_trace_options = {

@@ -19,6 +19,7 @@ module Honeycomb
       @service_name = ENV["HONEYCOMB_SERVICE"]
       @debug = ENV.key?("HONEYCOMB_DEBUG")
       @client = nil
+      @custom_fields = {}
     end
 
     def service_name
