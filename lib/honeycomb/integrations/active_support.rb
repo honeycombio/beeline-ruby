@@ -62,12 +62,6 @@ module Honeycomb
           end
         end
       end
-
-      private
-
-      def named_notification_event_handlers
-        @named_notification_event_handlers ||= Hash.new { |h, k| h[k] = on_notification_event }
-      end
     end
 
     # Handles ActiveSupport::Notification subscriptions, relaying them to a
