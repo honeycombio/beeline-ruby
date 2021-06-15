@@ -8,15 +8,27 @@ module Honeycomb
     # Included in the configuration object to specify events that should be
     # subscribed to
     module Configuration
-      attr_accessor :notification_events
+      attr_accessor :notification_events, :customized_event_handlers
 
       def after_initialize(client)
         super(client) if defined?(super)
 
         events = notification_events || []
+        customized_events = customized_event_handlers || {}
+
         ActiveSupport::Subscriber.new(client: client).tap do |sub|
           events.each do |event|
             sub.subscribe(event, &method(:handle_notification_event))
+          end
+
+          customized_event_handlers.each do |event, handler|
+            if sub.handlers.key?(event)
+              raise "Cannot use generic notification handling and set a custom handler for the same event" \
+                    "Please remove '#{event}' from the `notification_events` list as configured or" \
+                    "remove the `register_notification_handler` call including it."
+            end
+
+            sub.subscribe(event, &handler)
           end
         end
       end
@@ -27,6 +39,16 @@ module Honeycomb
         else
           @on_notification_event
         end
+      end
+
+      def register_notification_handler(name, &block)
+        raise "Must provide a block to handle '#{name}' events" unless block_given?
+        raise "Named notification handlers must accept 3 arguments, given block accepts #{block.arity}" unless block.arity == 3
+
+        self.customized_event_handlers ||= {}
+
+        raise "Duplicate named handler registered for '#{name}'" if customized_event_handlers.key?(name)
+        customized_event_handlers[name] = block
       end
 
       def handle_notification_event(name, span, payload)
@@ -40,11 +62,19 @@ module Honeycomb
           end
         end
       end
+
+      private
+
+      def named_notification_event_handlers
+        @named_notification_event_handlers ||= Hash.new { |h, k| h[k] = on_notification_event }
+      end
     end
 
     # Handles ActiveSupport::Notification subscriptions, relaying them to a
     # Honeycomb client
     class Subscriber
+      attr_reader :handlers
+
       def initialize(client:)
         @client = client
         @handlers = {}
@@ -72,7 +102,7 @@ module Honeycomb
 
       private
 
-      attr_reader :key, :client, :handlers
+      attr_reader :key, :client
 
       def spans
         Thread.current[key] ||= Hash.new { |h, id| h[id] = [] }
