@@ -67,6 +67,46 @@ RSpec.describe Honeycomb do
         .to all(include("app.interesting" => "banana"))
     end
   end
+
+  describe "adding computed fields to span" do
+    let(:field) do
+      Honeycomb.start_span(name: "test") do
+        Honeycomb.with_field("interesting") do
+          "banana"
+        end
+      end
+    end
+
+    it "returns the field's value" do
+      expect(field).to eq "banana"
+    end
+
+    it "contains the expected field" do
+      field # send the events
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("app.interesting" => "banana"))
+    end
+  end
+
+  describe "adding computed fields to trace" do
+    let(:field) do
+      Honeycomb.start_span(name: "test") do
+        Honeycomb.with_trace_field("interesting") do
+          "banana"
+        end
+      end
+    end
+
+    it "returns the field's value" do
+      expect(field).to eq "banana"
+    end
+
+    it "contains the expected field" do
+      field # send the events
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("app.interesting" => "banana"))
+    end
+  end
 end
 
 RSpec.describe Honeycomb::Beeline do

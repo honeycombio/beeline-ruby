@@ -89,6 +89,14 @@ module Honeycomb
       context.current_span.trace.add_field("app.#{key}", value)
     end
 
+    def with_field(key)
+      yield.tap { |value| add_field(key, value) }
+    end
+
+    def with_trace_field(key)
+      yield.tap { |value| add_field_to_trace(key, value) }
+    end
+
     private
 
     attr_reader :context

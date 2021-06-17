@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.5.3'
+ruby '2.5.8'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.2'
@@ -26,6 +26,16 @@ gem 'jbuilder', '~> 2.5'
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
+
+# background job processing
+gem 'sidekiq'
+# simple scheduled jobs
+gem "sidekiq-cron"
+# Community library for Sidekiq job instrumentation
+gem 'honeykiq'
+
+# the Beeline has autoinstrumentation for this HTTP client
+gem "faraday"
 
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
@@ -61,4 +71,10 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem 'honeycomb-beeline', path: "../.."
+if File.exist?('/.dockerenv') || ENV['BEELINE_FROM_RUBYGEMS']
+  puts "Using the beeline from RubyGems, not from this repository."
+  gem 'honeycomb-beeline'
+else
+  puts "Using the beeline's current state in this repository clone."
+  gem 'honeycomb-beeline', path: "../.."
+end
