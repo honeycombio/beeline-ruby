@@ -153,7 +153,6 @@ if defined?(Honeycomb::Rails)
         expect(event["error_detail"]).to eq "This is an error"
       end
 
-      # TODO: add this when we return a status_code
       include_examples "the rails integration" do
         let(:controller) { "test" }
         let(:action) { "hello_error" }
