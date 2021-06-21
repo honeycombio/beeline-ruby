@@ -90,7 +90,7 @@ module Honeycomb
       include Warden
       include Rails
 
-      def call_with_hook(env, span, &add_field)
+      def call_with_hook(env, span, &_add_field)
         super
       rescue => e
         wrapped = ActionDispatch::ExceptionWrapper.new(nil, e)
@@ -98,8 +98,6 @@ module Honeycomb
         span.add_field "response.status_code", wrapped.status_code
 
         raise e
-      ensure
-        add_package_information(env, &add_field)
       end
     end
   end
