@@ -75,7 +75,7 @@ module Honeycomb
 
     private
 
-    def call_with_hook(env, span, &add_field)
+    def call_with_hook(env, _span, &_add_field)
       app.call(env)
     end
 
