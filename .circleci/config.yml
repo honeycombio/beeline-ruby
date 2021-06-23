@@ -14,10 +14,13 @@ commands:
             - gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
             - gems-v1-<< parameters.ruby-version >>
       - run: .circleci/bundler_version.sh
-      - run: bundle install --jobs=4 --retry=3 --path vendor/bundle
+      - run: bundle config set --local path 'vendor/bundle'
+      - run: bundle install --jobs=4 --retry=3
+      - run: bundle env
       - save_cache:
           paths:
             - ./vendor/bundle
+            - ./gemfiles/vendor/bundle
           key: gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
       - run: << parameters.command >>
 
