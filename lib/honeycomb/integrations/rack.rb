@@ -48,11 +48,12 @@ module Honeycomb
         span.add_field("request.secure", req.ssl?)
         span.add_field("request.xhr", req.xhr?)
 
-        status, headers, body = app.call(env)
-
-        add_package_information(env, &add_field)
-
-        extract_user_information(env, &add_field)
+        begin
+          status, headers, body = call_with_hook(env, span, &add_field)
+        ensure
+          add_package_information(env, &add_field)
+          extract_user_information(env, &add_field)
+        end
 
         span.add_field("response.status_code", status)
         span.add_field("response.content_type", headers["Content-Type"])
@@ -70,6 +71,12 @@ module Honeycomb
       fields.each do |key, value|
         yield value, env[key]
       end
+    end
+
+    private
+
+    def call_with_hook(env, _span, &_add_field)
+      app.call(env)
     end
 
     # Rack middleware

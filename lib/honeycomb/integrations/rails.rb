@@ -89,6 +89,16 @@ module Honeycomb
       include Rack
       include Warden
       include Rails
+
+      def call_with_hook(env, span, &_add_field)
+        super
+      rescue StandardError => e
+        wrapped = ActionDispatch::ExceptionWrapper.new(nil, e)
+
+        span.add_field "response.status_code", wrapped.status_code
+
+        raise e
+      end
     end
   end
 end
