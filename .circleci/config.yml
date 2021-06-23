@@ -4,9 +4,6 @@ commands:
     parameters:
       ruby-version:
         type: string
-      gemfile:
-        type: string
-        default: Gemfile
       command:
         type: string
         default: bundle exec rake test
@@ -17,13 +14,13 @@ commands:
             - gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
             - gems-v1-<< parameters.ruby-version >>
       - run: gem update bundler
-      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> ./.circleci/bundler_version.sh
-      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> bundle install --jobs=4 --retry=3 --path vendor/bundle
+      - run: ./.circleci/bundler_version.sh
+      - run: bundle install --jobs=4 --retry=3 --path vendor/bundle
       - save_cache:
           paths:
             - ./vendor/bundle
           key: gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
-      - run: BUNDLE_GEMFILE=<< parameters.gemfile >> << parameters.command >>
+      - run: << parameters.command >>
 
 jobs:
   build_artifacts:
@@ -80,6 +77,8 @@ jobs:
         default: "2.6"
     docker:
         - image: circleci/ruby:<< parameters.ruby-version >>
+    environment:
+      BUNDLE_GEMFILE: ./Gemfile
     steps:
       - ruby:
           ruby-version: << parameters.ruby-version >>
@@ -92,10 +91,11 @@ jobs:
         type: string
     docker:
         - image: circleci/ruby:<< parameters.ruby-version >>
+    environment:
+      BUNDLE_GEMFILE: gemfiles/<< parameters.gemfile >>.gemfile
     steps:
       - ruby:
           ruby-version: << parameters.ruby-version >>
-          gemfile: << parameters.gemfile >>
           command: bundle exec rake test
 
 workflows:
@@ -116,43 +116,43 @@ workflows:
             parameters:
               ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6", "2.7"]
               gemfile:
-                - gemfiles/aws_2.gemfile
-                - gemfiles/aws_3.gemfile
-                - gemfiles/faraday_0.gemfile
-                - gemfiles/faraday_1.gemfile
-                - gemfiles/sequel4.gemfile
-                - gemfiles/sequel5.gemfile
-                - gemfiles/sinatra.gemfile
-                - gemfiles/rack.gemfile
-                - gemfiles/rails_41.gemfile
-                - gemfiles/rails_42.gemfile
-                - gemfiles/rails_5.gemfile
-                - gemfiles/rails_51.gemfile
-                - gemfiles/rails_52.gemfile
-                - gemfiles/rails_6.gemfile
-                - gemfiles/redis_3.gemfile
-                - gemfiles/redis_4.gemfile
+                - aws_2
+                - aws_3
+                - faraday_0
+                - faraday_1
+                - sequel4
+                - sequel5
+                - sinatra
+                - rack
+                - rails_41
+                - rails_42
+                - rails_5
+                - rails_51
+                - rails_52
+                - rails_6
+                - redis_3
+                - redis_4
             exclude:
               - ruby-version: "2.2"
-                gemfile: gemfiles/faraday_1.gemfile
+                gemfile: faraday_1
               - ruby-version: "2.2"
-                gemfile: gemfiles/rails_52.gemfile
+                gemfile: rails_52
               - ruby-version: "2.2"
-                gemfile: gemfiles/rails_6.gemfile
+                gemfile: rails_6
               - ruby-version: "2.3"
-                gemfile: gemfiles/rails_6.gemfile
+                gemfile: rails_6
               - ruby-version: "2.4"
-                gemfile: gemfiles/rails_6.gemfile
+                gemfile: rails_6
               - ruby-version: "2.4"
-                gemfile: gemfiles/rails_41.gemfile
+                gemfile: rails_41
               - ruby-version: "2.5"
-                gemfile: gemfiles/rails_41.gemfile
+                gemfile: rails_41
               - ruby-version: "2.6"
-                gemfile: gemfiles/rails_41.gemfile
+                gemfile: rails_41
               - ruby-version: "2.7"
-                gemfile: gemfiles/rails_41.gemfile
+                gemfile: rails_41
               - ruby-version: "2.7"
-                gemfile: gemfiles/rails_42.gemfile
+                gemfile: rails_42
   beeline:
     jobs:
       - lint:
