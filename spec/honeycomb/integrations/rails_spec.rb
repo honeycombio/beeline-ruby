@@ -155,7 +155,8 @@ if defined?(Honeycomb::Rails)
       end
 
       it "returns error details with the span" do
-        expect(event["error_detail"]).to eq "Invalid query parameters: Invalid encoding for parameter: �"
+        expect(event["error_detail"])
+          .to eq "Invalid query parameters: Invalid encoding for parameter: �"
       end
 
       include_examples "the rails integration" do
@@ -179,7 +180,8 @@ if defined?(Honeycomb::Rails)
       end
 
       it "returns error details with the span" do
-        expect(event["error_detail"]).to eq 'No route matches [GET] "/unrecognized"'
+        expect(event["error_detail"])
+          .to eq 'No route matches [GET] "/unrecognized"'
       end
 
       include_examples "the rails integration" do
