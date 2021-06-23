@@ -140,23 +140,30 @@ if defined?(Honeycomb::Rails)
         it "returns bad request" do
           expect(last_response).to be_bad_request
         end
+
+        it "returns an invalid request status code" do
+          expect(event["response.status_code"]).to eq 400
+        end
+
+        it "returns error with the span" do
+          expect(event["error"]).to eq "ActionController::BadRequest"
+        end
+
+        if VERSION >= Gem::Version.new("5.1")
+          it "returns error details with the span" do
+            expect(event["error_detail"])
+              .to eq "Invalid query parameters: Invalid encoding for parameter: �" # rubocop:disable Metrics/LineLength
+          end
+        else
+          it "returns error details with the span" do
+            expect(event["error_detail"])
+              .to eq "Invalid query parameters: Non UTF-8 value: \xC1"
+          end
+        end
       else
         it "returns ok" do
           expect(last_response).to be_ok
         end
-      end
-
-      it "returns an invalid request status code" do
-        expect(event["response.status_code"]).to eq 400
-      end
-
-      it "returns error with the span" do
-        expect(event["error"]).to eq "ActionController::BadRequest"
-      end
-
-      it "returns error details with the span" do
-        expect(event["error_detail"])
-          .to eq "Invalid query parameters: Invalid encoding for parameter: �"
       end
 
       include_examples "the rails integration" do
