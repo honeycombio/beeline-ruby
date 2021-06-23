@@ -37,15 +37,11 @@ if defined?(Honeycomb::Rails)
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
     let(:app) do
       Class.new(Rails::Application).tap do |app|
-        app.config.logger = Logger.new(STDERR)
-        app.config.log_level = :fatal
         app.config.eager_load = false
         app.config.secret_key_base = "3b7cd727ee24e8444053437c36cc66c4"
         app.config.respond_to?(:hosts) && app.config.hosts << "example.org"
-        # TODO: make this consistent with the railtie setup
-        # when we return status_code
-        app.config.middleware.insert_before(
-          ::Rails::Rack::Logger,
+        app.config.middleware.insert_after( # consistent with our Railtie
+          ActionDispatch::ShowExceptions,
           Honeycomb::Rails::Middleware,
           client: client,
         )
@@ -53,6 +49,7 @@ if defined?(Honeycomb::Rails)
 
         app.routes.draw do
           get "/hello/:name" => "test#hello"
+          get "/hello_error" => "test#hello_error"
         end
       end
     end
@@ -109,37 +106,9 @@ if defined?(Honeycomb::Rails)
     end
 
     describe "a standard request with an error" do
-      # TODO: remove this app setup once we return status_code and
-      # the top-level app setup matches the railtie middleware insertion
-      let(:app) do
-        Class.new(Rails::Application).tap do |app|
-          app.config.logger = Logger.new(STDERR)
-          app.config.log_level = :fatal
-          app.config.eager_load = false
-          app.config.secret_key_base = "3b7cd727ee24e8444053437c36cc66c4"
-          app.config.respond_to?(:hosts) && app.config.hosts << "example.org"
-          app.config.middleware.insert_after(
-            ActionDispatch::ShowExceptions,
-            Honeycomb::Rails::Middleware,
-            client: client,
-          )
-          app.initialize!
-
-          app.routes.draw do
-            get "/hello/:name" => "test#hello"
-            get "/hello_error" => "test#hello_error"
-          end
-        end
-      end
-
       before do
         get "/hello_error?honey=bee"
       end
-
-      # TODO: remove these lets when we add shared_examples
-      # because they're declared in
-      let(:event_data) { libhoney_client.events.map(&:data) }
-      let(:event) { event_data.first }
 
       it "returns internal server" do
         expect(last_response).to be_server_error
@@ -169,6 +138,26 @@ if defined?(Honeycomb::Rails)
         it "returns bad request" do
           expect(last_response).to be_bad_request
         end
+
+        it "returns an invalid request status code" do
+          expect(event["response.status_code"]).to eq 400
+        end
+
+        it "returns error with the span" do
+          expect(event["error"]).to eq "ActionController::BadRequest"
+        end
+
+        if VERSION >= Gem::Version.new("5.1")
+          it "returns error details with the span" do
+            expect(event["error_detail"])
+              .to eq "Invalid query parameters: Invalid encoding for parameter: �" # rubocop:disable Metrics/LineLength
+          end
+        else
+          it "returns error details with the span" do
+            expect(event["error_detail"])
+              .to eq "Invalid query parameters: Non UTF-8 value: \xC1"
+          end
+        end
       else
         it "returns ok" do
           expect(last_response).to be_ok
@@ -189,6 +178,15 @@ if defined?(Honeycomb::Rails)
 
       it "returns not found" do
         expect(last_response).to be_not_found
+      end
+
+      it "returns error with the span" do
+        expect(event["error"]).to eq "ActionController::RoutingError"
+      end
+
+      it "returns error details with the span" do
+        expect(event["error_detail"])
+          .to eq 'No route matches [GET] "/unrecognized"'
       end
 
       include_examples "the rails integration" do
