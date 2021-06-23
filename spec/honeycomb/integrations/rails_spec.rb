@@ -151,6 +151,18 @@ if defined?(Honeycomb::Rails)
         end
       end
 
+      it "returns an invalid request status code" do
+        expect(event["response.status_code"]).to eq 400
+      end
+
+      it "returns error with the span" do
+        expect(event["error"]).to eq "ActionController::BadRequest"
+      end
+
+      it "returns error details with the span" do
+        expect(event["error_detail"]).to eq "Invalid query parameters: Invalid encoding for parameter: �"
+      end
+
       include_examples "the rails integration" do
         let(:controller) { "test" }
         let(:action) { "hello" }
@@ -165,6 +177,14 @@ if defined?(Honeycomb::Rails)
 
       it "returns not found" do
         expect(last_response).to be_not_found
+      end
+
+      it "returns error with the span" do
+        expect(event["error"]).to eq "ActionController::RoutingError"
+      end
+
+      it "returns error details with the span" do
+        expect(event["error_detail"]).to eq 'No route matches [GET] "/unrecognized"'
       end
 
       include_examples "the rails integration" do
