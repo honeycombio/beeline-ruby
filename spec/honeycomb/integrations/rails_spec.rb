@@ -112,11 +112,6 @@ if defined?(Honeycomb::Rails)
         get "/hello_error?honey=bee"
       end
 
-      # TODO: remove these lets when we add shared_examples
-      # because they're declared in
-      let(:event_data) { libhoney_client.events.map(&:data) }
-      let(:event) { event_data.first }
-
       it "returns internal server" do
         expect(last_response).to be_server_error
       end
