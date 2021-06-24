@@ -81,6 +81,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.3)
+    rspec_junit_formatter (0.4.1)
+      rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (0.68.1)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
@@ -126,6 +128,7 @@ DEPENDENCIES
   pry-byebug (~> 3.6.0)
   rake
   rspec (~> 3.0)
+  rspec_junit_formatter
   rubocop (< 0.69)
   rubocop-performance (< 1.3.0)
   simplecov
@@ -133,4 +136,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.1.4
+   2.2.21
