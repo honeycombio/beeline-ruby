@@ -139,6 +139,7 @@ workflows:
                 - rails_51
                 - rails_52
                 - rails_6
+                - rails_61
                 - redis_3
                 - redis_4
             exclude:
@@ -152,6 +153,12 @@ workflows:
                 gemfile: rails_6
               - ruby-version: "2.4"
                 gemfile: rails_6
+              - ruby-version: "2.2"
+                gemfile: rails_61
+              - ruby-version: "2.3"
+                gemfile: rails_61
+              - ruby-version: "2.4"
+                gemfile: rails_61
               - ruby-version: "2.4"
                 gemfile: rails_41
               - ruby-version: "2.5"
