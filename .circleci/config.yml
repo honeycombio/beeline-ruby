@@ -104,6 +104,8 @@ jobs:
           ruby-version: << parameters.ruby-version >>
           gemfile: << parameters.gemfile >>
           command: bundle exec rake test
+      - store_test_results:
+          path: test/reports
 
 workflows:
   nightly:
