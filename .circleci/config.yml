@@ -119,6 +119,7 @@ workflows:
     jobs:
       - lint
       - test: &test
+          name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
           requires:
             - lint
           matrix:
