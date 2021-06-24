@@ -4,6 +4,8 @@ commands:
     parameters:
       ruby-version:
         type: string
+      gemfile:
+        type: string
       command:
         type: string
         default: bundle exec rake test
@@ -11,17 +13,18 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
+            - gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>-{{ checksum "Gemfile.lock" }}
+            - gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>
             - gems-v1-<< parameters.ruby-version >>
       - run: .circleci/bundler_version.sh
-      - run: bundle config set --local path 'vendor/bundle'
+      - run: bundle config set --local path $HOME/project/vendor/bundle
       - run: bundle install --jobs=4 --retry=3
+      - run: bundle clean --force
       - run: bundle env
       - save_cache:
           paths:
             - ./vendor/bundle
-            - ./gemfiles/vendor/bundle
-          key: gems-v1-<< parameters.ruby-version >>-{{ checksum "Gemfile.lock" }}
+          key: gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>-{{ checksum "Gemfile.lock" }}
       - run: << parameters.command >>
 
 jobs:
@@ -84,6 +87,7 @@ jobs:
     steps:
       - ruby:
           ruby-version: << parameters.ruby-version >>
+          gemfile: root
           command: bundle exec rake rubocop
   test:
     parameters:
@@ -98,6 +102,7 @@ jobs:
     steps:
       - ruby:
           ruby-version: << parameters.ruby-version >>
+          gemfile: << parameters.gemfile >>
           command: bundle exec rake test
 
 workflows:
