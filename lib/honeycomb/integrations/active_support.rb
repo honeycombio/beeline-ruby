@@ -47,6 +47,7 @@ module Honeycomb
       def default_handler
         @default_handler ||= lambda do |name, span, payload|
           payload.each do |key, value|
+            # Make ActionController::Parameters parseable by libhoney.
             value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)
             span.add_field("#{name}.#{key}", value)
           end
