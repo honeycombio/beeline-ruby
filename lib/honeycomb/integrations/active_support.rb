@@ -8,55 +8,45 @@ module Honeycomb
     # Included in the configuration object to specify events that should be
     # subscribed to
     module Configuration
-      attr_accessor :notification_events, :customized_event_handlers
+      attr_writer :notification_events
 
       def after_initialize(client)
         super(client) if defined?(super)
 
-        events = notification_events || []
-        customized_events = customized_event_handlers || {}
+        events = notification_events | active_support_handlers.keys
 
         ActiveSupport::Subscriber.new(client: client).tap do |sub|
           events.each do |event|
             sub.subscribe(event, &method(:handle_notification_event))
           end
-
-          customized_event_handlers.each do |event, handler|
-            if sub.handlers.key?(event)
-              raise "Cannot use generic notification handling and set a custom handler for the same event" \
-                    "Please remove '#{event}' from the `notification_events` list as configured or" \
-                    "remove the `register_notification_handler` call including it."
-            end
-
-            sub.subscribe(event, &handler)
-          end
         end
       end
 
-      def on_notification_event(&hook)
-        if block_given?
-          @on_notification_event = hook
+      def on_notification_event(event_name = nil, &hook)
+        if event_name
+          active_support_handlers[event_name] = hook
         else
-          @on_notification_event
+          @default_handler = hook
         end
-      end
-
-      def register_notification_handler(name, &block)
-        raise "Must provide a block to handle '#{name}' events" unless block_given?
-        raise "Named notification handlers must accept 3 arguments, given block accepts #{block.arity}" unless block.arity == 3
-
-        self.customized_event_handlers ||= {}
-
-        raise "Duplicate named handler registered for '#{name}'" if customized_event_handlers.key?(name)
-        customized_event_handlers[name] = block
       end
 
       def handle_notification_event(name, span, payload)
-        if on_notification_event
-          on_notification_event.call(name, span, payload)
-        else
+        handler = active_support_handlers.fetch(name, default_handler)
+
+        handler.call(name, span, payload)
+      end
+
+      def active_support_handlers
+        @active_support_handlers ||= {}
+      end
+
+      def notification_events
+        @notification_events ||= []
+      end
+
+      def default_handler
+        @default_handler ||= -> (name, span, payload) do
           payload.each do |key, value|
-            # Make ActionController::Parameters parseable by libhoney.
             value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)
             span.add_field("#{name}.#{key}", value)
           end
@@ -115,4 +105,4 @@ module Honeycomb
   end
 end
 
-Honeycomb::Configuration.include Honeycomb::ActiveSupport::Configuration
+Honeycomb::Configuration.prepend Honeycomb::ActiveSupport::Configuration

@@ -134,6 +134,8 @@ if defined?(Honeycomb::ActiveSupport)
     end
 
     describe "pass ActionController::Parameters as hash" do
+      require "action_controller"
+
       let(:libhoney_client) { Libhoney::TestClient.new }
       let(:configuration) do
         Honeycomb::Configuration.new.tap do |config|
