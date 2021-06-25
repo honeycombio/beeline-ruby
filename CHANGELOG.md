@@ -1,5 +1,14 @@
 # beeline-ruby changelog
 
+## 2.4.2 2021-06-25
+
+### Fixes
+
+- Update Rails middleware to get status code even on raised error. (#153) [@lirossarvet](https://github.com/lirossarvet)
+- Make Rails spec consistent with Honeycomb Railtie Initialization. (#154) [@robbkidd](https://github.com/robbkidd)
+- CI Improvements (#155) [@robbkidd](https://github.com/robbkidd)
+- Improve performance of Redis command serialization. (#146) [@ajvondrak](https://github.com/ajvondrak)
+
 ## 2.4.1 2021-06-01
 
 ### Fixes
