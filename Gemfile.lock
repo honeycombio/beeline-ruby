@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    honeycomb-beeline (2.4.1)
+    honeycomb-beeline (2.4.2)
       libhoney (~> 1.14, >= 1.14.2)
 
 GEM
@@ -40,7 +40,7 @@ GEM
       http-cookie (~> 1.0)
       http-form_data (~> 2.2)
       http-parser (~> 1.2.0)
-    http-cookie (1.0.3)
+    http-cookie (1.0.4)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
     http-parser (1.2.3)
