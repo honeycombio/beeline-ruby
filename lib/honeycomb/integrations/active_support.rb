@@ -58,8 +58,6 @@ module Honeycomb
     # Handles ActiveSupport::Notification subscriptions, relaying them to a
     # Honeycomb client
     class Subscriber
-      attr_reader :handlers
-
       def initialize(client:)
         @client = client
         @handlers = {}
@@ -87,7 +85,7 @@ module Honeycomb
 
       private
 
-      attr_reader :key, :client
+      attr_reader :key, :client, :handlers
 
       def spans
         Thread.current[key] ||= Hash.new { |h, id| h[id] = [] }
@@ -106,4 +104,4 @@ module Honeycomb
   end
 end
 
-Honeycomb::Configuration.prepend Honeycomb::ActiveSupport::Configuration
+Honeycomb::Configuration.include Honeycomb::ActiveSupport::Configuration
