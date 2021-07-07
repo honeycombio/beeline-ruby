@@ -10,7 +10,7 @@ module Honeycomb
   class Client
     extend Forwardable
 
-    attr_reader :libhoney
+    attr_reader :libhoney, :error_backtrace_limit
 
     def_delegators :@context, :current_span, :current_trace
 
@@ -38,6 +38,7 @@ module Honeycomb
         parser_hook: configuration.http_trace_parser_hook,
         propagation_hook: configuration.http_trace_propagation_hook,
       }
+      @error_backtrace_limit = configuration.error_backtrace_limit.to_i
 
       configuration.after_initialize(self)
 
@@ -71,6 +72,11 @@ module Honeycomb
       rescue StandardError => e
         current_span.add_field("error", e.class.name)
         current_span.add_field("error_detail", e.message)
+
+        if error_backtrace_limit > 0
+          current_span.add_field("error_partial_backtrace", e.backtrace[0...error_backtrace_limit])
+        end
+
         raise e
       ensure
         current_span.send

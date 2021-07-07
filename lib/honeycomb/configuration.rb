@@ -9,7 +9,8 @@ module Honeycomb
     attr_accessor :write_key,
                   :dataset,
                   :api_host,
-                  :debug
+                  :debug,
+                  :error_backtrace_limit
 
     attr_writer :service_name, :client, :host_name
 
@@ -18,6 +19,7 @@ module Honeycomb
       @dataset = ENV["HONEYCOMB_DATASET"]
       @service_name = ENV["HONEYCOMB_SERVICE"]
       @debug = ENV.key?("HONEYCOMB_DEBUG")
+      @error_backtrace_limit = 0
       @client = nil
     end
 
