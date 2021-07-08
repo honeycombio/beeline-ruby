@@ -48,16 +48,7 @@ module Honeycomb
     end
 
     def start_span(name:, serialized_trace: nil, **fields)
-      if context.current_trace.nil?
-        Trace.new(serialized_trace: serialized_trace,
-                  builder: libhoney.builder,
-                  context: context,
-                  **@additional_trace_options)
-      else
-        context.current_span.create_child
-      end
-
-      current_span = context.current_span
+      current_span = get_current_span(serialized_trace: serialized_trace)
 
       fields.each do |key, value|
         current_span.add_field(key, value)
@@ -74,7 +65,10 @@ module Honeycomb
         current_span.add_field("error_detail", e.message)
 
         if error_backtrace_limit > 0
-          current_span.add_field("error_partial_backtrace", e.backtrace[0...error_backtrace_limit])
+          current_span.add_field(
+            "error_partial_backtrace",
+            e.backtrace[0...error_backtrace_limit],
+          )
         end
 
         raise e
@@ -106,5 +100,20 @@ module Honeycomb
     private
 
     attr_reader :context
+
+    def get_current_span(serialized_trace:)
+      if context.current_trace.nil?
+        Trace.new(
+          serialized_trace: serialized_trace,
+          builder: libhoney.builder,
+          context: context,
+          **@additional_trace_options,
+        )
+      else
+        context.current_span.create_child
+      end
+
+      context.current_span
+    end
   end
 end

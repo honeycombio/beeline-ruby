@@ -70,6 +70,26 @@ RSpec.describe Honeycomb::Configuration do
     expect(event.api_host).to be api_host
   end
 
+  describe "error_backtrace_limit" do
+    it "defaults to 0" do
+      expect(configuration.error_backtrace_limit).to eq(0)
+    end
+
+    context "configured" do
+      it "uses the provided number" do
+        configuration.error_backtrace_limit = 3
+
+        expect(configuration.error_backtrace_limit).to eq(3)
+      end
+
+      it "raises an error for a non-number" do
+        expect do
+          configuration.error_backtrace_limit = nil
+        end.to raise_error(TypeError)
+      end
+    end
+  end
+
   describe "configured service_name" do
     before do
       configuration.service_name = service_name
