@@ -171,7 +171,7 @@ RSpec.describe Honeycomb::Client do
         let(:the_error) do
           error = ArgumentError.new("an argument!")
           error.set_backtrace([
-                                "error line 1",
+                                "error line 1 in <main>",
                                 "error line 2",
                                 "error line 3",
                                 "error line 4",
@@ -186,7 +186,7 @@ RSpec.describe Honeycomb::Client do
           aggregate_failures do
             expect(backtrace).not_to be nil
             expect(backtrace).to eq(
-              ["error line 1", "error line 2", "error line 3"],
+              ["error line 1 in 'main'", "error line 2", "error line 3"],
             )
           end
         end

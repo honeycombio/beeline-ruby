@@ -65,9 +65,10 @@ module Honeycomb
         current_span.add_field("error_detail", e.message)
 
         if error_backtrace_limit > 0
+          backtrace = e.backtrace[0...error_backtrace_limit]
           current_span.add_field(
             "error_partial_backtrace",
-            e.backtrace[0...error_backtrace_limit],
+            backtrace.map { |i| i.to_s.gsub(/[<>]/, "'") },
           )
         end
 
