@@ -65,10 +65,6 @@ module Honeycomb
         current_span.add_field("error_detail", e.message)
 
         if error_backtrace_limit > 0
-          # Honeycomb by default escapes things like brackets and shows the
-          # unicode sequence. So <main> becomes \u003cmain\u003e. Given the
-          # confusion that could cause in readability, we replace < and > with
-          # a single quote.
           current_span.add_field(
             "error_partial_backtrace",
             e.backtrace[0...error_backtrace_limit].join("\n").encode('UTF-8', invalid: :replace, undef: :replace, replace: '�'),
