@@ -10,7 +10,7 @@ module Honeycomb
   class Client
     extend Forwardable
 
-    attr_reader :libhoney, :error_backtrace_limit
+    attr_reader :libhoney
 
     def_delegators :@context, :current_span, :current_trace
 
@@ -48,7 +48,7 @@ module Honeycomb
     end
 
     def start_span(name:, serialized_trace: nil, **fields)
-      current_span = get_current_span(serialized_trace: serialized_trace)
+      current_span = new_span_for_context(serialized_trace: serialized_trace)
 
       fields.each do |key, value|
         current_span.add_field(key, value)
@@ -60,18 +60,21 @@ module Honeycomb
 
       begin
         yield current_span
-      rescue StandardError => e
-        current_span.add_field("error", e.class.name)
-        current_span.add_field("error_detail", e.message)
+      rescue StandardError => ex # rubocop:disable Naming/RescuedExceptionsVariableName, Metrics/LineLength
+        current_span.add_field("error", ex.class.name)
+        current_span.add_field("error_detail", ex.message)
 
         if error_backtrace_limit > 0
           current_span.add_field(
-            "error_partial_backtrace",
-            e.backtrace[0...error_backtrace_limit].join("\n").encode('UTF-8', invalid: :replace, undef: :replace, replace: '�'),
+            "error_backtrace_partial",
+            ex.backtrace
+              .take(error_backtrace_limit)
+              .join("\n")
+              .encode("UTF-8", invalid: :replace, undef: :replace, replace: "�"), # rubocop:disable Metrics/LineLength
           )
         end
 
-        raise e
+        raise ex
       ensure
         current_span.send
       end
@@ -99,9 +102,9 @@ module Honeycomb
 
     private
 
-    attr_reader :context
+    attr_reader :context, :error_backtrace_limit
 
-    def get_current_span(serialized_trace:)
+    def new_span_for_context(serialized_trace:)
       if context.current_trace.nil?
         Trace.new(
           serialized_trace: serialized_trace,

@@ -181,12 +181,12 @@ RSpec.describe Honeycomb::Client do
         end
 
         it "includes no more than the limit lines in the backtrace field" do
-          backtrace = event_data.first["error_partial_backtrace"]
+          backtrace = event_data.first["error_backtrace_partial"]
 
           aggregate_failures do
             expect(backtrace).not_to be nil
             expect(backtrace).to eq(
-              ["error line 1 in 'main'", "error line 2", "error line 3"],
+              "error line 1 in <main>\nerror line 2\nerror line 3",
             )
           end
         end
@@ -194,23 +194,23 @@ RSpec.describe Honeycomb::Client do
         it_behaves_like(
           "event data",
           package_fields: false,
-          additional_fields: %w[error error_detail error_partial_backtrace],
+          additional_fields: %w[error error_detail error_backtrace_partial],
         )
       end
 
       it "includes the backtrace" do
-        backtrace = event_data.first["error_partial_backtrace"]
+        backtrace = event_data.first["error_backtrace_partial"]
 
         aggregate_failures do
           expect(backtrace).not_to be nil
-          expect(backtrace.length).to be <= 3
+          expect(backtrace.split("\n").length).to be <= 3
         end
       end
 
       it_behaves_like(
         "event data",
         package_fields: false,
-        additional_fields: %w[error error_detail error_partial_backtrace],
+        additional_fields: %w[error error_detail error_backtrace_partial],
       )
     end
   end
