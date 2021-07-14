@@ -69,10 +69,9 @@ module Honeycomb
           # unicode sequence. So <main> becomes \u003cmain\u003e. Given the
           # confusion that could cause in readability, we replace < and > with
           # a single quote.
-          backtrace = e.backtrace[0...error_backtrace_limit]
           current_span.add_field(
             "error_partial_backtrace",
-            backtrace.map { |i| i.to_s.gsub(/[<>]/, "'") },
+            e.backtrace[0...error_backtrace_limit].join("\n").encode('UTF-8', invalid: :replace, undef: :replace, replace: '�'),
           )
         end
 
