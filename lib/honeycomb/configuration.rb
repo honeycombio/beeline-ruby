@@ -12,17 +12,23 @@ module Honeycomb
                   :debug
 
     attr_writer :service_name, :client, :host_name
+    attr_reader :error_backtrace_limit
 
     def initialize
       @write_key = ENV["HONEYCOMB_WRITEKEY"]
       @dataset = ENV["HONEYCOMB_DATASET"]
       @service_name = ENV["HONEYCOMB_SERVICE"]
       @debug = ENV.key?("HONEYCOMB_DEBUG")
+      @error_backtrace_limit = 0
       @client = nil
     end
 
     def service_name
       @service_name || dataset
+    end
+
+    def error_backtrace_limit=(val)
+      @error_backtrace_limit = Integer(val)
     end
 
     def client
