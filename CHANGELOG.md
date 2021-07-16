@@ -1,5 +1,17 @@
 # beeline-ruby changelog
 
+## 2.5.0 2021-07-16
+
+### Added
+
+- Allow backtrace to be sent with errors (#160) | [@lirossarvet](https://github.com/lirossarvet)
+
+### Maintenance
+
+- Updates Github Action Workflows (#159) | [@bdarfler](https://github.com/bdarfler)
+- Adds dependabot label (#158) | [@bdarfler](https://github.com/bdarfler)
+- Switches CODEOWNERS to telemetry-team (#157) | [@bdarfler](https://github.com/bdarfler)
+
 ## 2.4.2 2021-06-25
 
 ### Fixes
