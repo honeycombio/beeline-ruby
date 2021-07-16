@@ -108,7 +108,12 @@ RSpec.describe Honeycomb::Client do
   end
 
   describe "can create a trace and add error details" do
-    let(:the_error) { ArgumentError.new("an argument!") }
+    let(:the_error) do
+      error = ArgumentError.new("an argument!")
+      error.set_backtrace(%w[line1 line2])
+      error
+    end
+
     before do
       expect do
         client.start_span(name: "test error") do
@@ -160,28 +165,64 @@ RSpec.describe Honeycomb::Client do
     end
 
     context "when error_backtrace_limit is set to a positive integer" do
+      let(:error_backtrace_limit) { 3 }
       let(:configuration) do
         Honeycomb::Configuration.new.tap do |config|
           config.client = libhoney_client
-          config.error_backtrace_limit = 3
+          config.error_backtrace_limit = error_backtrace_limit
         end
       end
+
+      it "includes the backtrace" do
+        backtrace = event_data.first["error_backtrace"]
+
+        aggregate_failures do
+          expect(backtrace).not_to be nil
+          expect(backtrace.split("\n").length).to be <= error_backtrace_limit
+        end
+      end
+
+      it "includes error_backtrace_limit set to the configured value" do
+        data = event_data.first
+        expect(data["error_backtrace_limit"]).to eq(error_backtrace_limit)
+      end
+
+      # rubocop:disable Metrics/LineLength
+      it "includes error_backtrace_total_length as the backtrace's original length" do
+        data = event_data.first
+        expect(data["error_backtrace_total_length"]).to eq(2)
+      end
+      # rubocop:enable Metrics/LineLength
+
+      it_behaves_like(
+        "event data",
+        package_fields: false,
+        additional_fields: %w[
+          error
+          error_detail
+          error_backtrace
+          error_backtrace_limit
+          error_backtrace_total_length
+        ],
+      )
 
       context "and the error's backtrace is longer than the limit" do
         let(:the_error) do
           error = ArgumentError.new("an argument!")
-          error.set_backtrace([
-                                "error line 1 in <main>",
-                                "error line 2",
-                                "error line 3",
-                                "error line 4",
-                                "error line 5",
-                              ])
+          error.set_backtrace(
+            [
+              "error line 1 in <main>",
+              "error line 2",
+              "error line 3",
+              "error line 4",
+              "error line 5",
+            ],
+          )
           error
         end
 
         it "includes no more than the limit lines in the backtrace field" do
-          backtrace = event_data.first["error_backtrace_partial"]
+          backtrace = event_data.first["error_backtrace"]
 
           aggregate_failures do
             expect(backtrace).not_to be nil
@@ -191,27 +232,30 @@ RSpec.describe Honeycomb::Client do
           end
         end
 
+        it "includes error_backtrace_limit set to the configured value" do
+          data = event_data.first
+          expect(data["error_backtrace_limit"]).to eq(error_backtrace_limit)
+        end
+
+        # rubocop:disable Metrics/LineLength
+        it "includes error_backtrace_total_length as the backtrace's original length" do
+          data = event_data.first
+          expect(data["error_backtrace_total_length"]).to eq(5)
+        end
+        # rubocop:enable Metrics/LineLength
+
         it_behaves_like(
           "event data",
           package_fields: false,
-          additional_fields: %w[error error_detail error_backtrace_partial],
+          additional_fields: %w[
+            error
+            error_detail
+            error_backtrace
+            error_backtrace_limit
+            error_backtrace_total_length
+          ],
         )
       end
-
-      it "includes the backtrace" do
-        backtrace = event_data.first["error_backtrace_partial"]
-
-        aggregate_failures do
-          expect(backtrace).not_to be nil
-          expect(backtrace.split("\n").length).to be <= 3
-        end
-      end
-
-      it_behaves_like(
-        "event data",
-        package_fields: false,
-        additional_fields: %w[error error_detail error_backtrace_partial],
-      )
     end
   end
 

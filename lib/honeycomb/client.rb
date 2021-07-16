@@ -60,21 +60,10 @@ module Honeycomb
 
       begin
         yield current_span
-      rescue StandardError => ex # rubocop:disable Naming/RescuedExceptionsVariableName, Metrics/LineLength
-        current_span.add_field("error", ex.class.name)
-        current_span.add_field("error_detail", ex.message)
+      rescue StandardError => e
+        add_exception_data(current_span, e)
 
-        if error_backtrace_limit > 0
-          current_span.add_field(
-            "error_backtrace_partial",
-            ex.backtrace
-              .take(error_backtrace_limit)
-              .join("\n")
-              .encode("UTF-8", invalid: :replace, undef: :replace, replace: "�"), # rubocop:disable Metrics/LineLength
-          )
-        end
-
-        raise ex
+        raise e
       ensure
         current_span.send
       end
@@ -117,6 +106,24 @@ module Honeycomb
       end
 
       context.current_span
+    end
+
+    def add_exception_data(span, exception)
+      span.add_field("error", exception.class.name)
+      span.add_field("error_detail", exception.message)
+
+      return if error_backtrace_limit <= 0
+
+      span.add_field(
+        "error_backtrace",
+        exception
+          .backtrace
+          .take(error_backtrace_limit)
+          .join("\n")
+          .encode("UTF-8", invalid: :replace, undef: :replace, replace: "�"),
+      )
+      span.add_field("error_backtrace_limit", error_backtrace_limit)
+      span.add_field("error_backtrace_total_length", exception.backtrace.length)
     end
   end
 end
