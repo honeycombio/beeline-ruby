@@ -38,6 +38,7 @@ module Honeycomb
         parser_hook: configuration.http_trace_parser_hook,
         propagation_hook: configuration.http_trace_propagation_hook,
       }
+      @error_backtrace_limit = configuration.error_backtrace_limit.to_i
 
       configuration.after_initialize(self)
 
@@ -47,16 +48,7 @@ module Honeycomb
     end
 
     def start_span(name:, serialized_trace: nil, **fields)
-      if context.current_trace.nil?
-        Trace.new(serialized_trace: serialized_trace,
-                  builder: libhoney.builder,
-                  context: context,
-                  **@additional_trace_options)
-      else
-        context.current_span.create_child
-      end
-
-      current_span = context.current_span
+      current_span = new_span_for_context(serialized_trace: serialized_trace)
 
       fields.each do |key, value|
         current_span.add_field(key, value)
@@ -69,8 +61,8 @@ module Honeycomb
       begin
         yield current_span
       rescue StandardError => e
-        current_span.add_field("error", e.class.name)
-        current_span.add_field("error_detail", e.message)
+        add_exception_data(current_span, e)
+
         raise e
       ensure
         current_span.send
@@ -99,6 +91,39 @@ module Honeycomb
 
     private
 
-    attr_reader :context
+    attr_reader :context, :error_backtrace_limit
+
+    def new_span_for_context(serialized_trace:)
+      if context.current_trace.nil?
+        Trace.new(
+          serialized_trace: serialized_trace,
+          builder: libhoney.builder,
+          context: context,
+          **@additional_trace_options,
+        )
+      else
+        context.current_span.create_child
+      end
+
+      context.current_span
+    end
+
+    def add_exception_data(span, exception)
+      span.add_field("error", exception.class.name)
+      span.add_field("error_detail", exception.message)
+
+      return if error_backtrace_limit <= 0
+
+      span.add_field(
+        "error_backtrace",
+        exception
+          .backtrace
+          .take(error_backtrace_limit)
+          .join("\n")
+          .encode("UTF-8", invalid: :replace, undef: :replace, replace: "�"),
+      )
+      span.add_field("error_backtrace_limit", error_backtrace_limit)
+      span.add_field("error_backtrace_total_length", exception.backtrace.length)
+    end
   end
 end
