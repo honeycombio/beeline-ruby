@@ -8,12 +8,13 @@ module Honeycomb
     # Included in the configuration object to specify events that should be
     # subscribed to
     module Configuration
-      attr_accessor :notification_events
+      attr_writer :notification_events
 
       def after_initialize(client)
         super(client) if defined?(super)
 
-        events = notification_events || []
+        events = notification_events | active_support_handlers.keys
+
         ActiveSupport::Subscriber.new(client: client).tap do |sub|
           events.each do |event|
             sub.subscribe(event, &method(:handle_notification_event))
@@ -21,18 +22,30 @@ module Honeycomb
         end
       end
 
-      def on_notification_event(&hook)
-        if block_given?
-          @on_notification_event = hook
+      def on_notification_event(event_name = nil, &hook)
+        if event_name
+          active_support_handlers[event_name] = hook
         else
-          @on_notification_event
+          @default_handler = hook
         end
       end
 
       def handle_notification_event(name, span, payload)
-        if on_notification_event
-          on_notification_event.call(name, span, payload)
-        else
+        handler = active_support_handlers.fetch(name, default_handler)
+
+        handler.call(name, span, payload)
+      end
+
+      def active_support_handlers
+        @active_support_handlers ||= {}
+      end
+
+      def notification_events
+        @notification_events ||= []
+      end
+
+      def default_handler
+        @default_handler ||= lambda do |name, span, payload|
           payload.each do |key, value|
             # Make ActionController::Parameters parseable by libhoney.
             value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)

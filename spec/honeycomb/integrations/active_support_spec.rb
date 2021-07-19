@@ -104,7 +104,7 @@ if defined?(Honeycomb::ActiveSupport)
       end
     end
 
-    describe "custom notifications with custom hook" do
+    describe "custom notifications with custom default handler hook" do
       let(:libhoney_client) { Libhoney::TestClient.new }
       let(:configuration) do
         Honeycomb::Configuration.new.tap do |config|
@@ -133,7 +133,91 @@ if defined?(Honeycomb::ActiveSupport)
       end
     end
 
+    describe "custom notifications with event specific handler hook" do
+      let(:libhoney_client) { Libhoney::TestClient.new }
+      let(:configuration) do
+        Honeycomb::Configuration.new.tap do |config|
+          config.client = libhoney_client
+          config.notification_events = ["honeycomb.nonspecific_event"]
+          # rubocop:disable Metrics/LineLength
+          config.on_notification_event("honeycomb.test_event") do |_name, span, _payload|
+            span.add_field("the_hive", "queen")
+          end
+          # rubocop:enable Metrics/LineLength
+        end
+      end
+      let!(:client) { Honeycomb::Client.new(configuration: configuration) }
+      let(:event_data) { libhoney_client.events.map(&:data) }
+      let(:event_name) { "honeycomb.test_event" }
+
+      before do
+        ActiveSupport::Notifications.instrument event_name, "honeycomb" => 1 do
+        end
+      end
+
+      it_behaves_like "event data", package_fields: false, additional_fields: [
+        "the_hive",
+      ]
+
+      it "uses the default handler for events without a specific handler" do
+        # rubocop:disable Metrics/LineLength
+        ActiveSupport::Notifications.instrument "honeycomb.nonspecific_event", "honeycomb" => 1 do
+        end
+        # rubocop:enable Metrics/LineLength
+
+        this_event = libhoney_client.events.find do |e|
+          e.data["name"] == "honeycomb.nonspecific_event"
+        end
+
+        expect(this_event).not_to be nil
+        expect(this_event.data["honeycomb.nonspecific_event.honeycomb"]).to eq 1
+      end
+
+      context "with a custom default handler" do
+        let(:configuration) do
+          Honeycomb::Configuration.new.tap do |config|
+            config.client = libhoney_client
+            config.notification_events = ["honeycomb.nonspecific_event"]
+            config.on_notification_event do |_name, span, _payload|
+              span.add_field("the_hive", "bees")
+            end
+            # rubocop:disable Metrics/LineLength
+            config.on_notification_event("honeycomb.test_event") do |_name, span, _payload|
+              span.add_field("the_hive", "queen")
+            end
+            # rubocop:enable Metrics/LineLength
+          end
+        end
+
+        before do
+          # rubocop:disable Metrics/LineLength
+          ActiveSupport::Notifications.instrument "honeycomb.nonspecific_event", "honeycomb" => 1 do
+          end
+          # rubocop:enable Metrics/LineLength
+        end
+
+        it_behaves_like(
+          "event data",
+          package_fields: false,
+          additional_fields: ["the_hive"],
+        )
+
+        # rubocop:disable Metrics/LineLength
+        it "uses the new default handler for events without a specific handler" do
+          expect(event_data).to match_array(
+            [
+              hash_including("name" => "honeycomb.nonspecific_event", "the_hive" => "bees"),
+              hash_including("name" => "honeycomb.test_event", "the_hive" => "queen"),
+            ],
+          )
+        end
+        # rubocop:enable Metrics/LineLength
+      end
+    end
+
     describe "pass ActionController::Parameters as hash" do
+      require "action_controller"
+
       let(:libhoney_client) { Libhoney::TestClient.new }
       let(:configuration) do
         Honeycomb::Configuration.new.tap do |config|
