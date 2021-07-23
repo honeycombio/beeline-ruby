@@ -1,5 +1,11 @@
 # beeline-ruby changelog
 
+## 2.6.0 2021-07-23
+
+### Added
+
+- Allow setting different notification handling logic for specific events (#152) | [@lirossarvet](https://github.com/lirossarvet)
+
 ## 2.5.0 2021-07-16
 
 ### Added
