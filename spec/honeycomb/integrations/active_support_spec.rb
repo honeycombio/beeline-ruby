@@ -173,6 +173,26 @@ if defined?(Honeycomb::ActiveSupport)
         expect(this_event.data["honeycomb.nonspecific_event.honeycomb"]).to eq 1
       end
 
+      it "passes along exception information" do
+        # rubocop:disable Metrics/LineLength, Lint/HandleExceptions
+        begin
+          ActiveSupport::Notifications.instrument "honeycomb.nonspecific_event", "honeycomb" => 1 do
+            raise StandardError, "I tried, but I have failed"
+          end
+        rescue StandardError
+        end
+        # rubocop:enable Metrics/LineLength, Lint/HandleExceptions
+
+        this_event = libhoney_client.events.find do |e|
+          e.data["name"] == "honeycomb.nonspecific_event"
+        end
+
+        expect(this_event.data).to match(
+          a_hash_including("error" => "StandardError",
+                           "error_detail" => "I tried, but I have failed"),
+        )
+      end
+
       context "with a custom default handler" do
         let(:configuration) do
           Honeycomb::Configuration.new.tap do |config|

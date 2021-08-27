@@ -50,6 +50,13 @@ module Honeycomb
             # Make ActionController::Parameters parseable by libhoney.
             value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)
             span.add_field("#{name}.#{key}", value)
+
+            error, error_detail = payload[:exception]
+
+            if error
+              span.add_field("error", error)
+              span.add_field("error_detail", error_detail)
+            end
           end
         end
       end
