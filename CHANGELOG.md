@@ -1,6 +1,6 @@
 # beeline-ruby changelog
 
-## 2.7.9 2021-09-03
+## 2.7.0 2021-09-03
 
 ### Improvements
 
