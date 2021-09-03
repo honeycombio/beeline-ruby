@@ -52,11 +52,11 @@ module Honeycomb
             span.add_field("#{name}.#{key}", value)
           end
 
-          error, error_detail = payload[:exception]
-          if error
-            span.add_field("error", error)
-            span.add_field("error_detail", error_detail)
-          end
+          exception_object = payload[:exception_object]
+          next unless exception_object
+
+          span.add_field("error", exception_object.class.to_s)
+          span.add_field("error_detail", exception_object.message)
         end
       end
     end
