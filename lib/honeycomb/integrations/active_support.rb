@@ -54,10 +54,12 @@ module Honeycomb
 
           # If the notification event has recorded an exception, add the
           # Beeline's usual error fields to the span.
-          if payload[:exception_object]
-            span.add_field("error", payload[:exception_object].class.to_s)
-            span.add_field("error_detail", payload[:exception_object].message)
-          end
+          # * Uses the 2-element array on :exception in the event payload
+          #   to support Rails 4. If Rails 4 support is dropped, consider
+          #   the :exception_object added in Rails 5.
+          error, error_detail = payload[:exception]
+          span.add_field("error", error) if error
+          span.add_field("error_detail", error_detail) if error_detail
         end
       end
     end

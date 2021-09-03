@@ -53,7 +53,6 @@ if defined?(Honeycomb::ActiveSupport)
           it_behaves_like "event data", package_fields: false, additional_fields: [
             "some.cool_event.is_this_going_to_error?",
             "some.cool_event.exception",
-            "some.cool_event.exception_object",
             "error",
             "error_detail",
           ]
