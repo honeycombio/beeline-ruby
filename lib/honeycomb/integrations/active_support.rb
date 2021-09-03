@@ -52,11 +52,12 @@ module Honeycomb
             span.add_field("#{name}.#{key}", value)
           end
 
-          exception_object = payload[:exception_object]
-          next unless exception_object
-
-          span.add_field("error", exception_object.class.to_s)
-          span.add_field("error_detail", exception_object.message)
+          # If the notification event has recorded an exception, add the
+          # Beeline's usual error fields to the span.
+          if payload[:exception_object]
+            span.add_field("error", payload[:exception_object].class.to_s)
+            span.add_field("error_detail", payload[:exception_object].message)
+          end
         end
       end
     end
