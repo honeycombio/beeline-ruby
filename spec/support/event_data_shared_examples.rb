@@ -38,6 +38,12 @@ HTTP_FIELDS = %w[
 
 RSpec.shared_examples "event data" do |package_fields: true, http_fields: false, additional_fields: []|
   describe "data" do
+    it "is present" do
+      # .all? on an Enumerable like event_data will return true when the collection is empty.
+      # Confirm here that there are events to test.
+      expect(event_data).not_to be_empty
+    end
+
     BASE_FIELDS.each do |field|
       it "includes #{field}" do
         expect(event_data).to all(include field)
