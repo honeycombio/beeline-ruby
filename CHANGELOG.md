@@ -1,5 +1,17 @@
 # beeline-ruby changelog
 
+## 2.7.9 2021-09-03
+
+### Improvements
+
+- add `error` and `error_detail` fields to spans from `ActiveSupport::Notification` events that contain an exception (#166) | [@leviwilson](https://github.com/leviwilson)
+
+### Maintenance
+
+- Add issue and PR templates (#165) | [@vreynolds](https://github.com/vreynolds)
+- Add OSS lifecycle badge (#164) | [@vreynolds](https://github.com/vreynolds)
+- Add community health files (#163) | [@vreynolds](https://github.com/vreynolds)
+
 ## 2.6.0 2021-07-23
 
 ### Added
