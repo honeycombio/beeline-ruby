@@ -51,6 +51,15 @@ module Honeycomb
             value = value.to_unsafe_hash if value.respond_to?(:to_unsafe_hash)
             span.add_field("#{name}.#{key}", value)
           end
+
+          # If the notification event has recorded an exception, add the
+          # Beeline's usual error fields to the span.
+          # * Uses the 2-element array on :exception in the event payload
+          #   to support Rails 4. If Rails 4 support is dropped, consider
+          #   the :exception_object added in Rails 5.
+          error, error_detail = payload[:exception]
+          span.add_field("error", error) if error
+          span.add_field("error_detail", error_detail) if error_detail
         end
       end
     end
