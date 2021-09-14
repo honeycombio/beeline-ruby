@@ -13,7 +13,7 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>-{{ checksum "Gemfile.lock" }}
+            - gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>-{{ checksum "honeycomb-beeline.gemspec" }}
             - gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>
             - gems-v1-<< parameters.ruby-version >>
       - run: .circleci/bundler_version.sh
@@ -24,7 +24,7 @@ commands:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>-{{ checksum "Gemfile.lock" }}
+          key: gems-v1-<< parameters.ruby-version >>-<< parameters.gemfile >>-{{ checksum "honeycomb-beeline.gemspec" }}
       - run: << parameters.command >>
 
 jobs:
