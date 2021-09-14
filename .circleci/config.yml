@@ -170,6 +170,17 @@ workflows:
                 gemfile: rails_41
               - ruby-version: "2.7"
                 gemfile: rails_42
+              - ruby-version: "3.0"
+                gemfile: rails_41
+              - ruby-version: "3.0"
+                gemfile: rails_42
+              - ruby-version: "3.0"
+                gemfile: rails_5
+              - ruby-version: "3.0"
+                gemfile: rails_51
+              - ruby-version: "3.0"
+                gemfile: rails_52
+
   beeline:
     jobs:
       - lint:
