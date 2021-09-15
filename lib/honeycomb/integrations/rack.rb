@@ -26,10 +26,11 @@ module Honeycomb
 
     attr_reader :app, :client
 
-    def initialize(app, client:)
+    def initialize(app, options)
       @app = app
-      @client = client
+      @client = options[:client]
     end
+    ruby2_keywords(:initialize) if respond_to?(:ruby2_keywords, true)
 
     def call(env)
       req = ::Rack::Request.new(env)
