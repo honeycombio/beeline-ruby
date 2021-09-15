@@ -2,6 +2,7 @@
 
 appraise "aws-2" do
   gem "aws-sdk", "~> 2"
+  gem "webrick"
 end
 
 appraise "aws-3" do
