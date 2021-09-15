@@ -5,10 +5,11 @@ require "faraday"
 module Honeycomb
   # Faraday middleware to create spans around outgoing http requests
   class Faraday < ::Faraday::Middleware
-    def initialize(app, client:)
+    def initialize(app, options)
       super(app)
-      @client = client
+      @client = options[:client]
     end
+    ruby2_keywords(:initialize) if respond_to?(:ruby2_keywords, true)
 
     def call(env)
       return @app.call(env) if @client.nil?
