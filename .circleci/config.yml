@@ -180,6 +180,8 @@ workflows:
                 gemfile: rails_51
               - ruby-version: "3.0"
                 gemfile: rails_52
+              - ruby-version: "3.0"
+                gemfile: sequel4
 
   beeline:
     jobs:
