@@ -9,7 +9,6 @@ module Honeycomb
       super(app)
       @client = options[:client]
     end
-    ruby2_keywords(:initialize) if respond_to?(:ruby2_keywords, true)
 
     def call(env)
       return @app.call(env) if @client.nil?

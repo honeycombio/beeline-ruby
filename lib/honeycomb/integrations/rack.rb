@@ -30,7 +30,6 @@ module Honeycomb
       @app = app
       @client = options[:client]
     end
-    ruby2_keywords(:initialize) if respond_to?(:ruby2_keywords, true)
 
     def call(env)
       req = ::Rack::Request.new(env)
