@@ -20,6 +20,9 @@ namespace :coverage do
   task :report do
     require "simplecov"
 
-    SimpleCov.collate Dir["coverage/**/.resultset.json"]
+    SimpleCov.collate Dir["coverage/**/.resultset.json"] do
+      add_group "Integrations", "lib/honeycomb/integrations"
+      add_group "Propagation", "lib/honeycomb/propagation"
+    end
   end
 end
