@@ -124,7 +124,7 @@ workflows:
             - lint
           matrix:
             parameters:
-              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6", "2.7"]
+              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.0"]
               gemfile:
                 - aws_2
                 - aws_3
@@ -170,6 +170,19 @@ workflows:
                 gemfile: rails_41
               - ruby-version: "2.7"
                 gemfile: rails_42
+              - ruby-version: "3.0"
+                gemfile: rails_41
+              - ruby-version: "3.0"
+                gemfile: rails_42
+              - ruby-version: "3.0"
+                gemfile: rails_5
+              - ruby-version: "3.0"
+                gemfile: rails_51
+              - ruby-version: "3.0"
+                gemfile: rails_52
+              - ruby-version: "3.0"
+                gemfile: sequel4
+
   beeline:
     jobs:
       - lint:

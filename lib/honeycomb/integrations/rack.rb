@@ -26,9 +26,9 @@ module Honeycomb
 
     attr_reader :app, :client
 
-    def initialize(app, client:)
+    def initialize(app, options)
       @app = app
-      @client = client
+      @client = options[:client]
     end
 
     def call(env)

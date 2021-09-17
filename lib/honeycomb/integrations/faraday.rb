@@ -5,9 +5,9 @@ require "faraday"
 module Honeycomb
   # Faraday middleware to create spans around outgoing http requests
   class Faraday < ::Faraday::Middleware
-    def initialize(app, client:)
+    def initialize(app, options)
       super(app)
-      @client = client
+      @client = options[:client]
     end
 
     def call(env)
