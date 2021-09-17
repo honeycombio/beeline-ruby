@@ -129,7 +129,7 @@ jobs:
       - run: ls -l ./coverage
       - run: bundle exec rake coverage:report
       - store_artifacts:
-          path: coverage
+          path: coverage/index.html
 
 workflows:
   nightly:
