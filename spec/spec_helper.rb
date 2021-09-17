@@ -9,13 +9,28 @@ require "pry"
 WebMock.disable_net_connect!
 
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
-SimpleCov.formatter = SimpleCov::Formatter::Console
-
-# Make coverage work with Appraisals
-SimpleCov.command_name(ENV["BUNDLE_GEMFILE"].split.last || "")
 
 SimpleCov.start do
   add_filter "/spec/"
+  add_filter "Rakefile"
+
+  add_group "Integrations", "lib/honeycomb/integrations"
+  add_group "Propagation", "lib/honeycomb/propagation"
+  # Make coverage work with Appraisals
+  current_gemfile = ENV.fetch("BUNDLE_GEMFILE", "").split("/").last
+  command_name current_gemfile if current_gemfile
+
+  if ENV["CI"]
+    coverage_dir("coverage/#{ENV['CIRCLE_JOB']}")
+    formatter SimpleCov::Formatter::SimpleFormatter
+  else
+    formatter SimpleCov::Formatter::MultiFormatter.new(
+      [
+        SimpleCov::Formatter::SimpleFormatter,
+        SimpleCov::Formatter::HTMLFormatter,
+      ],
+    )
+  end
 end
 
 require "honeycomb-beeline"

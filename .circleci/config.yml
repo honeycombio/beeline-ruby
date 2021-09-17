@@ -106,6 +106,28 @@ jobs:
           command: bundle exec rake test
       - store_test_results:
           path: test/reports
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - coverage
+  coverage_report:
+    parameters:
+      ruby-version:
+        type: string
+        default: "2.6"
+    docker:
+        - image: circleci/ruby:<< parameters.ruby-version >>
+    environment:
+      BUNDLE_GEMFILE: ./Gemfile
+    steps:
+      - attach_workspace:
+          at: ./
+      - ruby:
+          ruby-version: << parameters.ruby-version >>
+          gemfile: root
+          command: bundle exec rake coverage:report
+      - store_artifacts:
+          path: coverage
 
 workflows:
   nightly:
@@ -192,6 +214,10 @@ workflows:
       - test:
           <<: *test
           filters: *regular_filters
+      - coverage_report:
+          filters: *regular_filters
+          requires:
+            - test
       - build_artifacts:
           filters: &tag_filters
               tags:
