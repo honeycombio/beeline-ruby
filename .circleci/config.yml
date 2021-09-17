@@ -120,13 +120,14 @@ jobs:
     environment:
       BUNDLE_GEMFILE: ./Gemfile
     steps:
-      - attach_workspace:
-          at: ./
-      - run: ls -l ./coverage
       - ruby:
           ruby-version: << parameters.ruby-version >>
           gemfile: root
-          command: bundle exec rake coverage:report
+          command: echo "Get the project environment and cached dependencies prior to retrieving the coverage results."
+      - attach_workspace:
+          at: ./
+      - run: ls -l ./coverage
+      - run: bundle exec rake coverage:report
       - store_artifacts:
           path: coverage
 
