@@ -1,6 +1,6 @@
 # Honeycomb Beeline for Ruby
 
-[![OSS Lifecycle](https://img.shields.io/osslifecycle/honeycombio/beeline-ruby)](https://github.com/honeycombio/home/blob/main/honeycomb-oss-lifecycle-and-practices.md)
+[![OSS Lifecycle](https://img.shields.io/osslifecycle/honeycombio/beeline-ruby?color=success)](https://github.com/honeycombio/home/blob/main/honeycomb-oss-lifecycle-and-practices.md)
 [![Build Status](https://circleci.com/gh/honeycombio/beeline-ruby.svg?style=svg)](https://circleci.com/gh/honeycombio/beeline-ruby)
 [![Gem Version](https://badge.fury.io/rb/honeycomb-beeline.svg)](https://badge.fury.io/rb/honeycomb-beeline)
 
