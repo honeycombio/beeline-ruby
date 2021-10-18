@@ -1,5 +1,16 @@
 # beeline-ruby changelog
 
+## 2.7.1 2021-10-18
+
+### Maintenance
+
+- Change maintenance badge to maintained (#174) | [@JamieDanielson](https://github.com/JamieDanielson)
+- Adds Stalebot (#175) | [@JamieDanielson](https://github.com/JamieDanielson)
+- gather up the matrix'd code coverage and save a report (#173) | [@robbkidd](https://github.com/robbkidd)
+- add Ruby 3.0 to CI matrix (#171) | [@robbkidd](https://github.com/robbkidd)
+- remove CodeCov from test suite (#172) | [@robbkidd](https://github.com/robbkidd)
+- Add NOTICE (#169) | [@cartermp](https://github.com/cartermp)
+
 ## 2.7.0 2021-09-03
 
 ### Improvements

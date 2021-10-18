@@ -1,8 +1,6 @@
 # Releasing
 
 - Update the version number in `lib/honeycomb/beeline/version`.
-- Run `bundle lock`.
-- Confirm the version number update appears in `Gemfile.lock`
 - Update `CHANGELOG.md` with the changes since the last release.
 - Commit changes, push, and open a release preparation pull request for review.
 - Once the pull request is merged, fetch the updated `main` branch.
