@@ -2054,7 +2054,13 @@ if defined?(Honeycomb::Redis)
 
         let(:redis) do
           allow(connection).to receive(:read).and_return(slots, nodes, commands)
-          Redis.new(driver: driver, cluster: cluster, replica: true).tap do
+          Redis.new(
+            driver: driver, cluster: cluster, replica: true,
+          ).tap do |redis|
+            # Establishes connections to all nodes in the cluster,
+            # otherwise extra READONLY commands are executed on replicas
+            # due to https://github.com/redis/redis-rb/issues/1017
+            redis.auth("password")
             libhoney_client.events.clear
           end
         end
