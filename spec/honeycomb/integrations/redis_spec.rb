@@ -2060,7 +2060,11 @@ if defined?(Honeycomb::Redis)
             # https://github.com/redis/redis-rb/issues/1017
             # establishes connections to all nodes in the cluster,
             # otherwise extra READONLY commands are executed on replicas
-            redis.auth
+            if VERSION > Gem::Version.new("4.1.1")
+              redis.auth
+            else
+              redis.auth("")
+            end
             libhoney_client.events.clear
           end
         end
