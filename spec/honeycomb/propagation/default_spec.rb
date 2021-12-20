@@ -30,7 +30,16 @@ RSpec.describe Honeycomb::DefaultPropagation::UnmarshalTraceContext do
     let(:rack_env) do
       { "HTTP_X_HONEYCOMB_TRACE" => honeycomb_span.to_trace_header }
     end
+
     let(:output) do
+      expect(Honeycomb::W3CPropagation::UnmarshalTraceContext)
+        .not_to receive(:parse_rack_env)
+
+      expect(Honeycomb::HoneycombPropagation::UnmarshalTraceContext)
+        .to receive(:parse_rack_env)
+        .with(rack_env)
+        .and_call_original
+
       default_propagation.parse_rack_env(rack_env)
     end
 
@@ -56,6 +65,14 @@ RSpec.describe Honeycomb::DefaultPropagation::UnmarshalTraceContext do
       { "HTTP_TRACEPARENT" => w3c_span.to_trace_header }
     end
     let(:output) do
+      expect(Honeycomb::HoneycombPropagation::UnmarshalTraceContext)
+        .not_to receive(:parse_rack_env)
+
+      expect(Honeycomb::W3CPropagation::UnmarshalTraceContext)
+        .to receive(:parse_rack_env)
+        .with(rack_env)
+        .and_call_original
+
       default_propagation.parse_rack_env(rack_env)
     end
 
@@ -86,6 +103,14 @@ RSpec.describe Honeycomb::DefaultPropagation::UnmarshalTraceContext do
         "HTTP_TRACEPARENT" => w3c_span.to_trace_header }
     end
     let(:output) do
+      expect(Honeycomb::W3CPropagation::UnmarshalTraceContext)
+        .not_to receive(:parse_rack_env)
+
+      expect(Honeycomb::HoneycombPropagation::UnmarshalTraceContext)
+        .to receive(:parse_rack_env)
+        .with(rack_env)
+        .and_call_original
+
       default_propagation.parse_rack_env(rack_env)
     end
 
