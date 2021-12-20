@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "socket"
-require "honeycomb/propagation/honeycomb"
+require "honeycomb/propagation/default"
 
 module Honeycomb
   # Used to configure the Honeycomb client
@@ -75,7 +75,7 @@ module Honeycomb
         @http_trace_parser_hook
       else
         # by default we try to parse incoming honeycomb traces
-        HoneycombPropagation::UnmarshalTraceContext.method(:parse_rack_env)
+        DefaultPropagation::UnmarshalTraceContext.method(:parse_rack_env)
       end
     end
 
