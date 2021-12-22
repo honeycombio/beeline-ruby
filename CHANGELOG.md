@@ -1,5 +1,16 @@
 # beeline-ruby changelog
 
+## 2.8.0 2021-12-22
+
+### Improvements
+
+- feat: accept both w3c and honeycomb propagation headers by default (#183) | [@robbkidd](https://github.com/robbkidd)
+
+### Maintenance
+
+- Update dependabot to monthly (#181) | [@vreynolds](https://github.com/vreynolds)
+- empower apply-labels action to apply labels (#179) | [@robbkidd](https://github.com/robbkidd)
+
 ## 2.7.1 2021-10-22
 
 ### Maintenance
