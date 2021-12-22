@@ -38,6 +38,7 @@ Style/AccessModifierDeclarations:
     - lib/honeycomb/propagation/aws.rb
     - lib/honeycomb/propagation/w3c.rb
     - lib/honeycomb/propagation/honeycomb.rb
+    - lib/honeycomb/propagation/default.rb
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
