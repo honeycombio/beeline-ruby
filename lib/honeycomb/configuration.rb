@@ -32,15 +32,15 @@ module Honeycomb
     end
 
     def client
-      options = {}.tap do |o|
-        o[:writekey] = write_key
-        o[:dataset] = dataset
-        api_host && o[:api_host] = api_host
-      end
-
-      @client ||
-        (debug && Libhoney::LogClient.new) ||
-        Libhoney::Client.new(**options)
+      # memoized:
+      # either the user has supplied a pre-configured Libhoney client
+      @client ||=
+        # or we'll create one and return it from here on
+        if debug
+          Libhoney::LogClient.new
+        else
+          Libhoney::Client.new(**libhoney_client_options)
+        end
     end
 
     def after_initialize(client)
@@ -87,6 +87,17 @@ module Honeycomb
       else
         # by default we send outgoing honeycomb trace headers
         HoneycombPropagation::MarshalTraceContext.method(:parse_faraday_env)
+      end
+    end
+
+    private
+
+    def libhoney_client_options
+      {}.tap do |o|
+        o[:writekey] = write_key
+        o[:dataset] = dataset
+        api_host && o[:api_host] = api_host
+        o[:user_agent_addition] = Honeycomb::Beeline::USER_AGENT_SUFFIX
       end
     end
   end
