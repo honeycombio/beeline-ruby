@@ -54,8 +54,54 @@ RSpec.describe Honeycomb::Configuration do
     expect(configuration.api_host).to eq api_host
   end
 
-  it "has a client that is the correct type" do
+  it "has a Libhoney client by default" do
     expect(configuration.client).to be_a Libhoney::Client
+  end
+
+  it "has a client with Beeline version information in the user agent" do
+    libhoney_client = configuration.client
+    transmission = libhoney_client.instance_variable_get(:@transmission)
+    user_agent = transmission.instance_variable_get(:@user_agent)
+    expect(user_agent).to match(Honeycomb::Beeline::USER_AGENT_SUFFIX)
+  end
+
+  context "when debug is enabled" do
+    before do
+      configuration.debug = true
+    end
+
+    it "has a logging Libhoney" do
+      expect(configuration.client).to be_a Libhoney::LogClient
+    end
+  end
+
+  context "when a customized Libhoney client is given in the config" do
+    before do
+      configuration.client = Libhoney::Client.new(
+        writekey: "customized!",
+        dataset: dataset_name,
+        proxy_config: "https://myproxy.example.com:8080",
+      )
+    end
+
+    it "has the custom Libhoney as its client" do
+      expect(configuration.client.writekey).to eq "customized!"
+      proxy_config = configuration.client.instance_variable_get(:@proxy_config)
+      expect(proxy_config).not_to be_nil
+    end
+
+    # This is known current behavior and consistent with what the other
+    # Beeline's do. It would be nice for the Beelines to be able to add
+    # their version info to  user-instantiated libhoney/transmissions,
+    # but that's not part of the libhoney public API at the moment. So
+    # this test exists to confirm the current behavior, even if that
+    # behavior is more incidental than intentional.
+    it "sadly, does not add Beeline version to the client user-agent" do
+      custom_client = configuration.client
+      transmission = custom_client.instance_variable_get(:@transmission)
+      user_agent = transmission.instance_variable_get(:@user_agent)
+      expect(user_agent).not_to match(Honeycomb::Beeline::USER_AGENT_SUFFIX)
+    end
   end
 
   it "configures the client with the correct write_key" do
