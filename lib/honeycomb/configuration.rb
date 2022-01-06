@@ -93,11 +93,13 @@ module Honeycomb
     private
 
     def libhoney_client_options
-      {}.tap do |o|
-        o[:writekey] = write_key
-        o[:dataset] = dataset
-        api_host && o[:api_host] = api_host
-        o[:user_agent_addition] = Honeycomb::Beeline::USER_AGENT_SUFFIX
+      {
+        writekey: write_key,
+        dataset: dataset,
+        user_agent_addition: Honeycomb::Beeline::USER_AGENT_SUFFIX,
+      }.tap do |options|
+        # only set the API host for the client if one has been given
+        options[:api_host] = api_host if api_host
       end
     end
   end
