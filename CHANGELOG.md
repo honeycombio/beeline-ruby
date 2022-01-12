@@ -1,5 +1,16 @@
 # beeline-ruby changelog
 
+## 2.8.1 2022-01-12
+
+### Fixed
+
+- fix Beeline user-agent addition when creating a Libhoney client (#189) | [@robbkidd](https://github.com/robbkidd)
+
+### Maintenance
+
+- gh: add re-triage workflow (#185) | [@vreynolds](https://github.com/vreynolds)
+- set minimum version of rspec_junit_formatter (#188) | [@robbkidd](https://github.com/robbkidd)
+
 ## 2.8.0 2021-12-22
 
 ### Improvements
