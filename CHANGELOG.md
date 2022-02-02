@@ -1,5 +1,11 @@
 # beeline-ruby changelog
 
+## 2.8.2 2022-02-02
+
+### Maintenance
+
+- Remove the upperbound on libhoney version (#191) | [@MikeGoldsmith](https://github.com/MikeGoldsmith)
+
 ## 2.8.1 2022-01-12
 
 ### Fixed
