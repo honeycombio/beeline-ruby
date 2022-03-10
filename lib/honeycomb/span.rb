@@ -71,6 +71,7 @@ module Honeycomb
                      presend_hook: presend_hook,
                      propagation_hook: propagation_hook).tap do |c|
         children << c
+        @is_parent = true
       end
     end
 
@@ -132,6 +133,10 @@ module Honeycomb
       @is_root
     end
 
+    def parent?
+      @is_parent
+    end
+
     def send_internal
       add_additional_fields
       send_children
@@ -180,10 +185,10 @@ module Honeycomb
     def span_type
       if root?
         parent_id.nil? ? "root" : "subroot"
-      elsif children.empty?
-        "leaf"
-      else
+      elsif parent?
         "mid"
+      else
+        "leaf"
       end
     end
 
