@@ -313,4 +313,97 @@ RSpec.describe Honeycomb::Client do
       end.to_not raise_error
     end
   end
+
+  describe "meta.span_type" do
+    let(:event_data) { libhoney_client.events.map(&:data) }
+
+    context "when children are sent before parents" do
+      before do
+        client.start_span(name: "root") do
+          client.start_span(name: "mid") do
+            client.start_span(name: "leaf") do
+              :ok
+            end
+          end
+        end
+      end
+
+      it "has the right values" do
+        leaf, mid, root = event_data
+        aggregate_failures do
+          expect(leaf["name"]).to eq("leaf")
+          expect(leaf["meta.span_type"]).to eq("leaf")
+
+          expect(mid["name"]).to eq("mid")
+          expect(mid["meta.span_type"]).to eq("mid")
+
+          expect(root["name"]).to eq("root")
+          expect(root["meta.span_type"]).to eq("root")
+        end
+      end
+    end
+
+    context "when parents are sent before children" do
+      before do
+        root = client.start_span(name: "root")
+        client.start_span(name: "mid")
+        client.start_span(name: "leaf")
+        root.send
+      end
+
+      it "has the right values" do
+        leaf, mid, root = event_data
+        aggregate_failures do
+          expect(leaf["name"]).to eq("leaf")
+          expect(leaf["meta.span_type"]).to eq("leaf")
+
+          expect(mid["name"]).to eq("mid")
+          expect(mid["meta.span_type"]).to eq("mid")
+
+          expect(root["name"]).to eq("root")
+          expect(root["meta.span_type"]).to eq("root")
+        end
+      end
+    end
+
+    context "when continuing a distributed trace" do
+      let(:upstream_configuration) do
+        Honeycomb::Configuration.new.tap do |config|
+          config.client = Libhoney::NullClient.new
+        end
+      end
+
+      let(:upstream_client) do
+        Honeycomb::Client.new(configuration: upstream_configuration)
+      end
+
+      before do
+        root = upstream_client.start_span(name: "root")
+        root.send
+
+        header = root.to_trace_header
+        client.start_span(name: "subroot", serialized_trace: header) do
+          client.start_span(name: "mid") do
+            client.start_span(name: "leaf") do
+              :ok
+            end
+          end
+        end
+      end
+
+      it "has the right values" do
+        leaf, mid, subroot = event_data
+        aggregate_failures do
+          expect(leaf["name"]).to eq("leaf")
+          expect(leaf["meta.span_type"]).to eq("leaf")
+
+          expect(mid["name"]).to eq("mid")
+          expect(mid["meta.span_type"]).to eq("mid")
+
+          expect(subroot["name"]).to eq("subroot")
+          expect(subroot["meta.span_type"]).to eq("subroot")
+        end
+      end
+    end
+  end
 end
