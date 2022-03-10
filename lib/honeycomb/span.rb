@@ -50,6 +50,7 @@ module Honeycomb
       # compatability
       @parent_id = parent_id
       @is_root = is_root
+      @is_leaf = true
     end
 
     def parse_hooks(sample_hook: nil,
@@ -71,7 +72,7 @@ module Honeycomb
                      presend_hook: presend_hook,
                      propagation_hook: propagation_hook).tap do |c|
         children << c
-        @is_parent = true
+        @is_leaf = false
       end
     end
 
@@ -133,8 +134,8 @@ module Honeycomb
       @is_root
     end
 
-    def parent?
-      @is_parent
+    def leaf?
+      @is_leaf
     end
 
     def send_internal
@@ -185,10 +186,10 @@ module Honeycomb
     def span_type
       if root?
         parent_id.nil? ? "root" : "subroot"
-      elsif parent?
-        "mid"
-      else
+      elsif leaf?
         "leaf"
+      else
+        "mid"
       end
     end
 
