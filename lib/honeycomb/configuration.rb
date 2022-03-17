@@ -14,6 +14,11 @@ module Honeycomb
     attr_writer :service_name, :client, :host_name
     attr_reader :error_backtrace_limit
 
+    default_dataset_classic = "rails"
+    default_dataset = "unknown_service"
+    # TODO get process for unknown_service name?
+    # https://github.com/open-telemetry/opentelemetry-ruby/blob/main/sdk/lib/opentelemetry/sdk/resources/resource.rb#L58
+
     def initialize
       @write_key = ENV["HONEYCOMB_WRITEKEY"]
       @dataset = ENV["HONEYCOMB_DATASET"]
@@ -23,9 +28,31 @@ module Honeycomb
       @client = nil
     end
 
+    def is_classic_key(write_key)
+      if write_key.length == 32
+    end
+
+    if is_classic_key(write_key)
+      propagate_dataset = true
+    else
+      propagate_dataset = false
+
     def service_name
       @service_name || dataset
     end
+
+    if !is_classic_key(write_key)
+      if dataset?
+        print('dataset is ignored in favor of service name')
+      dataset = service_name.strip
+      if service_name != service_name.strip
+        print('extra spaces in service name')
+      if dataset.starts_with?('unknown_service') || dataset.empty?
+        dataset = default_dataset
+      end
+    else
+      if dataset.empty?
+        dataset = default_dataset_classic
 
     def error_backtrace_limit=(val)
       @error_backtrace_limit = Integer(val)

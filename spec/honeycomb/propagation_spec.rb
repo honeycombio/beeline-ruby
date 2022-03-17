@@ -33,7 +33,8 @@ RSpec.describe Honeycomb::PropagationParser do
     ]
   end
 
-  it "handles a dataset" do
+  it "handles a dataset with classic key" do
+    propagate_dataset = true
     serialized_trace =
       "1;trace_id=trace_id,parent_id=parent_id,dataset=dataset"
     expect(propagation.parse(serialized_trace)).to eq [
@@ -41,6 +42,18 @@ RSpec.describe Honeycomb::PropagationParser do
       "parent_id",
       nil,
       "dataset",
+    ]
+  end
+
+  it "handles a dataset with non-classic key" do
+    propagate_dataset = false
+    serialized_trace =
+      "1;trace_id=trace_id,parent_id=parent_id,dataset=dataset"
+    expect(propagation.parse(serialized_trace)).to eq [
+      "trace_id",
+      "parent_id",
+      nil,
+      nil,
     ]
   end
 
@@ -81,7 +94,8 @@ RSpec.describe Honeycomb::PropagationSerializer do
   end
 end
 
-RSpec.describe "Propagation" do
+RSpec.describe "Propagation for Classic" do
+  propagate_dataset = true
   let(:parent_id) { SecureRandom.hex(8) }
   let(:dataset) { "rails,tesing/with-%characters%" }
   let(:trace_id) { SecureRandom.hex(16) }
@@ -105,6 +119,46 @@ RSpec.describe "Propagation" do
 
   it "produces the correct dataset" do
     expect(output[3]).to eq dataset
+  end
+
+  it "produces the correct trace_id" do
+    expect(output[0]).to eq trace_id
+  end
+
+  it "produces the correct parent_span_id" do
+    expect(output[1]).to eq parent_id
+  end
+
+  it "produces the correct fields" do
+    expect(output[2]).to eq fields
+  end
+end
+
+RSpec.describe "Propagation for NonClassic" do
+  propagate_dataset = false
+  let(:parent_id) { SecureRandom.hex(8) }
+  let(:dataset) { "rails,tesing/with-%characters%" }
+  let(:trace_id) { SecureRandom.hex(16) }
+  let(:fields) do
+    {
+      "test" => "honeycomb",
+    }
+  end
+  let(:builder) { instance_double("Builder", dataset: dataset) }
+  let(:trace) { instance_double("Trace", id: trace_id, fields: fields) }
+  let(:span) do
+    instance_double("Span", id: parent_id, trace: trace, builder: builder)
+      .extend(Honeycomb::PropagationSerializer)
+  end
+
+  let(:propagation) { Class.new.extend(Honeycomb::PropagationParser) }
+
+  let(:output) do
+    propagation.parse(span.to_trace_header)
+  end
+
+  it "does not propagate dataset" do
+    expect(output[3]).to eq nil
   end
 
   it "produces the correct trace_id" do

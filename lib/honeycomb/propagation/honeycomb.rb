@@ -7,6 +7,13 @@ require "uri"
 module Honeycomb
   # Parsing and propagation for honeycomb trace headers
   module HoneycombPropagation
+
+    module DatasetPropagation
+      ## only propagate for classic key
+      def propagate_dataset()
+        return false
+      end
+
     # Parse trace headers
     module UnmarshalTraceContext
       def parse_rack_env(env)
@@ -19,6 +26,9 @@ module Honeycomb
 
           if version == "1"
             trace_id, parent_span_id, trace_fields, dataset = parse_v1(payload)
+
+            if propagate_dataset = false
+              dataset = nil
 
             if !trace_id.nil? && !parent_span_id.nil?
               return [trace_id, parent_span_id, trace_fields, dataset]
@@ -34,7 +44,7 @@ module Honeycomb
         payload.split(",").each do |entry|
           key, value = entry.split("=", 2)
           case key.downcase
-          when "dataset"
+          when "dataset" && propagate_dataset
             dataset = URI.decode_www_form_component(value)
           when "trace_id"
             trace_id = value
@@ -62,7 +72,8 @@ module Honeycomb
     module MarshalTraceContext
       def to_trace_header
         context = Base64.urlsafe_encode64(JSON.generate(trace.fields)).strip
-        encoded_dataset = URI.encode_www_form_component(builder.dataset)
+        if propagate_dataset = true
+          encoded_dataset = URI.encode_www_form_component(builder.dataset)
         data_to_propogate = [
           "dataset=#{encoded_dataset}",
           "trace_id=#{trace.id}",
@@ -81,8 +92,9 @@ module Honeycomb
       def self.to_trace_header(propagation_context)
         fields = propagation_context.trace_fields
         context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
-        dataset = propagation_context.dataset
-        encoded_dataset = URI.encode_www_form_component(dataset)
+        if propagate_dataset = true
+          dataset = propagation_context.dataset
+          encoded_dataset = URI.encode_www_form_component(dataset)
         data_to_propogate = [
           "dataset=#{encoded_dataset}",
           "trace_id=#{propagation_context.trace_id}",
