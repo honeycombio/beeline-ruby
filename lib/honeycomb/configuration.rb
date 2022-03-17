@@ -36,6 +36,7 @@ module Honeycomb
       propagate_dataset = true
     else
       propagate_dataset = false
+    end
 
     def service_name
       @service_name || dataset
@@ -53,6 +54,7 @@ module Honeycomb
     else
       if dataset.empty?
         dataset = default_dataset_classic
+      end
 
     def error_backtrace_limit=(val)
       @error_backtrace_limit = Integer(val)

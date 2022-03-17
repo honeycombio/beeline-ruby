@@ -33,6 +33,7 @@ module Honeycomb
             if !trace_id.nil? && !parent_span_id.nil?
               return [trace_id, parent_span_id, trace_fields, dataset]
             end
+            end
           end
         end
 
@@ -81,6 +82,7 @@ module Honeycomb
           "context=#{context}",
         ]
         "1;#{data_to_propogate.join(',')}"
+        end
       end
 
       def self.parse_faraday_env(_env, propagation_context)
@@ -102,6 +104,7 @@ module Honeycomb
           "context=#{context}",
         ]
         "1;#{data_to_propogate.join(',')}"
+        end
       end
     end
   end
