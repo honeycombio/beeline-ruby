@@ -157,7 +157,8 @@ RSpec.describe Honeycomb::Configuration do
     end
 
     describe "default behavior" do
-      it "given no service name, service_name returns unknown_servce:<program_name>" do
+      it "given no service name, " \
+         "service_name returns unknown_servce:<program_name>" do
         expect(configuration.service_name).to eq "unknown_service:rspec"
       end
 
