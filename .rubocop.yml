@@ -26,6 +26,7 @@ Metrics/MethodLength:
     - lib/generators/honeycomb/honeycomb_generator.rb
 
 Metrics/LineLength:
+  Max: 100
   Exclude:
     - spec/honeycomb/integrations/active_support_spec.rb
     - spec/support/event_data_shared_examples.rb
