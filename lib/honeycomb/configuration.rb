@@ -37,9 +37,13 @@ module Honeycomb
     end
 
     def dataset
-      is_classic ?
-        @dataset :
-        service_name.strip
+      if is_classic
+        @dataset
+      else
+        service_name.strip.start_with?("unknown_service") ?
+          "unknown_service" :
+          service_name.strip
+      end
     end
 
     def error_backtrace_limit=(val)
