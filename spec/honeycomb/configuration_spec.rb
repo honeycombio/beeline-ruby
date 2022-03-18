@@ -156,9 +156,13 @@ RSpec.describe Honeycomb::Configuration do
       expect(configuration.dataset).to eq "my-service"
     end
 
+    it "given a nil service name, dataset returns the dataset" do
+      expect(configuration.dataset).to eq "unknown_service"
+    end
+
     describe "default behavior" do
       it "given no service name, " \
-         "service_name returns unknown_servce:<program_name>" do
+        "service_name returns unknown_servce:<program_name>" do
         expect(configuration.service_name).to eq "unknown_service:rspec"
       end
 
