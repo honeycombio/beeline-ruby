@@ -160,7 +160,6 @@ RSpec.describe Honeycomb::Configuration do
   describe "non-classic API key defaults for" do 
     before do
       configuration.write_key = "d68f9ed1e96432ac1a3380"
-      configuration.service_name = ""
     end
 
     it "service_name" do
