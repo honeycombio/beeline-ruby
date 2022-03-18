@@ -4,7 +4,7 @@ RSpec.describe Honeycomb::Configuration do
   let(:configuration) { Honeycomb::Configuration.new }
   let(:dataset_name) { "dataset" }
   let(:service_name) { "service_name" }
-  let(:write_key) { "service_name" }
+  let(:write_key) { "e38be416d0d68f9ed1e96432ac1a3380" }
   let(:api_host) { "https://www.honeycomb.io" }
   let(:event) { configuration.client.event }
 
