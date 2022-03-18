@@ -152,20 +152,12 @@ RSpec.describe Honeycomb::Configuration do
       configuration.service_name = " my-service "
     end
 
-    it "is_classic returns false" do
-      expect(configuration.is_classic).to eq false
-    end
-
-    it "service_name" do
-      expect(configuration.service_name).to eq " my-service "
-    end
-
-    it "dataset" do
+    it "dataset returns trimmed service name" do
       expect(configuration.dataset).to eq "my-service"
     end
   end
 
-  describe "non-classic API key defaults" do 
+  describe "non-classic API key defaults for" do 
     before do
       configuration.write_key = "d68f9ed1e96432ac1a3380"
       configuration.service_name = ""
