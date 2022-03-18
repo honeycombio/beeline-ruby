@@ -23,11 +23,17 @@ module Honeycomb
     end
 
     def is_classic
-      @write_key.length == 32
+      @write_key.nil? || @write_key.length == 32
     end
 
     def service_name
-      @service_name || dataset
+      if @service_name.nil? || @service_name.empty?
+        is_classic ?
+          "unknown_service:" + $0.split("/").last :
+          @dataset
+      else
+        @service_name
+      end
     end
 
     def dataset

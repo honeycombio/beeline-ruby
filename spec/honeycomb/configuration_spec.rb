@@ -39,7 +39,7 @@ RSpec.describe Honeycomb::Configuration do
   end
 
   it "has a default service_name" do
-    expect(configuration.service_name).to eq dataset_name
+    expect(configuration.service_name).to eq "unknown_service:rspec"
   end
 
   it "has the correct write_key" do
