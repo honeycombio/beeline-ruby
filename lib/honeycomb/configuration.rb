@@ -27,16 +27,10 @@ module Honeycomb
     end
 
     def service_name
-      if @service_name.nil? || @service_name.empty?
-        if classic?
-          @dataset
-        else
-          # append script name (eg rspec, script.rb, etc)
-          "unknown_service:" + $PROGRAM_NAME.split("/").last
-        end
-      else
-        @service_name
-      end
+      return @service_name if service_name_given?
+      return @dataset if classic?
+
+      "unknown_service:" + $PROGRAM_NAME.split("/").last
     end
 
     def dataset
@@ -44,6 +38,8 @@ module Honeycomb
       return "unknown_service" if service_name.nil?
 
       stripped_service_name = service_name.strip
+
+      warn("found extra whitespace in service name") if stripped_service_name != service_name
 
       if stripped_service_name.empty? || stripped_service_name.start_with?("unknown_service")
         # don't use process name in dataset
@@ -135,20 +131,25 @@ module Honeycomb
       if classic?
         validate_options_classic
       else
-        validate_options_non_classic
+        warn("service_name is unknown, will set to " + service_name) \
+          if service_name.start_with?("unknown_service")
+        warn("dataset will be ignored, sending data to " + service_name) \
+          if dataset_given?
       end
     end
 
     def validate_options_classic
-      warn("empty service_name option") if service_name.nil? || service_name.empty?
-      warn("empty dataset option") if dataset.nil? || dataset.empty?
+      warn("empty service_name option") if !service_name_given?
+      warn("empty dataset option") if !dataset_given?
     end
 
-    def validate_options_non_classic
-      warn("empty serviceName option, setting service name to" + service_name) \
-        if service_name.start_with?("unknown_service")
-      warn("dataset should be empty, sending data to" + service_name) \
-        if !dataset.nil? && !dataset.empty?
+    def service_name_given?
+      # check the instance variables, not the accessor method
+      @service_name && !@service_name.empty?
+    end
+
+    def dataset_given?
+      @dataset && !@dataset.empty?
     end
   end
 end
