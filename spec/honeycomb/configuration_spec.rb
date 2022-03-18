@@ -145,4 +145,19 @@ RSpec.describe Honeycomb::Configuration do
       expect(configuration.service_name).to eq service_name
     end
   end
+
+  it "has a classic API key" do
+    expect(configuration.is_classic).to eq true
+  end
+
+  describe "non-classic API key" do 
+    before do
+      configuration.write_key = "d68f9ed1e96432ac1a3380"
+      configuration.service_name = " my-service "
+    end
+
+    it "has a non-classic write key" do
+      expect(configuration.is_classic).to eq false
+    end
+  end
 end

@@ -22,8 +22,8 @@ module Honeycomb
       @client = nil
     end
 
-    def is_classic(write_key)
-      write_key.length == 32
+    def is_classic
+      @write_key.length == 32
     end
 
     def service_name
