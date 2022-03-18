@@ -29,19 +29,17 @@ module Honeycomb
     def service_name
       if @service_name.nil? || @service_name.empty?
         is_classic ?
-          "unknown_service:" + $0.split("/").last :
-          @dataset
+          @dataset :
+          "unknown_service:" + $0.split("/").last
       else
         @service_name
       end
     end
 
     def dataset
-      if @dataset.nil? || @dataset.empty?
-        "unknown_service"
-      else
-        @dataset
-      end
+      is_classic ?
+        @dataset :
+        service_name.strip
     end
 
     def error_backtrace_limit=(val)

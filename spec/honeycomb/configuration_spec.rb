@@ -39,7 +39,7 @@ RSpec.describe Honeycomb::Configuration do
   end
 
   it "has a default service_name" do
-    expect(configuration.service_name).to eq "unknown_service:rspec"
+    expect(configuration.service_name).to eq dataset_name
   end
 
   it "has the correct write_key" do
@@ -146,16 +146,6 @@ RSpec.describe Honeycomb::Configuration do
     end
   end
 
-  describe "empty dataset defaults" do
-    before do
-      configuration.dataset = ""
-    end
-
-    it "returns default" do
-      expect(configuration.dataset).to eq "unknown_service"
-    end
-  end
-
   describe "classic API key" do
     before do
       configuration.write_key = "e38be416d0d68f9ed1e96432ac1a3380"
@@ -166,17 +156,33 @@ RSpec.describe Honeycomb::Configuration do
     it "is_classic returns true" do
       expect(configuration.is_classic).to eq true
     end
+
+    it "service_name" do
+      expect(configuration.service_name).to eq " my-service "
+    end
+
+    it "dataset" do
+      expect(configuration.dataset).to eq " dataset "
+    end
   end
 
   describe "non-classic API key" do 
     before do
       configuration.write_key = "d68f9ed1e96432ac1a3380"
-      configuration.dataset = " dataset "
+      configuration.dataset = "dataset"
       configuration.service_name = " my-service "
     end
 
     it "is_classic returns false" do
       expect(configuration.is_classic).to eq false
+    end
+
+    it "service_name" do
+      expect(configuration.service_name).to eq " my-service "
+    end
+
+    it "dataset" do
+      expect(configuration.dataset).to eq "my-service"
     end
   end
 end
