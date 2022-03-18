@@ -7,11 +7,10 @@ module Honeycomb
   # Used to configure the Honeycomb client
   class Configuration
     attr_accessor :write_key,
-                  :dataset,
                   :api_host,
                   :debug
 
-    attr_writer :service_name, :client, :host_name
+    attr_writer :service_name, :client, :host_name, :dataset
     attr_reader :error_backtrace_limit
 
     def initialize
@@ -25,6 +24,10 @@ module Honeycomb
 
     def service_name
       @service_name || dataset
+    end
+
+    def dataset
+      @dataset
     end
 
     def error_backtrace_limit=(val)
