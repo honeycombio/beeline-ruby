@@ -30,7 +30,7 @@ module Honeycomb
       if @service_name.nil? || @service_name.empty?
         is_classic ?
           @dataset :
-          "unknown_service:" + $0.split("/").last
+          "unknown_service:" + $0.split("/").last # append script name (eg rspec, script.rb, etc)
       else
         @service_name
       end
@@ -41,7 +41,7 @@ module Honeycomb
         @dataset
       else
         service_name.strip.start_with?("unknown_service") ?
-          "unknown_service" :
+          "unknown_service" : # don't use process name in dataset
           service_name.strip
       end
     end
