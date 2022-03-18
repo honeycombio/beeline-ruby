@@ -22,13 +22,13 @@ module Honeycomb
       @client = nil
     end
 
-    def classic
+    def classic?
       @write_key.nil? || @write_key.length == 32
     end
 
     def service_name
       if @service_name.nil? || @service_name.empty?
-        if classic
+        if classic?
           @dataset
         else
           # append script name (eg rspec, script.rb, etc)
@@ -40,7 +40,7 @@ module Honeycomb
     end
 
     def dataset
-      if classic
+      if classic?
         @dataset
       elsif service_name.strip.start_with?("unknown_service")
         # don't use process name in dataset
