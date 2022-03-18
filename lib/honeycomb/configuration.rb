@@ -40,13 +40,16 @@ module Honeycomb
     end
 
     def dataset
-      if classic?
-        @dataset
-      elsif service_name.strip.start_with?("unknown_service")
+      return @dataset if classic?
+      return "unknown_service" if service_name.nil?
+
+      stripped_service_name = service_name.strip
+
+      if stripped_service_name.empty? || stripped_service_name.start_with?("unknown_service")
         # don't use process name in dataset
         "unknown_service"
       else
-        service_name.strip
+        stripped_service_name
       end
     end
 
@@ -62,6 +65,7 @@ module Honeycomb
         if debug
           Libhoney::LogClient.new
         else
+          validate_options
           Libhoney::Client.new(**libhoney_client_options)
         end
     end
@@ -124,6 +128,27 @@ module Honeycomb
         # only set the API host for the client if one has been given
         options[:api_host] = api_host if api_host
       end
+    end
+
+    def validate_options
+      warn("missing write_key") if write_key.nil? || write_key.empty?
+      if classic?
+        validate_options_classic
+      else
+        validate_options_non_classic
+      end
+    end
+
+    def validate_options_classic
+      warn("empty service_name option") if service_name.nil? || service_name.empty?
+      warn("empty dataset option") if dataset.nil? || dataset.empty?
+    end
+
+    def validate_options_non_classic
+      warn("empty serviceName option, setting service name to" + service_name) \
+        if service_name.start_with?("unknown_service")
+      warn("dataset should be empty, sending data to" + service_name) \
+        if !dataset.nil? && !dataset.empty?
     end
   end
 end
