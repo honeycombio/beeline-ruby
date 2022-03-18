@@ -146,28 +146,24 @@ RSpec.describe Honeycomb::Configuration do
     end
   end
 
-  describe "non-classic API key" do
+  describe "with a non-classic write key" do
     before do
       configuration.write_key = "d68f9ed1e96432ac1a3380"
-      configuration.service_name = " my-service "
     end
 
-    it "dataset returns trimmed service name" do
+    it "given a service name, dataset returns a trimmed service name" do
+      configuration.service_name = " my-service "
       expect(configuration.dataset).to eq "my-service"
     end
-  end
 
-  describe "non-classic API key defaults for" do
-    before do
-      configuration.write_key = "d68f9ed1e96432ac1a3380"
-    end
+    describe "default behavior" do
+      it "given no service name, service_name returns unknown_servce:<program_name>" do
+        expect(configuration.service_name).to eq "unknown_service:rspec"
+      end
 
-    it "service_name" do
-      expect(configuration.service_name).to eq "unknown_service:rspec"
-    end
-
-    it "dataset" do
-      expect(configuration.dataset).to eq "unknown_service"
+      it "dataset returns trimmed service_name" do
+        expect(configuration.dataset).to eq "unknown_service"
+      end
     end
   end
 end
