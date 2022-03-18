@@ -187,12 +187,10 @@ RSpec.describe Honeycomb::Client do
         expect(data["error_backtrace_limit"]).to eq(error_backtrace_limit)
       end
 
-      # rubocop:disable Metrics/LineLength
       it "includes error_backtrace_total_length as the backtrace's original length" do
         data = event_data.first
         expect(data["error_backtrace_total_length"]).to eq(2)
       end
-      # rubocop:enable Metrics/LineLength
 
       it_behaves_like(
         "event data",
@@ -237,12 +235,10 @@ RSpec.describe Honeycomb::Client do
           expect(data["error_backtrace_limit"]).to eq(error_backtrace_limit)
         end
 
-        # rubocop:disable Metrics/LineLength
         it "includes error_backtrace_total_length as the backtrace's original length" do
           data = event_data.first
           expect(data["error_backtrace_total_length"]).to eq(5)
         end
-        # rubocop:enable Metrics/LineLength
 
         it_behaves_like(
           "event data",
