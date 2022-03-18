@@ -146,6 +146,16 @@ RSpec.describe Honeycomb::Configuration do
     end
   end
 
+  describe "empty dataset defaults" do
+    before do
+      configuration.dataset = ""
+    end
+
+    it "returns default" do
+      expect(configuration.dataset).to eq "unknown_service"
+    end
+  end
+
   describe "classic API key" do
     before do
       configuration.write_key = "e38be416d0d68f9ed1e96432ac1a3380"

@@ -31,7 +31,11 @@ module Honeycomb
     end
 
     def dataset
-      @dataset
+      if @dataset.nil? || @dataset.empty?
+        "unknown_service"
+      else
+        @dataset
+      end
     end
 
     def error_backtrace_limit=(val)
