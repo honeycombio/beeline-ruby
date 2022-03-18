@@ -2,6 +2,7 @@
 
 require "socket"
 require "honeycomb/propagation/default"
+require "honeycomb/propagation/default_modern"
 
 module Honeycomb
   # Used to configure the Honeycomb client
@@ -96,9 +97,11 @@ module Honeycomb
         @http_trace_parser_hook = hook
       elsif @http_trace_parser_hook
         @http_trace_parser_hook
+      elsif classic?
+        DefaultPropagation::UnmarshalTraceContext.method(:parse_rack_env)
       else
         # by default we try to parse incoming honeycomb traces
-        DefaultPropagation::UnmarshalTraceContext.method(:parse_rack_env)
+        DefaultModernPropagation::UnmarshalTraceContext.method(:parse_rack_env)
       end
     end
 
@@ -107,9 +110,11 @@ module Honeycomb
         @http_trace_propagation_hook = hook
       elsif @http_trace_propagation_hook
         @http_trace_propagation_hook
+      elsif classic?
+        HoneycombPropagation::MarshalTraceContext.method(:parse_faraday_env)
       else
         # by default we send outgoing honeycomb trace headers
-        HoneycombPropagation::MarshalTraceContext.method(:parse_faraday_env)
+        HoneycombModernPropagation::MarshalTraceContext.method(:parse_faraday_env)
       end
     end
 

@@ -75,9 +75,7 @@ RSpec.describe Honeycomb::Configuration do
     it "is based on service_name, no longer set directly" do
       configuration.service_name = "the_service_name"
       configuration.dataset = "ignore_me"
-      expect do
-        expect(configuration.dataset).to eq "the_service_name"
-      end.to output(/dataset will be ignored/).to_stderr
+      expect(configuration.dataset).to eq "the_service_name"
     end
 
     it "removes leading/trailing whitespace to confusion in environments" do
