@@ -27,6 +27,7 @@ HTTP_FIELDS = %w[
   request.header.accept_encoding
   request.header.accept_language
   request.header.content_type
+  request.header.referer
   request.header.user_agent
   request.header.x_forwarded_for
   request.header.x_forwarded_proto

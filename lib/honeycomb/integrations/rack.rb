@@ -22,6 +22,7 @@ module Honeycomb
       ["CONTENT_TYPE", "request.header.content_type"],
       ["HTTP_USER_AGENT", "request.header.user_agent"],
       ["rack.url_scheme", "request.scheme"],
+      ["HTTP_REFERER", "request.header.referer"],
     ].freeze
 
     attr_reader :app, :client
