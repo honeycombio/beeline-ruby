@@ -31,12 +31,8 @@ module Honeycomb
       def parse_v1(payload)
         trace_id, parent_span_id, trace_flags = payload.split("-", 3)
 
-        if trace_flags.nil?
-          # if trace_flags is nil, it means a field is missing
-          return [nil, nil]
-        end
-
-        if trace_id == INVALID_TRACE_ID || parent_span_id == INVALID_SPAN_ID
+        # if trace_flags is nil, it means a field is missing
+        if trace_flags.nil? || trace_id == INVALID_TRACE_ID || parent_span_id == INVALID_SPAN_ID
           return [nil, nil]
         end
 
