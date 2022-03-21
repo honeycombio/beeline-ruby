@@ -4,7 +4,6 @@ require "forwardable"
 require "honeycomb/beeline/version"
 require "honeycomb/configuration"
 require "honeycomb/context"
-require "honeycomb/propagation/context"
 
 module Honeycomb
   # The Honeycomb Beeline client
