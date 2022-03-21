@@ -4,6 +4,7 @@ require "forwardable"
 require "honeycomb/beeline/version"
 require "honeycomb/configuration"
 require "honeycomb/context"
+require "honeycomb/propagation/context"
 
 module Honeycomb
   # The Honeycomb Beeline client
@@ -31,6 +32,8 @@ module Honeycomb
       # maybe make `service_name` a required parameter
       @libhoney.add_field "service_name", configuration.service_name
       @context = Context.new
+
+      @context.classic = classic_write_key?(configuration.write_key)
 
       @additional_trace_options = {
         presend_hook: configuration.presend_hook,
@@ -124,6 +127,10 @@ module Honeycomb
       )
       span.add_field("error_backtrace_limit", error_backtrace_limit)
       span.add_field("error_backtrace_total_length", exception.backtrace.length)
+    end
+
+    def classic_write_key?(write_key)
+      write_key.nil? || write_key.length == 32
     end
   end
 end

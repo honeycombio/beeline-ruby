@@ -2,6 +2,9 @@
 
 require "libhoney"
 
+## TODO testing dataset behavior in classic vs nonclassic
+## What dataset is on this tracer's builder?
+
 RSpec.describe Honeycomb::Trace do
   let(:libhoney_client) { Libhoney::TestClient.new }
   let(:context) { Honeycomb::Context.new }
@@ -18,6 +21,8 @@ RSpec.describe Honeycomb::Trace do
             ))
       .and_call_original
 
+    expect(context).not_to be_nil
+
     Honeycomb::Trace.new(
       builder: builder,
       context: context,
@@ -28,17 +33,16 @@ RSpec.describe Honeycomb::Trace do
 end
 
 RSpec.describe Honeycomb::Trace do
-  let(:libhoney_client) { Libhoney::TestClient.new }
-  let(:context) { Honeycomb::Context.new }
-  let(:builder) { libhoney_client.builder }
-  subject(:trace) { Honeycomb::Trace.new(builder: builder, context: context) }
+  # todo set dataset in libhoney builder
+  subject(:trace) { Honeycomb::Trace.new(builder: Libhoney::TestClient.new.builder, context: Honeycomb::Context.new) }
 
   let(:trace_fields) { { "wow" => 420 } }
-  let(:trace_header) { trace.root_span.to_trace_header }
+  let(:upstream_trace_header) { trace.root_span.to_trace_header }
+
   let(:distributed_trace) do
-    Honeycomb::Trace.new(builder: builder,
+    Honeycomb::Trace.new(builder: Libhoney::TestClient.new.builder,
                          context: context,
-                         serialized_trace: trace_header)
+                         serialized_trace: upstream_trace_header)
   end
 
   before do
@@ -50,18 +54,50 @@ RSpec.describe Honeycomb::Trace do
   it_behaves_like "a tracing object"
 
   describe "distributed tracing" do
-    it "preserves the trace_id" do
-      expect(distributed_trace.id).to eq trace.id
+    describe "with a classic key" do
+      let(:context) { Honeycomb::Context.new.tap {|c| c.classic = true } }
+
+      it "context should be classic" do
+        expect(context.classic?).to be true
+      end
+
+      it "preserves the trace_id" do
+        expect(distributed_trace.id).to eq trace.id
+      end
+
+      it "preserves the parent_id" do
+        root_span = distributed_trace.root_span
+        parent_id = root_span.instance_variable_get("@parent_id")
+        expect(parent_id).to eq trace.root_span.id
+      end
+
+      it "preserves the trace_fields" do
+        expect(distributed_trace.fields).to eq trace_fields
+      end
+
+      it "uses the dataset specified by the trace header" do
+        root_span = distributed_trace.root_span
+        builder = root_span.instance_variable_get("@builder")
+        expect(builder.dataset).to eq "awesome"
+      end
     end
 
-    it "preserves the parent_id" do
-      root_span = distributed_trace.root_span
-      parent_id = root_span.instance_variable_get("@parent_id")
-      expect(parent_id).to eq trace.root_span.id
-    end
+    describe "with a modern key" do
+      it "preserves the trace_id" do
+        expect(distributed_trace.id).to eq trace.id
+      end
 
-    it "preserves the trace_fields" do
-      expect(distributed_trace.fields).to eq trace_fields
+      it "preserves the parent_id" do
+        root_span = distributed_trace.root_span
+        parent_id = root_span.instance_variable_get("@parent_id")
+        expect(parent_id).to eq trace.root_span.id
+      end
+
+      it "preserves the trace_fields" do
+        expect(distributed_trace.fields).to eq trace_fields
+      end
+
+      it "ignores the dataset in the trace header and uses the dataset configured for the client"
     end
   end
 end

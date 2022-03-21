@@ -3,6 +3,7 @@
 module Honeycomb
   # Stores the current span and trace context
   class Context
+    attr_writer :classic
     def current_trace
       return if current_span.nil?
 
@@ -21,6 +22,10 @@ module Honeycomb
       spans.last != span && raise(ArgumentError, "Incorrect span sent")
 
       spans.pop
+    end
+
+    def classic?
+      !!@classic
     end
 
     private
