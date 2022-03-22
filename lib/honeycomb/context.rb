@@ -24,11 +24,9 @@ module Honeycomb
       spans.pop
     end
 
-    # rubocop:disable Style/DoubleNegation
     def classic?
-      !!@classic
+      @classic
     end
-    # rubocop:enable Style/DoubleNegation
 
     private
 
