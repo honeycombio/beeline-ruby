@@ -98,6 +98,7 @@ if defined?(Honeycomb::Aws)
         expect(sdk).to match(
           "name" => "aws-sdk",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
@@ -122,6 +123,7 @@ if defined?(Honeycomb::Aws)
         expect(api).to match(
           "name" => "aws-api",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
@@ -187,6 +189,7 @@ if defined?(Honeycomb::Aws)
         expect(sdk).to match(
           "name" => "aws-sdk",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
@@ -214,6 +217,7 @@ if defined?(Honeycomb::Aws)
         expect(api).to match(
           "name" => "aws-api",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
@@ -278,6 +282,7 @@ if defined?(Honeycomb::Aws)
         expect(sdk).to match(
           "name" => "aws-sdk",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
@@ -303,6 +308,7 @@ if defined?(Honeycomb::Aws)
         expect(api).to match(
           "name" => "aws-api",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
@@ -363,6 +369,7 @@ if defined?(Honeycomb::Aws)
         expect(sdk).to match(
           "name" => "aws-sdk",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
@@ -391,6 +398,7 @@ if defined?(Honeycomb::Aws)
         expect(api_failure).to match(
           "name" => "aws-api",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
@@ -427,6 +435,7 @@ if defined?(Honeycomb::Aws)
         expect(api_success).to match(
           "name" => "aws-api",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
@@ -502,6 +511,7 @@ if defined?(Honeycomb::Aws)
         expect(sdk).to match(
           "name" => "aws-sdk",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => an_instance_of(String),
           "meta.span_type" => "root",
@@ -529,6 +539,7 @@ if defined?(Honeycomb::Aws)
         {
           "name" => "aws-api",
           "service_name" => "example",
+          "service.name" => "example",
           "meta.beeline_version" => Honeycomb::Beeline::VERSION,
           "meta.local_hostname" => sdk["meta.local_hostname"],
           "meta.span_type" => "leaf",
