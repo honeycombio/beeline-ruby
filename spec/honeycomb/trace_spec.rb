@@ -55,7 +55,7 @@ RSpec.describe Honeycomb::Trace do
 
   describe "distributed tracing" do
     describe "with a classic key" do
-      let(:context) { Honeycomb::Context.new.tap {|c| c.classic = true } }
+      let(:context) { Honeycomb::Context.new.tap { |c| c.classic = true } }
 
       it "context should be classic" do
         expect(context.classic?).to be true
@@ -83,7 +83,7 @@ RSpec.describe Honeycomb::Trace do
     end
 
     describe "with a modern key" do
-      let(:context) { Honeycomb::Context.new.tap {|c| c.classic = false } }
+      let(:context) { Honeycomb::Context.new.tap { |c| c.classic = false } }
       it "preserves the trace_id" do
         expect(distributed_trace.id).to eq trace.id
       end
