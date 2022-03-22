@@ -34,13 +34,17 @@ end
 
 RSpec.describe Honeycomb::Trace do
   # todo set dataset in libhoney builder
-  subject(:trace) { Honeycomb::Trace.new(builder: Libhoney::TestClient.new.builder, context: Honeycomb::Context.new) }
+  let(:libhoney_client) { Libhoney::TestClient.new(dataset: "awesome") }
+  let(:builder) { libhoney_client.builder }
+
+  subject(:trace) { Honeycomb::Trace.new(builder: builder,
+                                        context: Honeycomb::Context.new) }
 
   let(:trace_fields) { { "wow" => 420 } }
   let(:upstream_trace_header) { trace.root_span.to_trace_header }
 
   let(:distributed_trace) do
-    Honeycomb::Trace.new(builder: Libhoney::TestClient.new.builder,
+    Honeycomb::Trace.new(builder: Libhoney::TestClient.new(dataset: "awesome squared").builder,
                          context: context,
                          serialized_trace: upstream_trace_header)
   end
@@ -83,6 +87,7 @@ RSpec.describe Honeycomb::Trace do
     end
 
     describe "with a modern key" do
+      let(:context) { Honeycomb::Context.new.tap {|c| c.classic = false } }
       it "preserves the trace_id" do
         expect(distributed_trace.id).to eq trace.id
       end
@@ -97,7 +102,11 @@ RSpec.describe Honeycomb::Trace do
         expect(distributed_trace.fields).to eq trace_fields
       end
 
-      it "ignores the dataset in the trace header and uses the dataset configured for the client"
+      it "ignores the dataset in the trace header and uses the dataset configured for the client" do
+        root_span = distributed_trace.root_span
+        builder = root_span.instance_variable_get("@builder")
+        expect(builder.dataset).to eq "awesome squared"
+      end
     end
   end
 end
