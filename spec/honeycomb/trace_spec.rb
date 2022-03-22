@@ -33,8 +33,10 @@ RSpec.describe Honeycomb::Trace do
   let(:libhoney_client) { Libhoney::TestClient.new(dataset: "awesome") }
   let(:builder) { libhoney_client.builder }
 
-  subject(:trace) { Honeycomb::Trace.new(builder: builder,
-                                        context: Honeycomb::Context.new) }
+  subject(:trace) do
+    Honeycomb::Trace.new(builder: builder,
+                         context: Honeycomb::Context.new)
+  end
 
   let(:trace_fields) { { "wow" => 420 } }
   let(:upstream_trace_header) { trace.root_span.to_trace_header }
