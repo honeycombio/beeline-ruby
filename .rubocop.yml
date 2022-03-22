@@ -75,3 +75,6 @@ Style/Alias:
 
 Style/IfUnlessModifier:
   Severity: warning
+
+Lint/UnneededCopDisableDirective:
+  Severity: warning
