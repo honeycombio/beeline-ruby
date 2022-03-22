@@ -42,6 +42,23 @@ RSpec.describe Honeycomb do
     end
   end
 
+  describe "service name configured" do
+    before do
+      Honeycomb.start_span(name: "test") do
+        Honeycomb.add_field_to_trace("interesting", "banana")
+      end
+    end
+
+    it "contains service_name field" do
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("service.name" => "service_name"))
+    end
+    it "contains service.name field" do
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("service.name" => "service_name"))
+    end
+  end
+
   describe "adding fields to span" do
     before do
       Honeycomb.start_span(name: "test") do
