@@ -72,3 +72,6 @@ Style/AsciiComments:
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method
+
+Style/IfUnlessModifier:
+  Severity: warning
