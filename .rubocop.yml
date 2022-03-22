@@ -74,7 +74,7 @@ Style/Alias:
   EnforcedStyle: prefer_alias_method
 
 Style/IfUnlessModifier:
-  Severity: warning
+  Severity: info
 
 Lint/UnneededCopDisableDirective:
-  Severity: warning
+  Severity: info
