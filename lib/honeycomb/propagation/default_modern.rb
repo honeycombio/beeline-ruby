@@ -20,8 +20,10 @@ module Honeycomb
           [nil, nil, nil, nil]
         end
       end
+      # rubocop:disable Style/AccessModifierDeclarations
       module_function :parse_rack_env
       public :parse_rack_env
+      # rubocop:enable Style/AccessModifierDeclarations
     end
   end
 end
