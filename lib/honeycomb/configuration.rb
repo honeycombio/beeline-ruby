@@ -144,8 +144,8 @@ module Honeycomb
     end
 
     def validate_options_classic
-      warn("empty service_name option") if !service_name_given?
-      warn("empty dataset option") if !dataset_given?
+      warn("empty service_name option") unless service_name_given?
+      warn("empty dataset option") unless dataset_given?
     end
 
     def service_name_given?
