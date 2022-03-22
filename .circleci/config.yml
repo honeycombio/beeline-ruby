@@ -210,10 +210,10 @@ workflows:
 
   beeline:
     jobs:
-      # - lint:
-      #     filters: &regular_filters
-      #         tags:
-      #           only: /.*/
+      - lint:
+          filters: &regular_filters
+              tags:
+                only: /.*/
       - test:
           <<: *test
           filters: *regular_filters
