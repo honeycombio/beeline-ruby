@@ -30,6 +30,7 @@ class HoneycombGenerator < Rails::Generators::Base
             config.dataset = #{options['dataset'].inspect}
           else
             config.dataset = #{options['service_name'].inspect}
+          end
           config.presend_hook do |fields|
             if fields["name"] == "redis" && fields.has_key?("redis.command")
               # remove potential PII from the redis command
