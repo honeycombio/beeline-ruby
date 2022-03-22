@@ -148,26 +148,26 @@ workflows:
             - lint
           matrix:
             parameters:
-              # ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.0"]
+              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.0"]
               ruby-version: ["2.4"]
               gemfile:
-                # - aws_2
-                # - aws_3
-                # - faraday_0
-                # - faraday_1
-                # - sequel4
-                # - sequel5
-                # - sinatra
-                # - rack
-                # - rails_41
-                # - rails_42
+                - aws_2
+                - aws_3
+                - faraday_0
+                - faraday_1
+                - sequel4
+                - sequel5
+                - sinatra
+                - rack
+                - rails_41
+                - rails_42
                 - rails_5
-                # - rails_51
-                # - rails_52
-                # - rails_6
-                # - rails_61
-                # - redis_3
-                # - redis_4
+                - rails_51
+                - rails_52
+                - rails_6
+                - rails_61
+                - redis_3
+                - redis_4
             exclude:
               - ruby-version: "2.2"
                 gemfile: faraday_1
@@ -210,10 +210,10 @@ workflows:
 
   beeline:
     jobs:
-      - lint:
-          filters: &regular_filters
-              tags:
-                only: /.*/
+      # - lint:
+      #     filters: &regular_filters
+      #         tags:
+      #           only: /.*/
       - test:
           <<: *test
           filters: *regular_filters
