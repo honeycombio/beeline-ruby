@@ -6,7 +6,8 @@ if defined?(Honeycomb::Rails)
   RSpec.describe HoneycombGenerator do
     describe "simple execution" do
       let(:name) { "honeycomb" }
-      let(:write_key) { "generator_write_key" }
+      # let(:write_key) { "generator_write_key" }
+      let(:write_key) { "classic_generator_write_key_test" }
       let(:dataset) { "generator_dataset" }
       let(:init_file) { File.join(@dir, "config/initializers/honeycomb.rb") }
       let(:config) { Honeycomb::Configuration.new }
