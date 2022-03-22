@@ -2,9 +2,6 @@
 
 require "libhoney"
 
-## TODO testing dataset behavior in classic vs nonclassic
-## What dataset is on this tracer's builder?
-
 RSpec.describe Honeycomb::Trace do
   let(:libhoney_client) { Libhoney::TestClient.new }
   let(:context) { Honeycomb::Context.new }
@@ -33,7 +30,6 @@ RSpec.describe Honeycomb::Trace do
 end
 
 RSpec.describe Honeycomb::Trace do
-  # todo set dataset in libhoney builder
   let(:libhoney_client) { Libhoney::TestClient.new(dataset: "awesome") }
   let(:builder) { libhoney_client.builder }
 
