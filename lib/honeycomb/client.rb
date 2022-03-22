@@ -30,6 +30,7 @@ module Honeycomb
 
       # maybe make `service_name` a required parameter
       @libhoney.add_field "service_name", configuration.service_name
+      @libhoney.add_field "service.name", configuration.service_name
       @context = Context.new
 
       @context.classic = classic_write_key?(configuration.write_key)
