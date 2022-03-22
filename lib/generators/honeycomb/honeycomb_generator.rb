@@ -24,7 +24,7 @@ class HoneycombGenerator < Rails::Generators::Base
         Honeycomb.configure do |config|
           config.write_key = #{write_key.inspect}
           def classic?
-            config.write_key.nil || config.write_key.length == 32
+            config.write_key.nil? || config.write_key.length == 32
           end
           if classic?
             config.dataset = #{options['dataset'].inspect}
