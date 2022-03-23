@@ -18,8 +18,6 @@ RSpec.describe Honeycomb::Trace do
             ))
       .and_call_original
 
-    expect(context).not_to be_nil
-
     Honeycomb::Trace.new(
       builder: builder,
       context: context,
