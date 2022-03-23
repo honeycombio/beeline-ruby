@@ -1,5 +1,11 @@
 # beeline-ruby changelog
 
+## 2.9.0 2022-03-23
+
+### Enhancements
+
+- Add Environment and Services support (#196) | [@MikeGoldsmith](https://github.com/MikeGoldsmith)
+
 ## 2.8.2 2022-02-02
 
 ### Maintenance
