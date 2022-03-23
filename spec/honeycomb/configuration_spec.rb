@@ -2,7 +2,7 @@
 
 RSpec.describe Honeycomb::Configuration do
   let(:configuration) { Honeycomb::Configuration.new }
-  let(:write_key) { "d68f9ed1e96432ac1a3380" }
+  let(:write_key) { "not_a_classic_write_key" }
   let(:api_host) { "https://www.honeycomb.io" }
   let(:event) { configuration.client.event }
 
