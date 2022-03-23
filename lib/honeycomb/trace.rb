@@ -9,8 +9,6 @@ require "honeycomb/rollup_fields"
 module Honeycomb
   # Represents a Honeycomb trace, which groups spans together
   class Trace
-    # include PropagationParser
-
     include RollupFields
     extend Forwardable
 
