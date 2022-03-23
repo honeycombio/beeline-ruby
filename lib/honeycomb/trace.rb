@@ -5,7 +5,6 @@ require "securerandom"
 require "honeycomb/span"
 require "honeycomb/propagation"
 require "honeycomb/rollup_fields"
-require "honeycomb/configuration"
 
 module Honeycomb
   # Represents a Honeycomb trace, which groups spans together
