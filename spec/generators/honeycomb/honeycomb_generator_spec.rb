@@ -6,8 +6,8 @@ if defined?(Honeycomb::Rails)
   RSpec.describe HoneycombGenerator do
     describe "simple execution" do
       let(:name) { "honeycomb" }
-      let(:write_key) { "generator_write_key" }
-      let(:dataset) { "generator_dataset" }
+      let(:write_key) { "classic_generator_write_key_test" }
+      let(:service_name) { "a_service_name" }
       let(:init_file) { File.join(@dir, "config/initializers/honeycomb.rb") }
       let(:config) { Honeycomb::Configuration.new }
 
@@ -40,16 +40,16 @@ if defined?(Honeycomb::Rails)
           expect(config.write_key).to eq(write_key)
         end
 
-        it "sets the dataset to a default" do
+        it "sets the service_name to a default" do
           Rails::Generators.invoke(name, [write_key])
           require init_file
-          expect(config.dataset).not_to be_empty
+          expect(config.service_name).not_to be_empty
         end
 
-        it "sets the dataset correctly" do
-          Rails::Generators.invoke(name, [write_key, "--dataset", dataset])
+        it "sets the service_name correctly" do
+          Rails::Generators.invoke(name, [write_key, "--service_name", service_name])
           require init_file
-          expect(config.dataset).to eq(dataset)
+          expect(config.service_name).to eq(service_name)
         end
 
         it "sets the notification events" do

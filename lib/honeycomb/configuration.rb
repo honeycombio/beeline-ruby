@@ -2,16 +2,16 @@
 
 require "socket"
 require "honeycomb/propagation/default"
+require "honeycomb/propagation/default_modern"
 
 module Honeycomb
   # Used to configure the Honeycomb client
   class Configuration
     attr_accessor :write_key,
-                  :dataset,
                   :api_host,
                   :debug
 
-    attr_writer :service_name, :client, :host_name
+    attr_writer :service_name, :client, :host_name, :dataset
     attr_reader :error_backtrace_limit
 
     def initialize
@@ -23,8 +23,31 @@ module Honeycomb
       @client = nil
     end
 
+    def classic?
+      @write_key.nil? || @write_key.length == 32
+    end
+
     def service_name
-      @service_name || dataset
+      return @service_name if service_name_given?
+      return @dataset if classic?
+
+      "unknown_service:" + $PROGRAM_NAME.split("/").last
+    end
+
+    def dataset
+      return @dataset if classic?
+      return "unknown_service" if service_name.nil?
+
+      stripped_service_name = service_name.strip
+
+      warn("found extra whitespace in service name") if stripped_service_name != service_name
+
+      if stripped_service_name.empty? || stripped_service_name.start_with?("unknown_service")
+        # don't use process name in dataset
+        "unknown_service"
+      else
+        stripped_service_name
+      end
     end
 
     def error_backtrace_limit=(val)
@@ -39,6 +62,7 @@ module Honeycomb
         if debug
           Libhoney::LogClient.new
         else
+          validate_options
           Libhoney::Client.new(**libhoney_client_options)
         end
     end
@@ -73,9 +97,11 @@ module Honeycomb
         @http_trace_parser_hook = hook
       elsif @http_trace_parser_hook
         @http_trace_parser_hook
+      elsif classic?
+        DefaultPropagation::UnmarshalTraceContext.method(:parse_rack_env)
       else
         # by default we try to parse incoming honeycomb traces
-        DefaultPropagation::UnmarshalTraceContext.method(:parse_rack_env)
+        DefaultModernPropagation::UnmarshalTraceContext.method(:parse_rack_env)
       end
     end
 
@@ -84,9 +110,11 @@ module Honeycomb
         @http_trace_propagation_hook = hook
       elsif @http_trace_propagation_hook
         @http_trace_propagation_hook
+      elsif classic?
+        HoneycombPropagation::MarshalTraceContext.method(:parse_faraday_env)
       else
         # by default we send outgoing honeycomb trace headers
-        HoneycombPropagation::MarshalTraceContext.method(:parse_faraday_env)
+        HoneycombModernPropagation::MarshalTraceContext.method(:parse_faraday_env)
       end
     end
 
@@ -101,6 +129,32 @@ module Honeycomb
         # only set the API host for the client if one has been given
         options[:api_host] = api_host if api_host
       end
+    end
+
+    def validate_options
+      warn("missing write_key") if write_key.nil? || write_key.empty?
+      if classic?
+        validate_options_classic
+      else
+        warn("service_name is unknown, will set to " + service_name) \
+          if service_name.start_with?("unknown_service")
+        warn("dataset will be ignored, sending data to " + service_name) \
+          if dataset_given?
+      end
+    end
+
+    def validate_options_classic
+      warn("empty service_name option") unless service_name_given?
+      warn("empty dataset option") unless dataset_given?
+    end
+
+    def service_name_given?
+      # check the instance variables, not the accessor method
+      @service_name && !@service_name.empty?
+    end
+
+    def dataset_given?
+      @dataset && !@dataset.empty?
     end
   end
 end

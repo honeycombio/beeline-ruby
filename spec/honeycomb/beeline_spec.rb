@@ -8,8 +8,8 @@ RSpec.describe Honeycomb do
   before do
     Honeycomb.configure do |config|
       config.write_key = "write_key"
-      config.dataset = "dataset"
-      config.service_name = "service_name"
+      config.dataset = "a_dataset"
+      config.service_name = "a_service_name"
       config.client = libhoney_client
     end
   end
@@ -39,6 +39,24 @@ RSpec.describe Honeycomb do
 
     it "sends the right amount of events" do
       expect(libhoney_client.events.size).to eq 1
+    end
+  end
+
+  describe "service name configured" do
+    before do
+      Honeycomb.start_span(name: "test") do
+        Honeycomb.add_field_to_trace("interesting", "banana")
+      end
+    end
+
+    it "contains service_name field" do
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("service_name" => "a_service_name"))
+    end
+
+    it "contains service.name field" do
+      expect(libhoney_client.events.map(&:data))
+        .to all(include("service.name" => "a_service_name"))
     end
   end
 
