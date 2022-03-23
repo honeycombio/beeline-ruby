@@ -11,7 +11,6 @@ class HoneycombGenerator < Rails::Generators::Base
 
   argument :write_key, required: true, desc: "required"
 
-  class_option :dataset, type: :string, default: "rails"
   class_option :service_name, type: :string, default: "rails"
 
   gem "honeycomb-beeline"
@@ -23,12 +22,7 @@ class HoneycombGenerator < Rails::Generators::Base
       <<-RUBY.strip_heredoc
         Honeycomb.configure do |config|
           config.write_key = #{write_key.inspect}
-          classic = config.write_key.nil? || config.write_key.length == 32
-          if classic
-            config.dataset = #{options['dataset'].inspect}
-          else
-            config.dataset = #{options['service_name'].inspect}
-          end
+          config.service_name = #{options['service_name'].inspect}
           config.presend_hook do |fields|
             if fields["name"] == "redis" && fields.has_key?("redis.command")
               # remove potential PII from the redis command
