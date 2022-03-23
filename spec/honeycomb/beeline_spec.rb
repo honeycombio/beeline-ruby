@@ -8,8 +8,8 @@ RSpec.describe Honeycomb do
   before do
     Honeycomb.configure do |config|
       config.write_key = "write_key"
-      config.dataset = "dataset"
-      config.service_name = "service_name"
+      config.dataset = "a_dataset"
+      config.service_name = "a_service_name"
       config.client = libhoney_client
     end
   end
@@ -51,11 +51,12 @@ RSpec.describe Honeycomb do
 
     it "contains service_name field" do
       expect(libhoney_client.events.map(&:data))
-        .to all(include("service.name" => "service_name"))
+        .to all(include("service_name" => "a_service_name"))
     end
+
     it "contains service.name field" do
       expect(libhoney_client.events.map(&:data))
-        .to all(include("service.name" => "service_name"))
+        .to all(include("service.name" => "a_service_name"))
     end
   end
 
