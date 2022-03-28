@@ -87,7 +87,7 @@ if defined?(Honeycomb::Rack)
       header("X-Forwarded-For", "1.2.3.4")
       header("X-Forwarded-Proto", "https")
       header("X-Forwarded-Port", "8000")
-      header("Referer", "https://www.honeycomb.io/")
+      header("Referer", "https://forever.misspelled.referer.example.com/")
     end
 
     describe "standard request" do
