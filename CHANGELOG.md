@@ -1,5 +1,15 @@
 # beeline-ruby changelog
 
+## 2.10.0 2022-04-08
+
+### Improvments
+
+- Add HTTP referer to rack integration (#197) | [@bgitt](https://github.com/bgitt)
+
+### Fixed
+
+- Fix regression with mid vs leaf meta.span_type detection (#194) | [@ajvondrak](https://github.com/ajvondrak)
+
 ## 2.9.0 2022-03-23
 
 ### Enhancements
