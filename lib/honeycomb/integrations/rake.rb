@@ -35,7 +35,9 @@ module Honeycomb
       attr_writer :honeycomb_client
 
       def honeycomb_client
-        @honeycomb_client || Honeycomb.client
+        return @honeycomb_client if defined?(@honeycomb_client)
+
+        Honeycomb.client
       end
     end
   end
