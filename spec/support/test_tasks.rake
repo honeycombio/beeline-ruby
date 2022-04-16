@@ -10,20 +10,21 @@ namespace :test do
 
   task :arguments, %i[a b c]
 
-  task :honeycomb_client do |t|
-    t.honeycomb_client.start_span(name: "inner task span") do
-      :ok
+  namespace :client do
+    task :access do |t|
+      t.honeycomb_client.start_span(name: "inner task span") { :ok }
     end
-  end
 
-  task :disabled do
-    Honeycomb.start_span(name: "global honeycomb client is still enabled") do
-      :ok
+    task :enabled
+
+    task disabled: :enabled do
+      Honeycomb.start_span(name: "global honeycomb client is still enabled") { :ok }
     end
-  end
 
-  task :custom do |t|
-    t.honeycomb_client.start_span(name: "using custom honeycomb client") { :ok }
-    Honeycomb.start_span(name: "using global honeycomb client") { :ok }
+    task :default do
+      Honeycomb.start_span(name: "global honeycomb client") { :ok } if Honeycomb.client
+    end
+
+    task custom: :default
   end
 end

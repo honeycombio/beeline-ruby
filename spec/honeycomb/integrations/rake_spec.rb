@@ -30,10 +30,18 @@ if defined?(Honeycomb::Rake)
         expect(event_data).to be_empty
       end
 
-      it "can use a custom Honeycomb client" do
-        Rake.application.honeycomb_client = custom
-        Rake::Task["test:event_data"].invoke
-        expect(custom.libhoney.events).not_to be_empty
+      it "can use a custom Honeycomb client on the application level" do
+        Rake.application.honeycomb_client = client
+        Rake::Task["test:client:custom"].invoke
+        names = event_data.map { |event| event["name"] }
+        expect(names).to eq ["rake.test:client:default", "rake.test:client:custom"]
+      end
+
+      it "can use a custom Honeycomb client on the task level" do
+        Rake::Task["test:client:custom"].honeycomb_client = client
+        Rake::Task["test:client:custom"].invoke
+        names = event_data.map { |event| event["name"] }
+        expect(names).to eq ["rake.test:client:custom"]
       end
     end
 
@@ -81,26 +89,44 @@ if defined?(Honeycomb::Rake)
       end
 
       it "gives the task access to the Honeycomb client" do
-        Rake::Task["test:honeycomb_client"].invoke
+        Rake::Task["test:client:access"].invoke
         names = event_data.map { |event| event["name"] }
-        expect(names).to eq ["inner task span", "rake.test:honeycomb_client"]
+        expect(names).to eq ["inner task span", "rake.test:client:access"]
       end
 
-      it "can be disabled" do
+      it "can be disabled on the application level" do
         Rake.application.honeycomb_client = nil
-        Rake::Task["test:disabled"].invoke
+        Rake::Task["test:client:disabled"].invoke
         names = event_data.map { |event| event["name"] }
         expect(names).to eq ["global honeycomb client is still enabled"]
       end
 
-      it "can use a custom Honeycomb client" do
+      it "can be disabled on the task level" do
+        Rake::Task["test:client:disabled"].honeycomb_client = nil
+        Rake::Task["test:client:disabled"].invoke
+        names = event_data.map { |event| event["name"] }
+        expect(names).to eq ["rake.test:client:enabled", "global honeycomb client is still enabled"]
+      end
+
+      it "can use a custom Honeycomb client on the application level" do
         Rake.application.honeycomb_client = custom
-        Rake::Task["test:custom"].invoke
+        Rake::Task["test:client:custom"].invoke
         aggregate_failures do
           custom_names = custom.libhoney.events.map { |event| event.data["name"] }
-          expect(custom_names).to eq ["using custom honeycomb client", "rake.test:custom"]
+          expect(custom_names).to eq ["rake.test:client:default", "rake.test:client:custom"]
           global_names = client.libhoney.events.map { |event| event.data["name"] }
-          expect(global_names).to eq ["using global honeycomb client"]
+          expect(global_names).to eq ["global honeycomb client"]
+        end
+      end
+
+      it "can use a custom Honeycomb client on the task level" do
+        Rake::Task["test:client:custom"].honeycomb_client = custom
+        Rake::Task["test:client:custom"].invoke
+        aggregate_failures do
+          custom_names = custom.libhoney.events.map { |event| event.data["name"] }
+          expect(custom_names).to eq ["rake.test:client:custom"]
+          global_names = client.libhoney.events.map { |event| event.data["name"] }
+          expect(global_names).to eq ["global honeycomb client", "rake.test:client:default"]
         end
       end
     end

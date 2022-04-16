@@ -22,7 +22,11 @@ module Honeycomb
         end
       end
 
+      attr_writer :honeycomb_client
+
       def honeycomb_client
+        return @honeycomb_client if defined?(@honeycomb_client)
+
         application.honeycomb_client
       end
     end
