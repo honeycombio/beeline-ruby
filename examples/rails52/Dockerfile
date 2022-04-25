@@ -1,4 +1,4 @@
-FROM ruby:2.5
+FROM ruby:2.7.6
 RUN apt-get update -qq && apt-get install -y nodejs sqlite3
 RUN gem install bundler
 WORKDIR /myapp
