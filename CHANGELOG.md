@@ -1,5 +1,11 @@
 # beeline-ruby changelog
 
+## 2.11.0 2022-06-01
+
+### Improvments
+
+- Let Rake spans be disabled programmatically (#200) | [ajvondrak](https://github.com/ajvondrak)
+
 ## 2.10.0 2022-04-08
 
 ### Improvments
