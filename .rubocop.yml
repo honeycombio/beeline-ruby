@@ -13,6 +13,7 @@ Metrics/BlockLength:
   Exclude:
     - honeycomb-beeline.gemspec
     - spec/**/*.rb
+    - spec/**/*.rake
 
 Metrics/AbcSize:
   Max: 50
