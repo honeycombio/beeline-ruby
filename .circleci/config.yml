@@ -169,6 +169,8 @@ workflows:
                 - redis_4
             exclude:
               - ruby-version: "2.2"
+                gemfile: faraday_0
+              - ruby-version: "2.2"
                 gemfile: faraday_1
               - ruby-version: "2.2"
                 gemfile: rails_52
