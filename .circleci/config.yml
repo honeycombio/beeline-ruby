@@ -30,7 +30,7 @@ commands:
 jobs:
   build_artifacts:
     docker:
-      - image: circleci/ruby:2.6
+      - image: cimg/ruby:2.6
     steps:
       - checkout
       - run: mkdir -p ~/artifacts
@@ -45,7 +45,7 @@ jobs:
 
   publish_rubygems:
     docker:
-      - image: circleci/ruby:2.6
+      - image: cimg/ruby:2.6
     steps:
       - attach_workspace:
           at: ~/
@@ -81,7 +81,7 @@ jobs:
         type: string
         default: "2.6"
     docker:
-        - image: circleci/ruby:<< parameters.ruby-version >>
+        - image: cimg/ruby:<< parameters.ruby-version >>
     environment:
       BUNDLE_GEMFILE: ./Gemfile
     steps:
@@ -96,7 +96,7 @@ jobs:
       ruby-version:
         type: string
     docker:
-        - image: circleci/ruby:<< parameters.ruby-version >>
+        - image: cimg/ruby:<< parameters.ruby-version >>
     environment:
       BUNDLE_GEMFILE: gemfiles/<< parameters.gemfile >>.gemfile
     steps:
@@ -116,7 +116,7 @@ jobs:
         type: string
         default: "2.6"
     docker:
-        - image: circleci/ruby:<< parameters.ruby-version >>
+        - image: cimg/ruby:<< parameters.ruby-version >>
     environment:
       BUNDLE_GEMFILE: ./Gemfile
     steps:
