@@ -52,6 +52,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-performance", "< 1.3.0"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "simplecov-console"
-  webmock_version = RUBY_VERSION < "2.3.0" ? "< 3.15.0" : nil
-  spec.add_development_dependency "webmock", webmock_version
+  if RUBY_VERSION < "2.3.0"
+    spec.add_development_dependency "webmock", "< 3.15.0"
+  else
+    spec.add_development_dependency "webmock"
+  end
 end
