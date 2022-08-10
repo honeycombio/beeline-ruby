@@ -89,7 +89,7 @@ jobs:
           ruby-version: << parameters.ruby-version >>
           gemfile: root
           command: bundle exec rake rubocop
-  test-older-versions: # older ruby versions are not available as non-deprecated cimg/ruby docker images
+  test-older-versions: # need to use deprecated circleci/ruby images for older ruby versions
     parameters:
       gemfile:
         type: string
@@ -163,7 +163,7 @@ workflows:
                 - main
     jobs:
       - lint
-      - test-older-versions: &test-older-versions # older ruby versions are not available as non-deprecated cimg/ruby docker images
+      - test-older-versions: &test-older-versions # need to use deprecated circleci/ruby images for older ruby versions
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
           requires:
             - lint
@@ -260,7 +260,7 @@ workflows:
           filters: &regular_filters
               tags:
                 only: /.*/
-      - test-older-versions: # older ruby versions are not available as non-deprecated cimg/ruby docker images
+      - test-older-versions: # need to use deprecated circleci/ruby images for older ruby versions
           <<: *test-older-versions
           filters: *regular_filters
       - test:
