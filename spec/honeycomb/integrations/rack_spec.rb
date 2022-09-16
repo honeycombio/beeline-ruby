@@ -11,11 +11,13 @@ if defined?(Honeycomb::Rack)
     let(:libhoney_client) { Libhoney::TestClient.new }
     let(:event_data) { libhoney_client.events.map(&:data) }
 
+    # rubocop:disable Lint/UnusedMethodArgument
     class RackApp
-      def call
+      def call(env)
         [200, { "content-type" => "text/plain" }, ["Hello world!"]]
       end
     end
+    # rubocop:enable Lint/UnusedMethodArgument
 
     let(:lobster) { RackApp.new }
 
