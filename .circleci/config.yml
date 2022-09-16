@@ -162,7 +162,7 @@ workflows:
               only:
                 - main
     jobs:
-      # - lint
+      - lint
       - test-older-versions: &test-older-versions # need to use deprecated circleci/ruby images for older ruby versions
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
           # requires:
@@ -257,10 +257,10 @@ workflows:
 
   beeline:
     jobs:
-      # - lint:
-      #     filters: &regular_filters
-      #         tags:
-      #           only: /.*/
+      - lint:
+          filters: &regular_filters
+              tags:
+                only: /.*/
       - test-older-versions: # need to use deprecated circleci/ruby images for older ruby versions
           <<: *test-older-versions
           filters: *regular_filters
@@ -270,7 +270,7 @@ workflows:
       - coverage_report:
           filters: *regular_filters
           requires:
-            - test
+            # - test
             - test-older-versions
       - build_artifacts:
           filters: &tag_filters
