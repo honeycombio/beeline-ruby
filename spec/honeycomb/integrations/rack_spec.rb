@@ -3,7 +3,7 @@
 if defined?(Honeycomb::Rack)
   require "rack/test"
   # require "rack/lobster"
-  require "rackup/lobster"
+  # require "rackup/lobster"
   require "warden"
 
   RSpec.describe Honeycomb::Rack do
@@ -11,7 +11,15 @@ if defined?(Honeycomb::Rack)
     let(:libhoney_client) { Libhoney::TestClient.new }
     let(:event_data) { libhoney_client.events.map(&:data) }
 
-    let(:lobster) { Rackup::Lobster.new }
+    class RackApp
+      def call(env)
+        ['200', {'Content-Type' => 'text/html'}, ["Hello world!"]]
+      end
+    end
+
+    let(:lobster) { RackApp.new }
+
+    # let(:lobster) { Rackup::Lobster.new }
     # let(:lobster) { Rack::Builder.new }
 
     # app = Rack::Builder.new do |builder|
@@ -22,6 +30,8 @@ if defined?(Honeycomb::Rack)
     # app = Proc.new do |env|
     #   ['200', {'Content-Type' => 'text/html'}, ["Hello world! The time is #{Time.now}"]]
     # end
+
+
 
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
