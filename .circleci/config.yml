@@ -165,8 +165,8 @@ workflows:
       - lint
       - test-older-versions: &test-older-versions # need to use deprecated circleci/ruby images for older ruby versions
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
-          requires:
-            - lint
+          # requires:
+          #   - lint
           matrix:
             parameters:
               ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6"]
@@ -215,8 +215,8 @@ workflows:
                 gemfile: rails_41
       - test: &test
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
-          requires:
-            - lint
+          # requires:
+          #   - lint
           matrix:
             parameters:
               ruby-version: ["2.7", "3.0", "3.1"]
