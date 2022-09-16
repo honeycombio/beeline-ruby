@@ -165,29 +165,29 @@ workflows:
       - lint
       - test-older-versions: &test-older-versions # need to use deprecated circleci/ruby images for older ruby versions
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
-          # requires:
-          #   - lint
+          requires:
+            - lint
           matrix:
             parameters:
               ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6"]
               gemfile:
-                # - aws_2
-                # - aws_3
-                # - faraday_0
-                # - faraday_1
-                # - sequel4
-                # - sequel5
-                # - sinatra
+                - aws_2
+                - aws_3
+                - faraday_0
+                - faraday_1
+                - sequel4
+                - sequel5
+                - sinatra
                 - rack
-                # - rails_41
-                # - rails_42
-                # - rails_5
-                # - rails_51
-                # - rails_52
-                # - rails_6
-                # - rails_61
-                # - redis_3
-                # - redis_4
+                - rails_41
+                - rails_42
+                - rails_5
+                - rails_51
+                - rails_52
+                - rails_6
+                - rails_61
+                - redis_3
+                - redis_4
             exclude:
               - ruby-version: "2.2"
                 gemfile: faraday_0
@@ -215,27 +215,27 @@ workflows:
                 gemfile: rails_41
       - test: &test
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
-          # requires:
-          #   - lint
+          requires:
+            - lint
           matrix:
             parameters:
               ruby-version: ["2.7", "3.0", "3.1"]
               gemfile:
-                # - aws_2
-                # - aws_3
-                # - faraday_0
-                # - faraday_1
-                # - sequel4
-                # - sequel5
-                # - sinatra
+                - aws_2
+                - aws_3
+                - faraday_0
+                - faraday_1
+                - sequel4
+                - sequel5
+                - sinatra
                 - rack
-                # - rails_5
-                # - rails_51
-                # - rails_52
-                # - rails_6
-                # - rails_61
-                # - redis_3
-                # - redis_4
+                - rails_5
+                - rails_51
+                - rails_52
+                - rails_6
+                - rails_61
+                - redis_3
+                - redis_4
             exclude:
               - ruby-version: "3.0"
                 gemfile: rails_5
@@ -278,7 +278,7 @@ workflows:
               branches:
                 ignore: /.*/
           requires:
-            # - lint
+            - lint
             - test
             - test-older-versions
       - publish_rubygems: &publish
