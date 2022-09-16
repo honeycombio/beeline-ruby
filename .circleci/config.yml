@@ -278,7 +278,7 @@ workflows:
               branches:
                 ignore: /.*/
           requires:
-            - lint
+            # - lint
             - test
             - test-older-versions
       - publish_rubygems: &publish
