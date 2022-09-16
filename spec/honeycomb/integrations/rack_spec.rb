@@ -12,8 +12,8 @@ if defined?(Honeycomb::Rack)
     let(:event_data) { libhoney_client.events.map(&:data) }
 
     class RackApp
-      def call(env)
-        [200, {'content-type' => 'text/plain'}, ["Hello world!"]]
+      def call
+        [200, { "content-type" => "text/plain" }, ["Hello world!"]]
       end
     end
 
