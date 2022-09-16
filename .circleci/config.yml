@@ -165,12 +165,11 @@ workflows:
       - lint
       - test-older-versions: &test-older-versions # need to use deprecated circleci/ruby images for older ruby versions
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
-          # requires:
-          #   - lint
+          requires:
+            - lint
           matrix:
             parameters:
-              # ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6"]
-              ruby-version: ["2.3", "2.4"]
+              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6"]
               gemfile:
                 # - aws_2
                 # - aws_3
@@ -264,13 +263,13 @@ workflows:
       - test-older-versions: # need to use deprecated circleci/ruby images for older ruby versions
           <<: *test-older-versions
           filters: *regular_filters
-      # - test:
-      #     <<: *test
-      #     filters: *regular_filters
+      - test:
+          <<: *test
+          filters: *regular_filters
       - coverage_report:
           filters: *regular_filters
           requires:
-            # - test
+            - test
             - test-older-versions
       - build_artifacts:
           filters: &tag_filters
@@ -279,8 +278,8 @@ workflows:
               branches:
                 ignore: /.*/
           requires:
-            # - lint
-            # - test
+            - lint
+            - test
             - test-older-versions
       - publish_rubygems: &publish
           filters: *tag_filters
