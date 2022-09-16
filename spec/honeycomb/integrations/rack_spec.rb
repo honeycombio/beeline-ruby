@@ -2,6 +2,8 @@
 
 if defined?(Honeycomb::Rack)
   require "rack/test"
+  # require "rack/lobster"
+  require "rackup/lobster"
   require "warden"
 
   RSpec.describe Honeycomb::Rack do
@@ -9,7 +11,7 @@ if defined?(Honeycomb::Rack)
     let(:libhoney_client) { Libhoney::TestClient.new }
     let(:event_data) { libhoney_client.events.map(&:data) }
 
-    # let(:lobster) { Rack::Lobster.new }
+    let(:lobster) { Rackup::Lobster.new }
     # let(:lobster) { Rack::Builder.new }
 
     # app = Rack::Builder.new do |builder|
@@ -17,9 +19,9 @@ if defined?(Honeycomb::Rack)
     # end
 
     # maybe equivalent? { Rack::Lobster.new }
-    app = Proc.new do |env|
-      ['200', {'Content-Type' => 'text/html'}, ["Hello world! The time is #{Time.now}"]]
-    end
+    # app = Proc.new do |env|
+    #   ['200', {'Content-Type' => 'text/html'}, ["Hello world! The time is #{Time.now}"]]
+    # end
 
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
@@ -28,8 +30,8 @@ if defined?(Honeycomb::Rack)
     end
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
     let(:honeycomb) do
-      # Honeycomb::Rack::Middleware.new(lobster, client: client)
-      Honeycomb::Rack::Middleware.new(app, client: client)
+      Honeycomb::Rack::Middleware.new(lobster, client: client)
+      # Honeycomb::Rack::Middleware.new(app, client: client)
     end
     let(:auth) { Authenticate.new(honeycomb) }
     let(:warden) do
