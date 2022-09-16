@@ -33,6 +33,7 @@ end
 
 appraise "rack" do
   gem "rack"
+  gem "rack-session"
   gem "rack-test"
   gem "warden"
 end

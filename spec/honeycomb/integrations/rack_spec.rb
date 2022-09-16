@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 if defined?(Honeycomb::Rack)
+  require "rack"
   require "rack/test"
-  # require "rack/lobster"
-  # require "rackup/lobster"
   require "warden"
+  require "rack/session"
 
   RSpec.describe Honeycomb::Rack do
     include Rack::Test::Methods
@@ -13,25 +13,11 @@ if defined?(Honeycomb::Rack)
 
     class RackApp
       def call(env)
-        ['200', {'Content-Type' => 'text/html'}, ["Hello world!"]]
+        [200, {'content-type' => 'text/plain'}, ["Hello world!"]]
       end
     end
 
     let(:lobster) { RackApp.new }
-
-    # let(:lobster) { Rackup::Lobster.new }
-    # let(:lobster) { Rack::Builder.new }
-
-    # app = Rack::Builder.new do |builder|
-    #   builder.run RackApp.new
-    # end
-
-    # maybe equivalent? { Rack::Lobster.new }
-    # app = Proc.new do |env|
-    #   ['200', {'Content-Type' => 'text/html'}, ["Hello world! The time is #{Time.now}"]]
-    # end
-
-
 
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
@@ -41,7 +27,6 @@ if defined?(Honeycomb::Rack)
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
     let(:honeycomb) do
       Honeycomb::Rack::Middleware.new(lobster, client: client)
-      # Honeycomb::Rack::Middleware.new(app, client: client)
     end
     let(:auth) { Authenticate.new(honeycomb) }
     let(:warden) do
@@ -49,7 +34,7 @@ if defined?(Honeycomb::Rack)
         manager.default_strategies :test
       end
     end
-    let(:session) { Rack::Session::Cookie.new(warden, secret: "honeycomb") }
+    let(:session) { Rack::Session::Cookie.new(warden) }
     let(:lint) { Rack::Lint.new(session) }
     let(:app) { lint }
 
