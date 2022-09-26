@@ -2,20 +2,24 @@
 
 if defined?(Honeycomb::Rack)
   require "rack/test"
-  require "rack/lobster" rescue require "rackup/lobster"
+  begin
+    require "rack/lobster"
+  rescue LoadError
+    require "rackup/lobster"
+  end
   require "warden"
 
   RSpec.describe Honeycomb::Rack do
     include Rack::Test::Methods
     let(:libhoney_client) { Libhoney::TestClient.new }
     let(:event_data) { libhoney_client.events.map(&:data) }
-    let(:lobster) {
+    let(:lobster) do
       begin
         Rack::Lobster.new
-      rescue
+      rescue NameError
         Rackup::Lobster.new
       end
-    }
+    end
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
         config.client = libhoney_client
