@@ -5,6 +5,7 @@ if defined?(Honeycomb::Rack)
   begin
     require "rack/lobster"
   rescue LoadError
+    require "rack/session"
     require "rackup"
     require "rackup/lobster"
   end
@@ -36,7 +37,8 @@ if defined?(Honeycomb::Rack)
         manager.default_strategies :test
       end
     end
-    let(:session) { Rack::Session::Cookie.new(warden, secret: "honeycomb") }
+    let(:secret) { "honeycombhoneycombhoneycombhoneycombhoneycombhoneycombhoneycombhoneycomb" }
+    let(:session) { Rack::Session::Cookie.new(warden, secret: secret) }
     let(:lint) { Rack::Lint.new(session) }
     let(:app) { lint }
 
