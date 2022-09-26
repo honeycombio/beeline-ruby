@@ -32,7 +32,7 @@ appraise "sinatra" do
 end
 
 appraise "rack-2" do
-  gem "rack", "~>2.2.0"
+  gem "rack", "~>2.0"
   gem "rack-test"
   gem "warden"
 end
