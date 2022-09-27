@@ -1,15 +1,24 @@
 # frozen_string_literal: true
 
 if defined?(Honeycomb::Rack)
+  # Rack::Session was moved to a separate gem in Rack v3.0
+  if Gem::Version.new(::Rack.release) >= Gem::Version.new("3.0")
+    require "rack/session"
+  end
   require "rack/test"
-  require "rack/lobster"
   require "warden"
+
+  class AnApp
+    def call(_env)
+      [200, { "content-type" => "text/plain" }, ["Hello world!"]]
+    end
+  end
 
   RSpec.describe Honeycomb::Rack do
     include Rack::Test::Methods
     let(:libhoney_client) { Libhoney::TestClient.new }
     let(:event_data) { libhoney_client.events.map(&:data) }
-    let(:lobster) { Rack::Lobster.new }
+    let(:base_test_app) { AnApp.new }
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
         config.client = libhoney_client
@@ -17,7 +26,7 @@ if defined?(Honeycomb::Rack)
     end
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
     let(:honeycomb) do
-      Honeycomb::Rack::Middleware.new(lobster, client: client)
+      Honeycomb::Rack::Middleware.new(base_test_app, client: client)
     end
     let(:auth) { Authenticate.new(honeycomb) }
     let(:warden) do
@@ -25,7 +34,8 @@ if defined?(Honeycomb::Rack)
         manager.default_strategies :test
       end
     end
-    let(:session) { Rack::Session::Cookie.new(warden, secret: "honeycomb") }
+    let(:secret) { "honeycombsecretneedstobe64characterslongforrack3sonowitslongeryay" }
+    let(:session) { Rack::Session::Cookie.new(warden, secret: secret) }
     let(:lint) { Rack::Lint.new(session) }
     let(:app) { lint }
 
@@ -101,6 +111,15 @@ if defined?(Honeycomb::Rack)
 
       it "sends a single event" do
         expect(libhoney_client.events.size).to eq 1
+      end
+
+      it "includes package information" do
+        libhoney_client.events.first.tap do |event|
+          expect(event.data).to include(
+            "meta.package" => "rack",
+            "meta.package_version" => ::Rack.release,
+          )
+        end
       end
 
       USER_FIELDS = [

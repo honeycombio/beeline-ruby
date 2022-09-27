@@ -1,3 +1,5 @@
+# Run me with: "bundle install && rackup ./main.rb"
+
 require "rack"
 require "honeycomb-beeline"
 

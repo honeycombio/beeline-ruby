@@ -178,7 +178,8 @@ workflows:
                 - sequel4
                 - sequel5
                 - sinatra
-                - rack
+                - rack_2
+                - rack_3
                 - rails_41
                 - rails_42
                 - rails_5
@@ -213,6 +214,10 @@ workflows:
                 gemfile: rails_41
               - ruby-version: "2.6"
                 gemfile: rails_41
+              - ruby-version: "2.2"
+                gemfile: rack_3
+              - ruby-version: "2.3"
+                gemfile: rack_3
       - test: &test
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
           requires:
@@ -228,7 +233,8 @@ workflows:
                 - sequel4
                 - sequel5
                 - sinatra
-                - rack
+                - rack_2
+                - rack_3
                 - rails_5
                 - rails_51
                 - rails_52
