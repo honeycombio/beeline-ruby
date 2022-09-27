@@ -9,7 +9,7 @@ if defined?(Honeycomb::Rack)
   require "warden"
 
   class AnApp
-    def call(env)
+    def call(_env)
       [200, { "content-type" => "text/plain" }, ["Hello world!"]]
     end
   end
