@@ -41,7 +41,6 @@ appraise "rack-3" do
   gem "rack", "~>3.0"
   gem "rack-session"
   gem "rack-test"
-  gem "rackup"
   gem "warden"
 end
 
