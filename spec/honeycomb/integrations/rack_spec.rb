@@ -34,8 +34,7 @@ if defined?(Honeycomb::Rack)
         manager.default_strategies :test
       end
     end
-    let(:secret) { "honeycombhoneycombhoneycombhoneycombhoneycombhoneycombhoneycombhoneycomb" }
-    let(:session) { Rack::Session::Cookie.new(warden, secret: secret) }
+    let(:session) { Rack::Session::Cookie.new(warden, secret: "superdupersecret") }
     let(:lint) { Rack::Lint.new(session) }
     let(:app) { lint }
 
