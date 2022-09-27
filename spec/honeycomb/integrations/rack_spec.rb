@@ -6,7 +6,6 @@ if defined?(Honeycomb::Rack)
     require "rack/lobster"
   rescue LoadError
     require "rack/session"
-    require "rackup"
     require "rackup/lobster"
   end
   require "warden"
