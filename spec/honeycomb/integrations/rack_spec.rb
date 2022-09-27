@@ -2,11 +2,18 @@
 
 if defined?(Honeycomb::Rack)
   require "rack/test"
-  begin
+  # Lobster is a silly Rack app that comes with Rackup. We use
+  # it as a base test app upon which we apply our Rack middleware.
+  #
+  # Rackup (and Lobster) moved out of the Rack gem as of v3.0
+  # and into its own gem and namespace.
+  if Gem::Version.new(::Rack.release) < Gem::Version.new("3.0")
     require "rack/lobster"
-  rescue LoadError
+    BaseTestAppClass = Rack::Lobster
+  else
     require "rack/session"
     require "rackup/lobster"
+    BaseTestAppClass = Rackup::Lobster
   end
   require "warden"
 
@@ -14,13 +21,7 @@ if defined?(Honeycomb::Rack)
     include Rack::Test::Methods
     let(:libhoney_client) { Libhoney::TestClient.new }
     let(:event_data) { libhoney_client.events.map(&:data) }
-    let(:lobster) do
-      begin
-        Rack::Lobster.new
-      rescue NameError
-        Rackup::Lobster.new
-      end
-    end
+    let(:base_test_app) { BaseTestAppClass.new }
     let(:configuration) do
       Honeycomb::Configuration.new.tap do |config|
         config.client = libhoney_client
@@ -28,7 +29,7 @@ if defined?(Honeycomb::Rack)
     end
     let(:client) { Honeycomb::Client.new(configuration: configuration) }
     let(:honeycomb) do
-      Honeycomb::Rack::Middleware.new(lobster, client: client)
+      Honeycomb::Rack::Middleware.new(base_test_app, client: client)
     end
     let(:auth) { Authenticate.new(honeycomb) }
     let(:warden) do
