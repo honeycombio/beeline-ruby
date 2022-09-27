@@ -65,7 +65,7 @@ module Honeycomb
 
     def add_package_information(_env)
       yield "meta.package", "rack"
-      yield "meta.package_version", ::Rack::VERSION.join(".")
+      yield "meta.package_version", ::Rack.release
     end
 
     def extract_fields(env, fields)

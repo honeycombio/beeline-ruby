@@ -115,6 +115,15 @@ if defined?(Honeycomb::Rack)
         expect(libhoney_client.events.size).to eq 1
       end
 
+      it "includes package information" do
+        libhoney_client.events.first.tap do |event|
+          expect(event.data).to include(
+            "meta.package" => "rack",
+            "meta.package_version" => ::Rack.release,
+          )
+        end
+      end
+
       USER_FIELDS = [
         "user.id",
         "user.email",
