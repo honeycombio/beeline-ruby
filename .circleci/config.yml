@@ -291,6 +291,7 @@ workflows:
           filters: *tag_filters
           requires:
             - build_artifacts
+          context: Honeycomb Secrets for Public Repos
       - publish_github:
           <<: *publish
           context: Honeycomb Secrets for Public Repos
