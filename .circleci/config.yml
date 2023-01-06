@@ -294,4 +294,3 @@ workflows:
           context: Honeycomb Secrets for Public Repos
       - publish_github:
           <<: *publish
-          context: Honeycomb Secrets for Public Repos
