@@ -7,8 +7,8 @@ require "honeycomb/beeline/version"
 Gem::Specification.new do |spec|
   spec.name          = Honeycomb::Beeline::NAME
   spec.version       = Honeycomb::Beeline::VERSION
-  spec.authors       = ["Martin Holman"]
-  spec.email         = ["martin@honeycomb.io"]
+  spec.authors       = ["Honeycomb"]
+  spec.email         = ["support@honeycomb.io"]
 
   spec.summary       = "Instrument your Ruby apps with Honeycomb"
   spec.homepage      = "https://honeycomb.io"
