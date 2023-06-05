@@ -43,8 +43,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bump"
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "overcommit", "~> 0.46.0"
-  spec.add_development_dependency "pry", "< 0.13.0"
-  spec.add_development_dependency "pry-byebug", "~> 3.6.0"
+  spec.add_development_dependency "pry"
+  spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter", ">= 0.5.1"
@@ -52,9 +52,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-performance", "< 1.3.0"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "simplecov-console"
-  if RUBY_VERSION < "2.3.0"
-    spec.add_development_dependency "webmock", "< 3.15.0"
-  else
-    spec.add_development_dependency "webmock"
-  end
+  spec.add_development_dependency "webmock"
 end
