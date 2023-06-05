@@ -169,7 +169,7 @@ workflows:
             - lint
           matrix:
             parameters:
-              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6"]
+              ruby-version: ["2.5", "2.6"]
               gemfile:
                 - aws_2
                 - aws_3
@@ -180,8 +180,6 @@ workflows:
                 - sinatra
                 - rack_2
                 - rack_3
-                - rails_41
-                - rails_42
                 - rails_5
                 - rails_51
                 - rails_52
@@ -190,34 +188,10 @@ workflows:
                 - redis_3
                 - redis_4
             exclude:
-              - ruby-version: "2.2"
-                gemfile: faraday_0
-              - ruby-version: "2.2"
-                gemfile: faraday_1
-              - ruby-version: "2.2"
-                gemfile: rails_52
-              - ruby-version: "2.2"
-                gemfile: rails_6
-              - ruby-version: "2.2"
-                gemfile: rails_61
-              - ruby-version: "2.3"
-                gemfile: rails_6
-              - ruby-version: "2.3"
-                gemfile: rails_61
               - ruby-version: "2.4"
                 gemfile: rails_6
               - ruby-version: "2.4"
                 gemfile: rails_61
-              - ruby-version: "2.4"
-                gemfile: rails_41
-              - ruby-version: "2.5"
-                gemfile: rails_41
-              - ruby-version: "2.6"
-                gemfile: rails_41
-              - ruby-version: "2.2"
-                gemfile: rack_3
-              - ruby-version: "2.3"
-                gemfile: rack_3
       - test: &test
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
           requires:
