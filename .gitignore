@@ -13,3 +13,6 @@
 .rspec_status
 
 /examples/**/*.lock
+
+# gem lock
+Gemfile.lock
