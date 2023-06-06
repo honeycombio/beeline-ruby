@@ -15,7 +15,7 @@ module Honeycomb
 
       upper_bound = MAX_INT32 / rate
       digest = Digest::SHA1.digest(value)[0, 4]
-      value = digest.unpack("I!>").first
+      value = digest.unpack1("I!>")
       value <= upper_bound
     end
   end
