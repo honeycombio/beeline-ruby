@@ -52,10 +52,8 @@ module Honeycomb
     module MarshalTraceContext
       def to_trace_header
         context = [""]
-        unless trace.fields.keys.nil?
-          trace.fields.keys.each do |key|
-            context.push("#{key}=#{trace.fields[key]}")
-          end
+        trace.fields.keys&.each do |key|
+          context.push("#{key}=#{trace.fields[key]}")
         end
 
         data_to_propagate = [
@@ -68,10 +66,8 @@ module Honeycomb
       def self.to_trace_header(propagation_context)
         context = [""]
         fields = propagation_context.trace_fields
-        unless fields.keys.nil?
-          fields.keys.each do |key|
-            context.push("#{key}=#{fields[key]}")
-          end
+        fields.keys&.each do |key|
+          context.push("#{key}=#{fields[key]}")
         end
 
         data_to_propagate = [

@@ -149,13 +149,13 @@ module Honeycomb
       end
 
       if sample
-        presend_hook && presend_hook.call(event.data)
+        presend_hook&.call(event.data)
         event.send_presampled
       end
       @sent = true
       context.span_sent(self)
 
-      parent && parent.remove_child(self)
+      parent&.remove_child(self)
     end
 
     def add_additional_fields
