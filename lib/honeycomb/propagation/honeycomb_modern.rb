@@ -40,11 +40,9 @@ module Honeycomb
             parent_span_id = value
           when "context"
             Base64.decode64(value).tap do |json|
-              
               trace_fields = JSON.parse json
             rescue JSON::ParserError
               trace_fields = {}
-              
             end
           end
         end

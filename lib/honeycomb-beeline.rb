@@ -40,10 +40,8 @@ module Honeycomb
 
     def load_integrations
       integrations_to_load.each do |integration|
-        
         require "honeycomb/integrations/#{integration}"
       rescue LoadError
-        
       end
     end
 
