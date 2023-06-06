@@ -42,12 +42,12 @@ if defined?(Honeycomb::ActiveSupport)
 
         context "with a sad event" do
           before do
-            begin
+            
               ActiveSupport::Notifications.instrument event_name, "is_this_going_to_error?" => "yep" do
                 raise StandardError, "😭"
               end
             rescue StandardError # rubocop:disable Lint/HandleExceptions
-            end
+            
           end
 
           it_behaves_like "event data", package_fields: false, additional_fields: [
