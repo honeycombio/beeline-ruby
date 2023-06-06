@@ -5,8 +5,8 @@ module Honeycomb
   module W3CPropagation
     # Parse trace headers
     module UnmarshalTraceContext
-      INVALID_TRACE_ID = "00000000000000000000000000000000".freeze
-      INVALID_SPAN_ID = "0000000000000000".freeze
+      INVALID_TRACE_ID = "00000000000000000000000000000000"
+      INVALID_SPAN_ID = "0000000000000000"
 
       def parse_rack_env(env)
         parse env["HTTP_TRACEPARENT"]
