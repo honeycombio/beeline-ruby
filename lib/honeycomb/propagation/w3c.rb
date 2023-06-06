@@ -16,7 +16,7 @@ module Honeycomb
         unless serialized_trace.nil?
           version, payload = serialized_trace.split("-", 2)
           # version should be 2 hex characters
-          if version =~ /^[A-Fa-f0-9]{2}$/
+          if /^[A-Fa-f0-9]{2}$/.match?(version)
             trace_id, parent_span_id = parse_v1(payload)
 
             if !trace_id.nil? && !parent_span_id.nil?
