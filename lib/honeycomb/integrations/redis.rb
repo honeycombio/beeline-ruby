@@ -199,7 +199,7 @@ module Honeycomb
         pretty.encode!("UTF-8", "binary", fallback: ->(c) { hex(c) })
         pretty.gsub!(NEEDS_BACKSLASH, BACKSLASH)
         pretty.gsub!(NEEDS_HEX) { |c| hex(c) }
-        pretty =~ NEEDS_QUOTES ? "\"#{pretty}\"" : pretty
+        NEEDS_QUOTES.match?(pretty) ? "\"#{pretty}\"" : pretty
       end
 
       # A regular expression matching characters that need to be hex-encoded.

@@ -5,8 +5,8 @@ module Honeycomb
   module W3CPropagation
     # Parse trace headers
     module UnmarshalTraceContext
-      INVALID_TRACE_ID = "00000000000000000000000000000000".freeze
-      INVALID_SPAN_ID = "0000000000000000".freeze
+      INVALID_TRACE_ID = "00000000000000000000000000000000"
+      INVALID_SPAN_ID = "0000000000000000"
 
       def parse_rack_env(env)
         parse env["HTTP_TRACEPARENT"]
@@ -16,7 +16,7 @@ module Honeycomb
         unless serialized_trace.nil?
           version, payload = serialized_trace.split("-", 2)
           # version should be 2 hex characters
-          if version =~ /^[A-Fa-f0-9]{2}$/
+          if /^[A-Fa-f0-9]{2}$/.match?(version)
             trace_id, parent_span_id = parse_v1(payload)
 
             if !trace_id.nil? && !parent_span_id.nil?

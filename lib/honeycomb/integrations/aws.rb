@@ -108,7 +108,7 @@ module Honeycomb
           "aws.operation" => context.operation_name,
         }
 
-        context.params && context.params.each do |key, value|
+        context.params&.each do |key, value|
           context[:honeycomb_aws_sdk_data]["aws.params.#{key}"] = value
         end
 

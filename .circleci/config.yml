@@ -89,27 +89,6 @@ jobs:
           ruby-version: << parameters.ruby-version >>
           gemfile: root
           command: bundle exec rake rubocop
-  test-older-versions: # need to use deprecated circleci/ruby images for older ruby versions
-    parameters:
-      gemfile:
-        type: string
-      ruby-version:
-        type: string
-    docker:
-        - image: circleci/ruby:<< parameters.ruby-version >>
-    environment:
-      BUNDLE_GEMFILE: gemfiles/<< parameters.gemfile >>.gemfile
-    steps:
-      - ruby:
-          ruby-version: << parameters.ruby-version >>
-          gemfile: << parameters.gemfile >>
-          command: bundle exec rake test
-      - store_test_results:
-          path: test/reports
-      - persist_to_workspace:
-          root: ./
-          paths:
-            - coverage
   test:
     parameters:
       gemfile:
@@ -163,68 +142,13 @@ workflows:
                 - main
     jobs:
       - lint
-      - test-older-versions: &test-older-versions # need to use deprecated circleci/ruby images for older ruby versions
-          name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
-          requires:
-            - lint
-          matrix:
-            parameters:
-              ruby-version: ["2.2", "2.3", "2.4", "2.5", "2.6"]
-              gemfile:
-                - aws_2
-                - aws_3
-                - faraday_0
-                - faraday_1
-                - sequel4
-                - sequel5
-                - sinatra
-                - rack_2
-                - rack_3
-                - rails_41
-                - rails_42
-                - rails_5
-                - rails_51
-                - rails_52
-                - rails_6
-                - rails_61
-                - redis_3
-                - redis_4
-            exclude:
-              - ruby-version: "2.2"
-                gemfile: faraday_0
-              - ruby-version: "2.2"
-                gemfile: faraday_1
-              - ruby-version: "2.2"
-                gemfile: rails_52
-              - ruby-version: "2.2"
-                gemfile: rails_6
-              - ruby-version: "2.2"
-                gemfile: rails_61
-              - ruby-version: "2.3"
-                gemfile: rails_6
-              - ruby-version: "2.3"
-                gemfile: rails_61
-              - ruby-version: "2.4"
-                gemfile: rails_6
-              - ruby-version: "2.4"
-                gemfile: rails_61
-              - ruby-version: "2.4"
-                gemfile: rails_41
-              - ruby-version: "2.5"
-                gemfile: rails_41
-              - ruby-version: "2.6"
-                gemfile: rails_41
-              - ruby-version: "2.2"
-                gemfile: rack_3
-              - ruby-version: "2.3"
-                gemfile: rack_3
       - test: &test
           name: test-<< matrix.gemfile >>-ruby_<< matrix.ruby-version >>
           requires:
             - lint
           matrix:
             parameters:
-              ruby-version: ["2.7", "3.0", "3.1"]
+              ruby-version: ["2.5","2.6", "2.7", "3.0", "3.1"]
               gemfile:
                 - aws_2
                 - aws_3
@@ -266,9 +190,6 @@ workflows:
           filters: &regular_filters
               tags:
                 only: /.*/
-      - test-older-versions: # need to use deprecated circleci/ruby images for older ruby versions
-          <<: *test-older-versions
-          filters: *regular_filters
       - test:
           <<: *test
           filters: *regular_filters
@@ -276,7 +197,6 @@ workflows:
           filters: *regular_filters
           requires:
             - test
-            - test-older-versions
       - build_artifacts:
           filters: &tag_filters
               tags:
@@ -286,7 +206,6 @@ workflows:
           requires:
             - lint
             - test
-            - test-older-versions
       - publish_rubygems: &publish
           filters: *tag_filters
           requires:
