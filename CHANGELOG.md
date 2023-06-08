@@ -4,7 +4,7 @@
 
 ### ⚠️ Breaking Changes ⚠️
 
-Minimum Ruby version is 2.5 and muminum Rails version is 5.0.
+Minimum Ruby version is 2.5 and minimum Rails version is 5.0.
 
 ### Fixed
 
