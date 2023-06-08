@@ -14,7 +14,7 @@ trial](https://ui.honeycomb.io/signup) to obtain an API key before starting.
 
 ## Compatible with
 
-Requires Ruby version 2.3 or later
+Requires Ruby version 2.5 or later
 
 Built in instrumentation for:
 
