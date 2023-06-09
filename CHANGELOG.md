@@ -1,5 +1,33 @@
 # beeline-ruby changelog
 
+## 3.0.0 2023-06-08
+
+### ⚠️ Breaking Changes ⚠️
+
+Minimum Ruby version is 2.5 and minimum Rails version is 5.0.
+
+### Fixed
+
+- fix: set min rubocop to avoid false positive lint error (#218) | @robbkidd
+
+### Maintenance
+
+- chore: give dependabot PRs better title (#217) | @vreynolds
+- ci: use context for publishing ruby gem (#219) | @JamieDanielson
+- ci: update validate PR title workflow (#216) | @pkanal
+- ci: validate PR title (#214) | @pkanal
+- docs: update readme (#225) | @pkanal
+- docs: add otel recommendation to readme (#222) | @pkanal
+- maint: drop support for Ruby < 2.5 and Rails < 5.0 (#227) | @robbkidd
+- maint: update author to honeycomb (#220) | @JamieDanielson
+- maint: delete workflows for old board (#212) | @vreynolds
+- maint: add release file (#211) | @vreynolds
+- maint: add new project workflow (#210) | @vreynolds
+- maint: handle recent Rack v3 changes in tests & example (#209) | @emilyashley
+- maint: add ruby 3.1 to CI matrix (#206) | @vreynolds
+- maint: fix nightly build (#205) | @vreynolds
+- maint: drop testing for Faraday 0 under Ruby 2.2 (#204) | @robbkidd
+
 ## 2.11.0 2022-06-01
 
 ### Improvements
