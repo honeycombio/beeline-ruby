@@ -95,7 +95,7 @@ if defined?(Honeycomb::Aws)
       let(:api) { event_data.first }
 
       it "sends the expected aws-sdk span" do
-        expect(sdk).to match(
+        expect(sdk).to include(
           "name" => "aws-sdk",
           "service_name" => "example",
           "service.name" => "example",
@@ -120,7 +120,7 @@ if defined?(Honeycomb::Aws)
       end
 
       it "sends the expected aws-api span" do
-        expect(api).to match(
+        expect(api).to include(
           "name" => "aws-api",
           "service_name" => "example",
           "service.name" => "example",
@@ -186,7 +186,7 @@ if defined?(Honeycomb::Aws)
       let(:api) { event_data.first }
 
       it "sends the expected aws-sdk span" do
-        expect(sdk).to match(
+        expect(sdk).to include(
           "name" => "aws-sdk",
           "service_name" => "example",
           "service.name" => "example",
@@ -214,7 +214,7 @@ if defined?(Honeycomb::Aws)
       end
 
       it "sends the expected aws-api span" do
-        expect(api).to match(
+        expect(api).to include(
           "name" => "aws-api",
           "service_name" => "example",
           "service.name" => "example",
@@ -279,7 +279,7 @@ if defined?(Honeycomb::Aws)
       let(:api) { event_data.first }
 
       it "sends the expected aws-sdk span" do
-        expect(sdk).to match(
+        expect(sdk).to include(
           "name" => "aws-sdk",
           "service_name" => "example",
           "service.name" => "example",
@@ -305,7 +305,7 @@ if defined?(Honeycomb::Aws)
       end
 
       it "sends the expected aws-api span" do
-        expect(api).to match(
+        expect(api).to include(
           "name" => "aws-api",
           "service_name" => "example",
           "service.name" => "example",
@@ -366,7 +366,7 @@ if defined?(Honeycomb::Aws)
       let(:sdk) { event_data[2] }
 
       it "sends the expected aws-sdk span" do
-        expect(sdk).to match(
+        expect(sdk).to include(
           "name" => "aws-sdk",
           "service_name" => "example",
           "service.name" => "example",
@@ -395,7 +395,7 @@ if defined?(Honeycomb::Aws)
       end
 
       it "sends an aws-api span for the original request" do
-        expect(api_failure).to match(
+        expect(api_failure).to include(
           "name" => "aws-api",
           "service_name" => "example",
           "service.name" => "example",
@@ -432,7 +432,7 @@ if defined?(Honeycomb::Aws)
       end
 
       it "sends an aws-api span for the retried request" do
-        expect(api_success).to match(
+        expect(api_success).to include(
           "name" => "aws-api",
           "service_name" => "example",
           "service.name" => "example",
@@ -508,7 +508,7 @@ if defined?(Honeycomb::Aws)
       let(:apis) { event_data.take(4) }
 
       it "sends the expected aws-sdk span" do
-        expect(sdk).to match(
+        expect(sdk).to include(
           "name" => "aws-sdk",
           "service_name" => "example",
           "service.name" => "example",
@@ -569,10 +569,10 @@ if defined?(Honeycomb::Aws)
       end
 
       it "sends the expected aws-api span for each request" do
-        expect(apis[0]).to match(api.merge("aws.attempt" => 1))
-        expect(apis[1]).to match(api.merge("aws.attempt" => 2))
-        expect(apis[2]).to match(api.merge("aws.attempt" => 3))
-        expect(apis[3]).to match(api.merge("aws.attempt" => 4))
+        expect(apis[0]).to include(api.merge("aws.attempt" => 1))
+        expect(apis[1]).to include(api.merge("aws.attempt" => 2))
+        expect(apis[2]).to include(api.merge("aws.attempt" => 3))
+        expect(apis[3]).to include(api.merge("aws.attempt" => 4))
       end
     end
 
