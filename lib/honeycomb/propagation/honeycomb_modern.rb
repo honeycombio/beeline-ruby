@@ -3,6 +3,7 @@
 require "base64"
 require "json"
 require "uri"
+require "libhoney/cleaner"
 
 module Honeycomb
   # Parsing and propagation for honeycomb trace headers
@@ -56,8 +57,14 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
+      # for cleaning data in trace fields before serializing to prop header value
+      include Libhoney::Cleaner
+      # promote cleaner instance methods to module methods so that self.to_trace_header can use them
+      module_function :clean_data, :clean_string
+
       def to_trace_header
-        context = Base64.urlsafe_encode64(JSON.generate(trace.fields)).strip
+        fields = clean_data(trace.fields)
+        context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
         data_to_propogate = [
           "trace_id=#{trace.id}",
           "parent_id=#{id}",
@@ -73,7 +80,7 @@ module Honeycomb
       end
 
       def self.to_trace_header(propagation_context)
-        fields = propagation_context.trace_fields
+        fields = clean_data(propagation_context.trace_fields)
         context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
         data_to_propogate = [
           "trace_id=#{propagation_context.trace_id}",
