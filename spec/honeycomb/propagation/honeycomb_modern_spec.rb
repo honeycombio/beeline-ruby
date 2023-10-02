@@ -75,6 +75,17 @@ RSpec.shared_examples "honeycomb_propagation_parse" do
       nil,
     ]
   end
+
+  it "handles previously-encoded invalid utf8" do
+    serialized_trace =
+      "1;trace_id=trace_id,parent_id=parent_id,context=eyJ0ZXN0IjoiaG9uZXljb21iIiwiaW52YWxpZF91dGY4Ijoi77-9In0="
+    expect(propagation.parse(serialized_trace)).to eq [
+      "trace_id",
+      "parent_id",
+      { "test" => "honeycomb", "invalid_utf8" => "�" },
+      nil,
+    ]
+  end
 end
 
 RSpec.describe Honeycomb::HoneycombModernPropagation::UnmarshalTraceContext do
@@ -94,24 +105,30 @@ end
 RSpec.describe Honeycomb::HoneycombModernPropagation::MarshalTraceContext do
   describe "module usage" do
     let(:builder) { instance_double("Builder", dataset: "rails") }
-    let(:trace) { instance_double("Trace", id: 2, fields: {}) }
+    let(:trace) { instance_double("Trace", id: 2, fields: {
+      "test" => "honeycomb",
+      "invalid_utf8" => "\xAE",
+    }) }
     let(:span) do
       instance_double("Span", id: 1, trace: trace, builder: builder)
         .extend(subject)
     end
 
-    it "can serialize a basic span and not include the dataset" do
+    it "can serialize a span with fields and handle invalid UTF8 and not include the dataset" do
       expect(span.to_trace_header)
-        .to eq("1;trace_id=2,parent_id=1,context=e30=")
+        .to eq("1;trace_id=2,parent_id=1,context=eyJ0ZXN0IjoiaG9uZXljb21iIiwiaW52YWxpZF91dGY4Ijoi77-9In0=")
     end
   end
 
   describe "class method usage" do
-    let(:context) { Honeycomb::Propagation::Context.new(2, 1, {}, "rails") }
+    let(:context) { Honeycomb::Propagation::Context.new(2, 1, {
+      "test" => "honeycomb",
+      "invalid_utf8" => "\xAE",
+    }, "rails") }
 
-    it "can serialize a basic span and not include the dataset" do
+    it "can serialize a span with fields and handle invalid UTF8 and not include the dataset" do
       expect(subject.to_trace_header(context))
-        .to eq("1;trace_id=2,parent_id=1,context=e30=")
+        .to eq("1;trace_id=2,parent_id=1,context=eyJ0ZXN0IjoiaG9uZXljb21iIiwiaW52YWxpZF91dGY4Ijoi77-9In0=")
     end
   end
 end
@@ -123,6 +140,7 @@ RSpec.describe "Propagation" do
   let(:fields) do
     {
       "test" => "honeycomb",
+      "invalid_utf8" => "\xAE",
     }
   end
   let(:builder) { instance_double("Builder", dataset: dataset) }
@@ -151,6 +169,9 @@ RSpec.describe "Propagation" do
   end
 
   it "produces the correct fields" do
-    expect(output[2]).to eq fields
+    expect(output[2]).to eq({
+      "test" => "honeycomb",
+      "invalid_utf8" => "�",
+    })
   end
 end
