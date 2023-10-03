@@ -77,13 +77,16 @@ RSpec.shared_examples "honeycomb_propagation_parse" do
   end
 
   it "handles previously-encoded invalid utf8" do
-    expected_encoded_fields = "eyJ0ZXN0IjoiaG9uZXljb21iIiwiaW52YWxpZF91dGY4Ijoi77-9In0="
+    encoded_fields = "eyJ0ZXN0IjoiaG9uZXljb21iIiwiaW52YWxpZF91dGY4Ijoi77-9In0="
+    expected_fields = { "test" => "honeycomb", "invalid_utf8" => "�" }
+
     serialized_trace =
-      "1;trace_id=trace_id,parent_id=parent_id,context=#{expected_encoded_fields}"
+      "1;trace_id=trace_id,parent_id=parent_id,context=#{encoded_fields}"
+
     expect(propagation.parse(serialized_trace)).to eq [
       "trace_id",
       "parent_id",
-      { "test" => "honeycomb", "invalid_utf8" => "�" },
+      expected_fields,
       nil,
     ]
   end
