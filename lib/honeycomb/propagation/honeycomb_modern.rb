@@ -63,12 +63,10 @@ module Honeycomb
       module_function :clean_data, :clean_string
 
       def to_trace_header
-        fields = clean_data(trace.fields)
-        context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
         data_to_propogate = [
           "trace_id=#{trace.id}",
           "parent_id=#{id}",
-          "context=#{context}",
+          "context=#{encode_trace_fields(trace.fields)}",
         ]
         "1;#{data_to_propogate.join(',')}"
       end
@@ -80,15 +78,22 @@ module Honeycomb
       end
 
       def self.to_trace_header(propagation_context)
-        fields = clean_data(propagation_context.trace_fields)
-        context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
         data_to_propogate = [
           "trace_id=#{propagation_context.trace_id}",
           "parent_id=#{propagation_context.parent_id}",
-          "context=#{context}",
+          "context=#{encode_trace_fields(propagation_context.trace_fields)}",
         ]
         "1;#{data_to_propogate.join(',')}"
       end
+
+      def encode_trace_fields(fields)
+        Base64.urlsafe_encode64(
+          JSON.generate(
+            clean_data(fields)
+          )
+        ).strip
+      end
+      module_function :encode_trace_fields
     end
   end
 end
