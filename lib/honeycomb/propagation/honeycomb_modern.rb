@@ -89,8 +89,8 @@ module Honeycomb
       def encode_trace_fields(fields)
         Base64.urlsafe_encode64(
           JSON.generate(
-            clean_data(fields)
-          )
+            clean_data(fields),
+          ),
         ).strip
       end
       module_function :encode_trace_fields

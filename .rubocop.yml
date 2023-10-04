@@ -36,11 +36,7 @@ Metrics/ParameterLists:
   Max: 6
 
 Style/AccessModifierDeclarations:
-  Exclude:
-    - lib/honeycomb/propagation/aws.rb
-    - lib/honeycomb/propagation/w3c.rb
-    - lib/honeycomb/propagation/honeycomb.rb
-    - lib/honeycomb/propagation/default.rb
+  Enabled: false
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
