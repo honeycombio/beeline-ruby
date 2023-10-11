@@ -13,3 +13,6 @@
 .rspec_status
 
 /examples/**/*.lock
+
+# intentionally omitting lock files
+Gemfile.lock
