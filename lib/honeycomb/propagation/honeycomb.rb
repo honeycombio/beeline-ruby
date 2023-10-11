@@ -3,6 +3,7 @@
 require "base64"
 require "json"
 require "uri"
+require "libhoney/cleaner"
 
 module Honeycomb
   # Parsing and propagation for honeycomb trace headers
@@ -41,7 +42,7 @@ module Honeycomb
           when "parent_id"
             parent_span_id = value
           when "context"
-            Base64.decode64(value).tap do |json|
+            Base64.urlsafe_decode64(value).tap do |json|
               trace_fields = JSON.parse json
             rescue JSON::ParserError
               trace_fields = {}
@@ -58,14 +59,17 @@ module Honeycomb
 
     # Serialize trace headers
     module MarshalTraceContext
+      # for cleaning data in trace fields before serializing to prop header value
+      include Libhoney::Cleaner
+      # promote cleaner instance methods to module methods so that self.to_trace_header can use them
+      module_function :clean_data, :clean_string
+
       def to_trace_header
-        context = Base64.urlsafe_encode64(JSON.generate(trace.fields)).strip
-        encoded_dataset = URI.encode_www_form_component(builder.dataset)
         data_to_propogate = [
-          "dataset=#{encoded_dataset}",
+          "dataset=#{encode_dataset(builder.dataset)}",
           "trace_id=#{trace.id}",
           "parent_id=#{id}",
-          "context=#{context}",
+          "context=#{encode_trace_fields(trace.fields)}",
         ]
         "1;#{data_to_propogate.join(',')}"
       end
@@ -77,18 +81,28 @@ module Honeycomb
       end
 
       def self.to_trace_header(propagation_context)
-        fields = propagation_context.trace_fields
-        context = Base64.urlsafe_encode64(JSON.generate(fields)).strip
-        dataset = propagation_context.dataset
-        encoded_dataset = URI.encode_www_form_component(dataset)
         data_to_propogate = [
-          "dataset=#{encoded_dataset}",
+          "dataset=#{encode_dataset(propagation_context.dataset)}",
           "trace_id=#{propagation_context.trace_id}",
           "parent_id=#{propagation_context.parent_id}",
-          "context=#{context}",
+          "context=#{encode_trace_fields(propagation_context.trace_fields)}",
         ]
         "1;#{data_to_propogate.join(',')}"
       end
+
+      def encode_trace_fields(fields)
+        Base64.urlsafe_encode64(
+          JSON.generate(
+            clean_data(fields),
+          ),
+        ).strip
+      end
+      module_function :encode_trace_fields
+
+      def encode_dataset(dataset)
+        URI.encode_www_form_component(dataset)
+      end
+      module_function :encode_dataset
     end
   end
 end
