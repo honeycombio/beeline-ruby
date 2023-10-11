@@ -32,7 +32,7 @@ services:
     image: redis:latest
 
   squid:
-    image: datadog/squid
+    image: ubuntu/squid
     ports:
       # for reverse proxy back to web app
       - "127.0.0.1:3000:3000"
