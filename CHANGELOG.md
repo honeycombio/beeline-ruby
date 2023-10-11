@@ -1,5 +1,17 @@
 # beeline-ruby changelog
 
+## 3.0.1 2023-10-12
+
+### Fixed
+
+- fix: clean invalid UTF8 from trace field values when generating propagation header (#232) | Robb Kidd
+
+### Maintenance
+
+- maint: add local dev notes and fix example (#233) | Jamie Danielson
+- ci: move nightly to weekly (#230) | Vera Reynolds
+- ci: AWS specs updated to use include() instead of match() (#229) | Robb Kidd
+
 ## 3.0.0 2023-06-08
 
 ### ⚠️ Breaking Changes ⚠️
