@@ -43,8 +43,26 @@ RSpec.describe Honeycomb::Configuration do
     expect(configuration.write_key).to eq write_key
   end
 
+  describe "#classic?" do
+    it "is true when no key is set" do
+      configuration.write_key = nil
+      expect(configuration.classic?).to be true
+    end
+
+    it "is true with a classic key" do
+      configuration.write_key = "c1a551c000d68f9ed1e96432ac1a3380"
+      expect(configuration.classic?).to be true
+    end
+
+    it "is false with an E&S key" do
+      configuration.write_key = "1234567890123456789012"
+      expect(configuration.classic?).to be false
+    end
+  end
+
   describe "#service_name" do
     it "returns the default unknown-service:<process_name> when not set" do
+      expect(configuration.instance_variable_get(:@service_name)).to be_nil
       # rspec is the expected process name because *this test suite* is rspec
       expect(configuration.service_name).to eq "unknown_service:rspec"
     end
@@ -61,10 +79,12 @@ RSpec.describe Honeycomb::Configuration do
 
     context "with a classic write key" do
       before do
-        configuration.write_key = "c1a551c000d68f9ed1e96432ac1a3380"
+        allow(configuration).to receive(:classic?).and_return(true)
       end
 
       it "returns the value of dataset when service_name isn't set" do
+        expect(configuration.instance_variable_get(:@service_name)).to be_nil
+
         configuration.dataset = "a_dataset"
         expect(configuration.service_name).to eq "a_dataset"
       end
@@ -105,11 +125,12 @@ RSpec.describe Honeycomb::Configuration do
 
     context "with a classic write key" do
       before do
-        configuration.write_key = "c1a551c000d68f9ed1e96432ac1a3380"
+        allow(configuration).to receive(:classic?).and_return(true)
       end
 
       it "returns whatever dataset has been set" do
         expect(configuration.dataset).to be_nil
+
         configuration.dataset = "a_dataset"
         expect(configuration.dataset).to eq "a_dataset"
       end
