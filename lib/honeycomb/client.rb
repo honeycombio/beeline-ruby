@@ -33,7 +33,7 @@ module Honeycomb
       @libhoney.add_field "service.name", configuration.service_name
       @context = Context.new
 
-      @context.classic = classic_write_key?(configuration.write_key)
+      @context.classic = configuration.classic?
 
       @additional_trace_options = {
         presend_hook: configuration.presend_hook,
@@ -127,10 +127,6 @@ module Honeycomb
       )
       span.add_field("error_backtrace_limit", error_backtrace_limit)
       span.add_field("error_backtrace_total_length", exception.backtrace.length)
-    end
-
-    def classic_write_key?(write_key)
-      write_key.nil? || write_key.length == 32
     end
   end
 end
