@@ -54,8 +54,23 @@ RSpec.describe Honeycomb::Configuration do
       expect(configuration.classic?).to be true
     end
 
+    it "is true with a classic v3 ingest key" do
+      configuration.write_key = "hcaic_1234567890123456789012345678901234567890123456789012345678"
+      expect(configuration.classic?).to be true
+    end
+
     it "is false with an E&S key" do
       configuration.write_key = "1234567890123456789012"
+      expect(configuration.classic?).to be false
+    end
+
+    it "is false with an E&S v3 ingest key" do
+      configuration.write_key = "hcaik_1234567890123456789012345678901234567890123456789012345678"
+      expect(configuration.classic?).to be false
+    end
+
+    it "is false with a v3 key id only" do
+      configuration.write_key = "hcxik_12345678901234567890123456"
       expect(configuration.classic?).to be false
     end
   end
