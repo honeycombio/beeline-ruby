@@ -24,7 +24,7 @@ module Honeycomb
     end
 
     def classic?
-      @write_key.nil? || @write_key.length == 32
+      Libhoney.classic_api_key?(@write_key)
     end
 
     def service_name
