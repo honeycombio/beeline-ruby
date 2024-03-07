@@ -2,9 +2,9 @@
 
 ## 3.1.0 2024-03-07
 
-### Enhancements
-
 ⚠️  Minimum libhoney version is now 2.3.0 ⚠️
+
+### Enhancements
 
 - feat: support classic ingest keys (#238) | Robb Kidd
 
