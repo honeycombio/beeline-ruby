@@ -1,5 +1,26 @@
 # beeline-ruby changelog
 
+## 3.1.0 2024-03-07
+
+⚠️  Minimum libhoney version is now 2.3.0 ⚠️
+
+Previously the minimum libhoney was 1.14.2. Backwards-incompatible changes in [libhoney 2.0.0](https://github.com/honeycombio/libhoney-rb/releases/tag/v2.0.0):
+
+* Removal of the deprecated Array input for http proxy configuration.
+  * If you are using the Beeline in services that must send web traffic through an out-going proxy, see [libhoney 1.x proxy_config deprecation warning](https://github.com/honeycombio/libhoney-rb/blob/v1.21.0/lib/libhoney/client.rb#L273-L276) for recommended configuration.
+* Drop support for Ruby versions 2.2 and 2.3.
+  * Beeline Ruby already requires a minimum Ruby 2.5.
+ 
+### Enhancements
+
+- feat: support classic ingest keys (#238) | Robb Kidd
+
+### Maintenance
+
+- maint: add labels to release.yml for auto-generated grouping (#239) | Jamie Danielson
+- maint: update codeowners to pipeline-team (#237) | Jamie Danielson
+- maint: update codeowners to pipeline (#236) | Jamie Danielson
+
 ## 3.0.1 2023-10-12
 
 ### Fixed
