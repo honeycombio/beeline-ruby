@@ -1,5 +1,17 @@
 # beeline-ruby changelog
 
+## 3.1.0 2024-03-07
+
+### Enhancements
+
+- feat: support classic ingest keys (#238) | Robb Kidd
+
+### Maintenance
+
+- maint: add labels to release.yml for auto-generated grouping (#239) | Jamie Danielson
+- maint: update codeowners to pipeline-team (#237) | Jamie Danielson
+- maint: update codeowners to pipeline (#236) | Jamie Danielson
+
 ## 3.0.1 2023-10-12
 
 ### Fixed
