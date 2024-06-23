@@ -784,15 +784,12 @@ if defined?(Honeycomb::Aws)
           :copy_object,
           status_code: 200,
           headers: {},
-          body: <<-XML,
-            <Response>
-              <Errors>
-                <Error>
-                  <Code>WTF</Code>
-                  <Message>Some special error occurred</Message>
-                </Error>
-              </Errors>
-            </Response>
+          body: <<~XML,
+            <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+            <Error>
+              <Code>WTF</Code>
+              <Message>Some special error occurred</Message>
+            </Error>
           XML
         )
 
