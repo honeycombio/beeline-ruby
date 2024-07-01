@@ -579,7 +579,12 @@ if defined?(Honeycomb::Aws)
     describe "s3 region redirect" do
       before do
         # Aws::S3 caches redirected regions, have to reset between tests
-        Aws::S3::BUCKET_REGIONS.clear
+        if Honeycomb::Aws::SDK_VERSION.start_with?("2.")
+          Aws::S3::BUCKET_REGIONS.clear
+        else
+          # BUCKET_REGIONS const removed in v3.149.0
+          Aws::S3.bucket_region_cache.clear
+        end
 
         s3 = Aws::S3::Client.new(honeycomb_client: client)
 
@@ -779,15 +784,12 @@ if defined?(Honeycomb::Aws)
           :copy_object,
           status_code: 200,
           headers: {},
-          body: <<-XML,
-            <Response>
-              <Errors>
-                <Error>
-                  <Code>WTF</Code>
-                  <Message>Some special error occurred</Message>
-                </Error>
-              </Errors>
-            </Response>
+          body: <<~XML,
+            <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+            <Error>
+              <Code>WTF</Code>
+              <Message>Some special error occurred</Message>
+            </Error>
           XML
         )
 
