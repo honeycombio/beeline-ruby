@@ -8,6 +8,8 @@ if defined?(Honeycomb::Sinatra)
     include Rack::Test::Methods
 
     class App < Sinatra::Application
+      set :host_authorization, { permitted_hosts: [] }
+
       get "/" do
         "Hello world"
       end
