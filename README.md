@@ -4,6 +4,8 @@
 [![Build Status](https://circleci.com/gh/honeycombio/beeline-ruby.svg?style=svg)](https://circleci.com/gh/honeycombio/beeline-ruby)
 [![Gem Version](https://badge.fury.io/rb/honeycomb-beeline.svg)](https://badge.fury.io/rb/honeycomb-beeline)
 
+**STATUS**: This project is being Sunset. See [this issue](https://github.com/honeycombio/beeline-ruby/issues/244) for more details.
+
 ⚠️**Note**: Beelines are Honeycomb's legacy instrumentation libraries. We embrace OpenTelemetry as the effective way to instrument applications. For any new observability efforts, we recommend [instrumenting with OpenTelemetry](https://docs.honeycomb.io/getting-data-in/opentelemetry/ruby/).
 
 This package makes it easy to instrument your Ruby web app to send useful events to [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.
